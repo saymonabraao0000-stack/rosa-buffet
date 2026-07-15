@@ -24,7 +24,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40" />
       <div className="absolute inset-0 bg-ink/20" />
 
-      <Container className="relative z-10 pt-24">
+      <Container className="relative z-10 pb-28 pt-28 sm:pb-32 sm:pt-32">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
