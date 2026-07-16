@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Container from "@/components/ui/Container";
@@ -11,6 +13,13 @@ import { siteConfig } from "@/lib/site-config";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
+  // Âncoras (#secao) só existem na home; a partir de outra página,
+  // aponta para "/#secao" para navegar até a home e rolar até a seção.
+  const resolveHref = (href: string) =>
+    href.startsWith("#") ? (isHome ? href : `/${href}`) : href;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -35,7 +44,7 @@ export default function Navbar() {
       }`}
     >
       <Container className="flex h-20 items-center justify-between">
-        <a href="#inicio" className="flex items-center gap-3 focus-gold rounded-full">
+        <Link href={isHome ? "#inicio" : "/"} className="flex items-center gap-3 focus-gold rounded-full">
           <Image
             src="/images/logo.jpg"
             alt={siteConfig.name}
@@ -47,17 +56,17 @@ export default function Navbar() {
           <span className="font-display text-lg tracking-wide text-cream">
             {siteConfig.name}
           </span>
-        </a>
+        </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Navegação principal">
+        <nav className="hidden items-center gap-7 lg:flex" aria-label="Navegação principal">
           {siteConfig.nav.map((item) => (
-            <a
+            <Link
               key={item.href}
-              href={item.href}
+              href={resolveHref(item.href)}
               className="focus-gold text-sm font-medium uppercase tracking-wide text-cream/85 transition-colors hover:text-gold"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -88,14 +97,14 @@ export default function Navbar() {
             <Container className="flex flex-col gap-6 py-8">
               <nav className="flex flex-col gap-5" aria-label="Navegação móvel">
                 {siteConfig.nav.map((item) => (
-                  <a
+                  <Link
                     key={item.href}
-                    href={item.href}
+                    href={resolveHref(item.href)}
                     onClick={() => setMenuOpen(false)}
                     className="focus-gold text-base font-medium uppercase tracking-wide text-cream/90 transition-colors hover:text-gold"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 ))}
               </nav>
               <WhatsAppButton size="md" className="w-full" />

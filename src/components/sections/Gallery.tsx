@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { galleryImages } from "@/lib/site-data";
@@ -49,6 +50,22 @@ export default function Gallery() {
             </motion.button>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="mt-12 flex justify-center"
+        >
+          <Link
+            href="/celebracoes"
+            className="focus-gold inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-base font-semibold tracking-wide text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-ink-soft"
+          >
+            Ver portfólio completo
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </motion.div>
       </Container>
 
       <AnimatePresence>
