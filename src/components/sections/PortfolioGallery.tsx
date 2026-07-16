@@ -3,17 +3,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { portfolioCategories } from "@/lib/portfolio-data";
 
 type FlatImage = { src: string; w: number; h: number; category: string };
 
 const ALL = "todas";
+// Quantidade inicial de fotos exibidas (~3 linhas em 4 colunas no desktop)
+// e quantas são reveladas a cada clique em "Ver mais".
+const INITIAL_COUNT = 12;
+const STEP = 12;
 
 export default function PortfolioGallery() {
   const [active, setActive] = useState<string>(ALL);
   const [lightbox, setLightbox] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(INITIAL_COUNT);
 
   const filters = useMemo(
     () => [
@@ -32,6 +37,9 @@ export default function PortfolioGallery() {
       c.images.map((img) => ({ ...img, category: c.label })),
     );
   }, [active]);
+
+  const visibleImages = images.slice(0, visibleCount);
+  const hasMore = visibleCount < images.length;
 
   const closeLightbox = useCallback(() => setLightbox(null), []);
   const showPrev = useCallback(
@@ -72,6 +80,7 @@ export default function PortfolioGallery() {
                 onClick={() => {
                   setActive(f.slug);
                   setLightbox(null);
+                  setVisibleCount(INITIAL_COUNT);
                 }}
                 aria-pressed={isActive}
                 className={`focus-gold rounded-full border px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 ${
@@ -94,7 +103,7 @@ export default function PortfolioGallery() {
           transition={{ duration: 0.4 }}
           className="columns-2 gap-4 md:columns-3 lg:columns-4 [&>*]:mb-4"
         >
-          {images.map((img, index) => (
+          {visibleImages.map((img, index) => (
             <button
               key={img.src}
               type="button"
@@ -118,6 +127,23 @@ export default function PortfolioGallery() {
             </button>
           ))}
         </motion.div>
+
+        {/* Ver mais / contador */}
+        {hasMore && (
+          <div className="mt-12 flex flex-col items-center gap-3">
+            <p className="text-sm text-gray-dark">
+              Mostrando {visibleImages.length} de {images.length} fotos
+            </p>
+            <button
+              type="button"
+              onClick={() => setVisibleCount((c) => c + STEP)}
+              className="focus-gold inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-base font-semibold tracking-wide text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-ink-soft"
+            >
+              Ver mais fotos
+              <ChevronDown className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
       </Container>
 
       {/* Lightbox */}
