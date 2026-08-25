@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
@@ -36,12 +37,19 @@ export default function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+          className="flex flex-col items-center gap-4 sm:flex-row"
         >
           <WhatsAppButton
             size="lg"
             label="Solicitar orçamento pelo WhatsApp"
             className="mt-2"
           />
+          <Link
+            href="/orcamento"
+            className="focus-gold mt-2 inline-flex items-center justify-center rounded-full border border-cream/30 px-8 py-4 text-base font-semibold tracking-wide text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-cream/10"
+          >
+            Simular valor da festa
+          </Link>
         </motion.div>
       </Container>
     </section>

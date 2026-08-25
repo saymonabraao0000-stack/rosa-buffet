@@ -38,16 +38,20 @@ src/
   app/
     page.tsx              # home (única rota com seções via âncora: #inicio, #sobre, #servicos, #galeria, #depoimentos, #contato)
     celebracoes/page.tsx   # portfólio de fotos (rota Next)
+    orcamento/page.tsx      # simulador de orçamento em quiz (ver seção dedicada)
     layout.tsx             # metadata, JSON-LD (schema.org LocalBusiness), fontes
     robots.ts, sitemap.ts  # gerados em build, force-static (ver seção GITHUB_PAGES)
   components/
     layout/                # Navbar, Footer, WhatsAppFloatingButton
     sections/               # uma seção da home ou do portfólio por arquivo
+    quiz/                   # PartyQuiz.tsx e QuizCalendar.tsx, usados só em /orcamento
     ui/                     # botões, contadores, wrappers genéricos
   lib/
     site-config.ts          # dados institucionais centrais (contato, endereço, links, nav)
     site-data.ts             # conteúdo das seções da home (diferenciais, serviços, depoimentos, FAQ)
     portfolio-data.ts        # dados gerados das fotos do portfólio (ver seção "Fotos")
+    quiz-data.ts              # temas/faixas de convidados/cardápio/opcionais do simulador (preços ilustrativos — ver Pendências)
+    availability-data.ts       # datas reservadas (mantidas à mão) e valor do sinal, usados no simulador
     base-path.ts              # helper de subcaminho para o modo GitHub Pages
     pages-image-loader.ts      # loader de imagens custom para o modo GitHub Pages
 public/
@@ -74,6 +78,16 @@ public/
 2. **`public/portfolio.html`** — página estática autocontida (CSS e JS inline, um único arquivo de ~800 linhas), com os mesmos temas e as mesmas 110 fotos, mas reimplementados à mão em HTML/CSS/JS puro. Os caminhos de imagem são **relativos** (`images/portfolio/...`, sem barra inicial), então o arquivo funciona sozinho: pode ser enviado por WhatsApp/e-mail como arquivo, aberto localmente, ou hospedado em qualquer lugar (nem precisa do Next) — desde que a pasta `images/` vá junto ao lado dele. É o motivo de existir apesar de duplicar a lógica de `/celebracoes`: serve a um caso de uso que uma rota Next não cobre (arquivo único, sem servidor, sem dependências de build).
 
 Editar um dos dois **não** atualiza o outro automaticamente — são implementações independentes que só compartilham os arquivos de imagem.
+
+## `/orcamento` — simulador de festa (quiz)
+
+Rota imersiva (sem `Navbar`/`Footer` normais, só um cabeçalho mínimo próprio) em [orcamento/page.tsx](src/app/orcamento/page.tsx), renderizando [PartyQuiz.tsx](src/components/quiz/PartyQuiz.tsx) — um wizard de uma pergunta por tela, estilo Typeform (barra de progresso, cards com letra A/B/C, avanço automático ao escolher, "pressione Enter" nos campos de texto), pedido explicitamente pelo dono do site inspirado no fluxo de diagnóstico de `mazzeoia.com.br`.
+
+Fluxo: boas-vindas → nome → tema da festa (reaproveita as fotos/categorias de `portfolio-data.ts`) → faixa de convidados → data desejada (calendário próprio em [QuizCalendar.tsx](src/components/quiz/QuizCalendar.tsx)) → nível de cardápio → opcionais (multi-seleção) → resultado. O resultado calcula uma faixa de valor estimado (`calculateEstimate` em [quiz-data.ts](src/lib/quiz-data.ts)) e monta uma mensagem de WhatsApp pré-preenchida com todas as respostas via `buildWhatsappUrl` (o mesmo helper usado no resto do site).
+
+**Datas e sinal**: a etapa de data usa [availability-data.ts](src/lib/availability-data.ts). `reservationDeposit` (R$ 500) é um valor real, informado pelo dono do negócio. `bookedDates` é uma lista **mantida à mão** (não há banco de dados no projeto) — enquanto estiver vazia, o simulador trata todas as datas futuras como disponíveis; isso não é o mesmo que "não há nada reservado" de verdade, só reflete que ninguém preencheu a lista ainda (ver Pendências).
+
+**Cuidado ao editar a imagem do cabeçalho**: o `<Image>` da logo usa `src="/images/logo-header.png"` **sem** chamar `withBasePath()` manualmente — o loader customizado do modo GitHub Pages já aplica o prefixo sozinho (ver seção abaixo). Envolver o `src` em `withBasePath()` de novo faz o prefixo aplicar duas vezes no `srcset` (`/rosa-buffet/rosa-buffet/images/...`), quebrando a imagem só no export estático; esse bug já aconteceu uma vez e foi corrigido durante o desenvolvimento desta feature.
 
 ## Modo GITHUB_PAGES=1
 
@@ -106,3 +120,5 @@ Estado atual: a etapa de build (`Gerar site estático`, job `build`) passa norma
   - `social.facebook` ([site-config.ts:41](src/lib/site-config.ts#L41)) tem TODO explícito — aponta para `https://www.facebook.com/`, a home genérica do Facebook, não a página da empresa.
   - `googleMapsUrl`/`googleMapsEmbedUrl` ([site-config.ts:33-36](src/lib/site-config.ts#L33-L36)) **não têm TODO no código**, mas são apenas uma URL de busca do Google Maps montada a partir do endereço em texto (`query=Rua+São+João...`), não um link para uma ficha/perfil real do Google Business da Rosa Buffet. Funciona, mas vale trocar por um link de perfil real quando existir um.
 - Vários cards de serviço em [site-data.ts](src/lib/site-data.ts) (festas infantis, eventos corporativos, chá revelação, buffet completo) ainda usam fotos de banco de imagens (Unsplash) como placeholder — cada um tem um TODO próprio no código indicando isso; substituir por fotos reais quando disponíveis, adicionando o arquivo em `public/images/eventos/` e trocando a URL.
+- **Preços ilustrativos no simulador `/orcamento`**: o preço por convidado de cada nível de cardápio (`buffetTiers`) e o valor de cada opcional (`addons`), ambos em [quiz-data.ts](src/lib/quiz-data.ts), são valores inventados só para o cálculo funcionar de ponta a ponta — há um TODO explícito no topo de cada um. Cada card no quiz já mostra "(estimativa)" ao lado do valor, e o resultado final tem um aviso de que é sujeito a confirmação, mas os números em si **não são reais** e precisam ser substituídos pelos valores de custo por convidado da Rosa Buffet antes de tratar a estimativa como confiável.
+- **Lista de datas reservadas vazia**: `bookedDates` em [availability-data.ts](src/lib/availability-data.ts) começa vazia — o calendário do simulador vai mostrar toda data futura como disponível até alguém popular essa lista à mão (não há integração com agenda real). O valor do sinal (R$ 500) já é real, informado pelo dono do negócio em 2026-08-25.
