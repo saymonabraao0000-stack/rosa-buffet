@@ -3,6 +3,7 @@ import { MapPin, MessageCircle, Phone } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { FacebookIcon, InstagramIcon } from "@/components/ui/SocialIcons";
 import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
+import { withBasePath } from "@/lib/base-path";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -36,7 +37,8 @@ export default function Footer() {
             <ul className="flex flex-col gap-3 text-sm text-cream/75">
               {siteConfig.nav.map((item) => (
                 <li key={item.href}>
-                  <a href={item.href} className="focus-gold transition-colors hover:text-gold">
+                  {/* withBasePath: âncora crua não recebe o subcaminho do Next sozinha. */}
+                  <a href={withBasePath(item.href)} className="focus-gold transition-colors hover:text-gold">
                     {item.label}
                   </a>
                 </li>
