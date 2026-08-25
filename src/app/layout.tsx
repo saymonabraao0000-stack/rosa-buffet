@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site-config";
-import { withBasePath } from "@/lib/base-path";
 import WhatsAppFloatingButton from "@/components/layout/WhatsAppFloatingButton";
 import "./globals.css";
 
@@ -57,9 +56,8 @@ export const metadata: Metadata = {
     images: ["/images/logo.jpg"],
   },
   icons: {
-    // withBasePath: no GitHub Pages o site fica sob /rosa-buffet.
-    icon: withBasePath("/images/logo.jpg"),
-    apple: withBasePath("/images/logo.jpg"),
+    icon: "/images/logo.jpg",
+    apple: "/images/logo.jpg",
   },
   robots: {
     index: true,

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { isDateBooked, formatISODate } from "@/lib/availability-data";
+import { formatISODate } from "@/lib/availability-data";
 
 const WEEKDAY_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MONTH_LABELS = [
@@ -31,10 +31,11 @@ function sameDay(a: Date | null, b: Date) {
 
 type QuizCalendarProps = {
   value: Date | null;
+  bookedDates: string[];
   onSelect: (date: Date) => void;
 };
 
-export default function QuizCalendar({ value, onSelect }: QuizCalendarProps) {
+export default function QuizCalendar({ value, bookedDates, onSelect }: QuizCalendarProps) {
   const today = startOfDay(new Date());
   const minMonth = startOfMonth(today);
   const maxMonth = new Date(minMonth.getFullYear(), minMonth.getMonth() + MONTHS_AHEAD, 1);
@@ -88,7 +89,7 @@ export default function QuizCalendar({ value, onSelect }: QuizCalendarProps) {
         {cells.map((date, i) => {
           if (!date) return <span key={`blank-${i}`} />;
           const past = date.getTime() < today.getTime();
-          const booked = isDateBooked(date);
+          const booked = bookedDates.includes(formatISODate(date));
           const disabled = past || booked;
           const selected = sameDay(value, date);
           return (

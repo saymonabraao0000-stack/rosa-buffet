@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import QuizCalendar from "@/components/quiz/QuizCalendar";
-import { reservationDeposit } from "@/lib/availability-data";
+import { reservationDeposit, formatISODate } from "@/lib/availability-data";
+import { createLeadAction, updateLeadAction } from "@/lib/quiz/actions";
+import type { LeadProgressPatch } from "@/lib/crm/types";
 import {
   addons,
   buffetTiers,
@@ -24,7 +26,7 @@ import {
 
 const STEPS = [
   "welcome",
-  "nome",
+  "contato",
   "tema",
   "convidados",
   "data",
@@ -35,7 +37,7 @@ const STEPS = [
 
 type Step = (typeof STEPS)[number];
 
-const ANSWERABLE_STEPS: Step[] = ["nome", "tema", "convidados", "data", "buffet", "opcionais"];
+const ANSWERABLE_STEPS: Step[] = ["contato", "tema", "convidados", "data", "buffet", "opcionais"];
 
 const currency = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -55,6 +57,8 @@ function letterFor(index: number) {
 
 type Answers = {
   nome: string;
+  telefone: string;
+  leadId: string | null;
   temaSlug: string | null;
   guestSlug: string | null;
   date: Date | null;
@@ -65,6 +69,8 @@ type Answers = {
 
 const initialAnswers: Answers = {
   nome: "",
+  telefone: "",
+  leadId: null,
   temaSlug: null,
   guestSlug: null,
   date: null,
@@ -73,9 +79,14 @@ const initialAnswers: Answers = {
   addonSlugs: [],
 };
 
-export default function PartyQuiz() {
+type PartyQuizProps = {
+  bookedDates: string[];
+};
+
+export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
+  const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const step = STEPS[stepIndex];
 
   const tema = quizThemes.find((t) => t.slug === answers.temaSlug) ?? null;
@@ -94,8 +105,11 @@ export default function PartyQuiz() {
 
   const canAdvance = (() => {
     switch (step) {
-      case "nome":
-        return answers.nome.trim().length >= 2;
+      case "contato":
+        return (
+          answers.nome.trim().length >= 2 &&
+          answers.telefone.replace(/\D/g, "").length >= 10
+        );
       case "tema":
         return !!answers.temaSlug;
       case "convidados":
@@ -112,22 +126,73 @@ export default function PartyQuiz() {
   const goNext = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1));
   const goPrev = () => setStepIndex((i) => Math.max(i - 1, 0));
 
-  const selectAndAdvance = (patch: Partial<Answers>) => {
-    setAnswers((a) => ({ ...a, ...patch }));
+  // Salva a resposta no servidor sem travar a navegação: dispara a Server
+  // Action e já avança, sem esperar o resultado (erro de rede não deve
+  // interromper o quiz — só fica sem registrar aquele passo específico).
+  const saveProgress = (patch: LeadProgressPatch) => {
+    if (!answers.leadId) return;
+    void updateLeadAction(answers.leadId, patch).catch(() => {});
+  };
+
+  const selectAndAdvance = (localPatch: Partial<Answers>, dbPatch: LeadProgressPatch) => {
+    setAnswers((a) => ({ ...a, ...localPatch }));
+    saveProgress({ ...dbPatch, currentStep: step });
     setTimeout(goNext, 350);
   };
 
-  // Enter avança nas duas etapas de texto/boas-vindas; as demais etapas têm
-  // botão próprio ("Continuar") porque envolvem uma escolha que vale a pena
-  // o usuário conferir antes de seguir (data com sinal, opcionais).
+  const handleContatoSubmit = async () => {
+    if (!canAdvance || isSubmittingLead) return;
+    setIsSubmittingLead(true);
+    const { id } = await createLeadAction({
+      nome: answers.nome.trim(),
+      telefone: answers.telefone.trim(),
+    });
+    setAnswers((a) => ({ ...a, leadId: id }));
+    setIsSubmittingLead(false);
+    goNext();
+  };
+
+  const handleDataContinue = () => {
+    saveProgress({
+      dataEvento: answers.dateSkipped || !answers.date ? null : formatISODate(answers.date),
+      dataSkipped: answers.dateSkipped,
+      currentStep: "data",
+    });
+    goNext();
+  };
+
+  const handleDataSkip = () => {
+    setAnswers((a) => ({ ...a, date: null, dateSkipped: true }));
+    saveProgress({ dataEvento: null, dataSkipped: true, currentStep: "data" });
+    goNext();
+  };
+
+  const handleSeeEstimate = () => {
+    if (estimate) {
+      saveProgress({
+        addonSlugs: answers.addonSlugs,
+        estimateMin: estimate.min,
+        estimateMax: estimate.max,
+        currentStep: "resultado",
+      });
+    }
+    goNext();
+  };
+
+  // Enter avança nas duas primeiras etapas (boas-vindas e contato); as
+  // demais têm botão próprio ("Continuar") porque envolvem uma escolha que
+  // vale a pena o usuário conferir antes de seguir (data com sinal, opcionais).
   useEffect(() => {
-    if (step !== "welcome" && step !== "nome") return;
+    if (step !== "welcome" && step !== "contato") return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && canAdvance) goNext();
+      if (e.key !== "Enter" || !canAdvance) return;
+      if (step === "contato") void handleContatoSubmit();
+      else goNext();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [step, canAdvance]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, canAdvance, answers.nome, answers.telefone, isSubmittingLead]);
 
   const progress =
     step === "welcome"
@@ -236,11 +301,15 @@ export default function PartyQuiz() {
                 </div>
               )}
 
-              {step === "nome" && (
+              {step === "contato" && (
                 <div>
                   <h2 className="font-display text-2xl text-ink sm:text-3xl">
-                    Para começar, qual é o seu nome?
+                    Para começar, qual é o seu nome e WhatsApp?
                   </h2>
+                  <p className="mt-2 text-sm text-gray-dark">
+                    É só pra garantirmos que alguém da nossa equipe fala com
+                    você, mesmo que dê pra terminar a simulação depois.
+                  </p>
                   <input
                     autoFocus
                     type="text"
@@ -249,14 +318,22 @@ export default function PartyQuiz() {
                     placeholder="Digite seu nome..."
                     className="focus-gold mt-6 w-full border-b-2 border-ink/20 bg-transparent pb-3 text-xl text-ink placeholder:text-ink/30 focus:border-gold focus:outline-none"
                   />
+                  <input
+                    type="tel"
+                    value={answers.telefone}
+                    onChange={(e) => setAnswers((a) => ({ ...a, telefone: e.target.value }))}
+                    placeholder="(92) 99999-9999"
+                    className="focus-gold mt-5 w-full border-b-2 border-ink/20 bg-transparent pb-3 text-xl text-ink placeholder:text-ink/30 focus:border-gold focus:outline-none"
+                  />
                   <div className="mt-6 flex items-center gap-4">
                     <button
                       type="button"
-                      disabled={!canAdvance}
-                      onClick={goNext}
+                      disabled={!canAdvance || isSubmittingLead}
+                      onClick={() => void handleContatoSubmit()}
                       className="focus-gold inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                      OK <Check className="h-4 w-4" aria-hidden="true" />
+                      {isSubmittingLead ? "Enviando..." : "OK"}
+                      {!isSubmittingLead && <Check className="h-4 w-4" aria-hidden="true" />}
                     </button>
                     <span className="text-sm text-gray-dark">
                       pressione <span className="font-semibold text-ink">Enter</span>
@@ -275,7 +352,7 @@ export default function PartyQuiz() {
                       <button
                         key={t.slug}
                         type="button"
-                        onClick={() => selectAndAdvance({ temaSlug: t.slug })}
+                        onClick={() => selectAndAdvance({ temaSlug: t.slug }, { temaSlug: t.slug })}
                         className={`focus-gold group relative overflow-hidden rounded-xl border text-left transition-all ${
                           answers.temaSlug === t.slug
                             ? "border-gold ring-2 ring-gold"
@@ -320,7 +397,12 @@ export default function PartyQuiz() {
                       <button
                         key={g.slug}
                         type="button"
-                        onClick={() => selectAndAdvance({ guestSlug: g.slug })}
+                        onClick={() =>
+                          selectAndAdvance(
+                            { guestSlug: g.slug },
+                            { guestRangeSlug: g.slug, estimatedGuests: g.estimateGuests },
+                          )
+                        }
                         className={`focus-gold flex items-center gap-3 rounded-xl border px-5 py-4 text-left text-ink transition-colors ${
                           answers.guestSlug === g.slug
                             ? "border-gold bg-gold-soft/15"
@@ -353,6 +435,7 @@ export default function PartyQuiz() {
                   <div className="mt-6">
                     <QuizCalendar
                       value={answers.date}
+                      bookedDates={bookedDates}
                       onSelect={(date) => setAnswers((a) => ({ ...a, date, dateSkipped: false }))}
                     />
                   </div>
@@ -360,17 +443,14 @@ export default function PartyQuiz() {
                     <button
                       type="button"
                       disabled={!canAdvance}
-                      onClick={goNext}
+                      onClick={handleDataContinue}
                       className="focus-gold inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       Continuar
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        setAnswers((a) => ({ ...a, date: null, dateSkipped: true }));
-                        goNext();
-                      }}
+                      onClick={handleDataSkip}
                       className="focus-gold text-sm font-medium text-gray-dark underline-offset-2 hover:text-ink hover:underline"
                     >
                       Ainda não sei a data
@@ -389,7 +469,9 @@ export default function PartyQuiz() {
                       <button
                         key={b.slug}
                         type="button"
-                        onClick={() => selectAndAdvance({ buffetSlug: b.slug })}
+                        onClick={() =>
+                          selectAndAdvance({ buffetSlug: b.slug }, { buffetTierSlug: b.slug })
+                        }
                         className={`focus-gold flex items-start gap-3 rounded-xl border px-5 py-4 text-left transition-colors ${
                           answers.buffetSlug === b.slug
                             ? "border-gold bg-gold-soft/15"
@@ -461,7 +543,7 @@ export default function PartyQuiz() {
                   </div>
                   <button
                     type="button"
-                    onClick={goNext}
+                    onClick={handleSeeEstimate}
                     className="focus-gold mt-6 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft"
                   >
                     Ver estimativa

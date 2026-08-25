@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import PartyQuiz from "@/components/quiz/PartyQuiz";
+import { getBookedDates } from "@/lib/crm/leads";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Simule o orçamento da sua festa",
@@ -15,6 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function OrcamentoPage() {
-  return <PartyQuiz />;
+export default async function OrcamentoPage() {
+  const bookedDates = await getBookedDates();
+  return <PartyQuiz bookedDates={bookedDates} />;
 }
