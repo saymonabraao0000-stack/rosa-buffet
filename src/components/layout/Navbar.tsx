@@ -44,18 +44,15 @@ export default function Navbar() {
       }`}
     >
       <Container className="flex h-20 items-center justify-between">
-        <Link href={isHome ? "#inicio" : "/"} className="flex items-center gap-3 focus-gold rounded-full">
+        <Link href={isHome ? "#inicio" : "/"} className="flex items-center focus-gold rounded-full">
           <Image
-            src="/images/logo.jpg"
+            src="/images/logo-header.png"
             alt={siteConfig.name}
-            width={44}
-            height={44}
+            width={900}
+            height={235}
             priority
-            className="h-11 w-11 rounded-full object-cover"
+            className="h-11 w-auto"
           />
-          <span className="font-display text-lg tracking-wide text-cream">
-            {siteConfig.name}
-          </span>
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Navegação principal">
