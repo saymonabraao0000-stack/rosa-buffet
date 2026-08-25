@@ -55,7 +55,7 @@ export const siteConfig = {
     { label: "Sobre", href: "#sobre" },
     { label: "Serviços", href: "#servicos" },
     { label: "Celebrações", href: "/celebracoes" },
-    { label: "Simule sua Festa", href: "/orcamento" },
+    { label: "Simulador", href: "/orcamento" },
     { label: "Galeria", href: "#galeria" },
     { label: "Depoimentos", href: "#depoimentos" },
     { label: "Contato", href: "#contato" },

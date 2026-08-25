@@ -55,19 +55,19 @@ export default function Navbar() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex" aria-label="Navegação principal">
+        <nav className="hidden items-center gap-5 xl:flex" aria-label="Navegação principal">
           {siteConfig.nav.map((item) => (
             <Link
               key={item.href}
               href={resolveHref(item.href)}
-              className="focus-gold text-sm font-medium uppercase tracking-wide text-cream/85 transition-colors hover:text-gold"
+              className="focus-gold whitespace-nowrap text-sm font-medium uppercase tracking-wide text-cream/85 transition-colors hover:text-gold"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           <WhatsAppButton size="md" />
         </div>
 
@@ -76,7 +76,7 @@ export default function Navbar() {
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
           aria-expanded={menuOpen}
-          className="focus-gold flex h-10 w-10 items-center justify-center rounded-full text-cream lg:hidden"
+          className="focus-gold flex h-10 w-10 items-center justify-center rounded-full text-cream xl:hidden"
         >
           {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
@@ -89,7 +89,7 @@ export default function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden bg-ink/97 backdrop-blur-md lg:hidden"
+            className="overflow-hidden bg-ink/97 backdrop-blur-md xl:hidden"
           >
             <Container className="flex flex-col gap-6 py-8">
               <nav className="flex flex-col gap-5" aria-label="Navegação móvel">
