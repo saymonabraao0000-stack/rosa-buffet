@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfólio de Celebrações | Rosa Buffet</title>
+<meta name="description" content="Portfólio da Rosa Buffet em Manaus: 110 fotos reais de festas de 15 anos, casamentos, festas infantis, formaturas e aniversários realizados pela nossa equipe." />
+<meta name="theme-color" content="#0d0d0d" />
+<link rel="icon" href="images/logo.jpg" />
+<link rel="apple-touch-icon" href="images/logo.jpg" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:site_name" content="Rosa Buffet" />
+<meta property="og:title" content="Portfólio de Celebrações | Rosa Buffet" />
+<meta property="og:description" content="Momentos reais de festas realizadas pela Rosa Buffet em Manaus. Explore por tema e inspire-se para o seu evento." />
+<meta property="og:image" content="https://www.rosabuffet.com.br/images/logo.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --ink:#0d0d0d;
+  --ink-soft:#171717;
+  --gold:#c9a227;
+  --gold-soft:#e0c368;
+  --cream:#faf8f3;
+  --gray-light:#f2f0ec;
+  --gray-dark:#4a4a4a;
+  --shell:min(1200px,100% - 3rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:"Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+h1,h2,h3{font-family:"Playfair Display",Georgia,serif;font-weight:600;line-height:1.15;margin:0}
+::selection{background:var(--gold);color:var(--ink)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+.shell{width:var(--shell);margin-inline:auto}
+.eyebrow{
+  font-size:.72rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.35em;color:var(--gold);margin:0;
+}
+
+/* ---------- Cabeçalho ---------- */
+.site-header{
+  position:fixed;inset:0 0 auto 0;z-index:40;
+  transition:background-color .3s ease,box-shadow .3s ease,backdrop-filter .3s ease;
+}
+.site-header.is-scrolled{
+  background:rgba(13,13,13,.9);
+  backdrop-filter:blur(12px);
+  box-shadow:0 4px 30px -10px rgba(0,0,0,.6);
+}
+.site-header .shell{display:flex;align-items:center;justify-content:space-between;height:5rem;gap:1rem}
+.brand{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.brand img{width:2.75rem;height:2.75rem;border-radius:999px;object-fit:cover}
+.brand span{font-family:"Playfair Display",Georgia,serif;font-size:1.125rem;letter-spacing:.02em;color:var(--cream)}
+.site-nav{display:none;gap:1.75rem;align-items:center}
+.site-nav a{
+  text-decoration:none;font-size:.8rem;font-weight:500;text-transform:uppercase;
+  letter-spacing:.06em;color:rgba(250,248,243,.85);transition:color .25s ease;
+}
+.site-nav a:hover{color:var(--gold)}
+@media(min-width:1024px){.site-nav{display:flex}}
+
+/* ---------- Botões ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+  border-radius:999px;padding:.95rem 2rem;font-weight:600;letter-spacing:.02em;
+  text-decoration:none;transition:transform .3s ease,background-color .3s ease,color .3s ease,border-color .3s ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-gold{background:var(--gold);color:var(--ink)}
+.btn-gold:hover{background:var(--gold-soft)}
+.btn-dark{background:var(--ink);color:var(--cream)}
+.btn-dark:hover{background:var(--ink-soft)}
+.btn-ghost{border:1px solid rgba(250,248,243,.35);color:var(--cream)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-sm{padding:.6rem 1.4rem;font-size:.85rem}
+.btn .icon{width:1.15em;height:1.15em;flex:none}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;background:var(--ink);padding:9.5rem 0 4.5rem;text-align:center}
+.hero::before{
+  content:"";position:absolute;top:-6rem;left:50%;translate:-50% 0;
+  width:22rem;height:22rem;border-radius:999px;
+  background:rgba(201,162,39,.12);filter:blur(70px);pointer-events:none;
+}
+.hero .shell{position:relative;display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+.hero h1{font-size:clamp(2.25rem,6vw,3.75rem);color:var(--cream);max-width:22ch}
+.hero p{margin:0;max-width:60ch;color:rgba(250,248,243,.75);font-size:1.05rem}
+.stats{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem 1rem;
+  width:100%;max-width:56rem;margin-top:1.5rem;
+  border-top:1px solid rgba(250,248,243,.12);padding-top:2rem;
+}
+@media(min-width:768px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat b{display:block;font-family:"Playfair Display",Georgia,serif;font-size:2rem;color:var(--gold)}
+.stat span{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(250,248,243,.6)}
+
+/* ---------- Galeria ---------- */
+.gallery{padding:3.5rem 0 6rem;scroll-margin-top:5rem}
+.gallery-intro{text-align:center;display:flex;flex-direction:column;align-items:center;gap:.85rem;margin-bottom:2.5rem}
+.gallery-intro h2{font-size:clamp(1.85rem,4vw,2.6rem)}
+.gallery-intro p{margin:0;max-width:58ch;color:var(--gray-dark)}
+.filters{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;margin-bottom:3rem}
+.filter{
+  border:1px solid rgba(13,13,13,.15);border-radius:999px;padding:.55rem 1.25rem;
+  font-size:.875rem;font-weight:500;letter-spacing:.02em;color:var(--gray-dark);
+  transition:all .3s ease;
+}
+.filter:hover{border-color:var(--gold);color:var(--ink)}
+.filter[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.filter .count{opacity:.65;font-size:.8em;margin-left:.35rem}
+.grid{columns:2;column-gap:1rem}
+@media(min-width:768px){.grid{columns:3}}
+@media(min-width:1024px){.grid{columns:4;column-gap:1.25rem}}
+.card{
+  position:relative;display:block;width:100%;padding:0;margin:0 0 1rem;
+  border-radius:.85rem;overflow:hidden;break-inside:avoid;background:var(--gray-light);
+  animation:fade-up .5s ease both;
+}
+@media(min-width:1024px){.card{margin-bottom:1.25rem}}
+.card img{width:100%;height:auto;transition:transform .7s ease}
+.card:hover img{transform:scale(1.06)}
+.card::after{
+  content:"";position:absolute;inset:0;background:rgba(13,13,13,0);transition:background-color .3s ease;
+}
+.card:hover::after{background:rgba(13,13,13,.25)}
+.card .tag{
+  position:absolute;left:.75rem;bottom:.75rem;z-index:1;
+  background:rgba(13,13,13,.72);color:var(--cream);backdrop-filter:blur(4px);
+  border-radius:999px;padding:.25rem .75rem;font-size:.72rem;font-weight:500;
+  opacity:0;translate:0 .5rem;transition:all .3s ease;
+}
+.card:hover .tag{opacity:1;translate:0 0}
+@keyframes fade-up{from{opacity:0;translate:0 .75rem}to{opacity:1;translate:0 0}}
+.load-more{margin-top:3rem;display:flex;flex-direction:column;align-items:center;gap:.75rem}
+.load-more p{margin:0;font-size:.875rem;color:var(--gray-dark)}
+.load-more[hidden]{display:none}
+
+/* ---------- Lightbox ---------- */
+.lightbox{
+  position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+  padding:1rem;background:rgba(13,13,13,.95);
+  opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;
+}
+.lightbox.is-open{opacity:1;visibility:visible}
+.lightbox figure{
+  margin:0;display:flex;flex-direction:column;align-items:center;gap:1rem;
+  max-width:min(64rem,100%);
+}
+.lightbox img{max-height:78vh;max-width:100%;width:auto;border-radius:.5rem;object-fit:contain}
+/* Em telas grandes, fotos menores sobem um pouco de tamanho para não ficarem perdidas */
+@media(min-width:640px){.lightbox img{min-height:55vh}}
+.lightbox figcaption{font-size:.85rem;color:rgba(250,248,243,.7)}
+.lb-btn{
+  position:absolute;z-index:10;display:flex;align-items:center;justify-content:center;
+  width:3rem;height:3rem;border-radius:999px;background:rgba(250,248,243,.1);color:var(--cream);
+  transition:background-color .25s ease;
+}
+.lb-btn:hover{background:rgba(250,248,243,.22)}
+.lb-close{top:1rem;right:1rem;width:2.75rem;height:2.75rem}
+.lb-prev{left:.75rem;top:50%;translate:0 -50%}
+.lb-next{right:.75rem;top:50%;translate:0 -50%}
+@media(min-width:640px){.lb-prev{left:1.5rem}.lb-next{right:1.5rem}}
+.lb-btn svg{width:1.6rem;height:1.6rem}
+
+/* ---------- Temas ---------- */
+.themes{background:var(--gray-light);padding:5rem 0}
+.themes-head{text-align:center;display:flex;flex-direction:column;align-items:center;gap:.85rem;margin-bottom:3rem}
+.themes-head h2{font-size:clamp(1.75rem,4vw,2.4rem)}
+.themes-head p{margin:0;max-width:55ch;color:var(--gray-dark)}
+.theme-grid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.theme-card{
+  position:relative;display:block;overflow:hidden;border-radius:1rem;
+  aspect-ratio:4/5;text-align:left;width:100%;padding:0;
+}
+.theme-card img{width:100%;height:100%;object-fit:cover;transition:transform .7s ease}
+.theme-card:hover img{transform:scale(1.06)}
+.theme-card .veil{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(13,13,13,.88) 0%,rgba(13,13,13,.35) 45%,rgba(13,13,13,0) 75%);
+}
+.theme-card .label{position:absolute;left:1.25rem;right:1.25rem;bottom:1.25rem;color:var(--cream)}
+.theme-card .label strong{display:block;font-family:"Playfair Display",Georgia,serif;font-size:1.35rem;font-weight:600}
+.theme-card .label span{font-size:.8rem;color:rgba(250,248,243,.7)}
+
+/* ---------- CTA ---------- */
+.cta{background:var(--ink);color:var(--cream);padding:5.5rem 0;text-align:center;scroll-margin-top:5rem}
+.cta .shell{display:flex;flex-direction:column;align-items:center;gap:1.25rem}
+.cta h2{font-size:clamp(1.9rem,4.5vw,2.75rem);color:var(--cream);max-width:20ch}
+.cta p{margin:0;max-width:52ch;color:rgba(250,248,243,.75)}
+.cta-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;margin-top:.75rem}
+.cta-info{
+  margin-top:2rem;display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem 2rem;
+  font-size:.9rem;color:rgba(250,248,243,.65);
+}
+.cta-info a{text-decoration:none;transition:color .25s ease}
+.cta-info a:hover{color:var(--gold)}
+
+/* ---------- Rodapé ---------- */
+.site-footer{background:var(--ink-soft);color:rgba(250,248,243,.6);padding:2.5rem 0;font-size:.85rem}
+.site-footer .shell{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem}
+.site-footer a{text-decoration:none;transition:color .25s ease}
+.site-footer a:hover{color:var(--gold)}
+
+/* ---------- WhatsApp flutuante ---------- */
+.wa-float{
+  position:fixed;right:1.25rem;bottom:1.25rem;z-index:45;
+  display:flex;align-items:center;justify-content:center;width:3.5rem;height:3.5rem;
+  border-radius:999px;background:#25d366;color:#fff;
+  box-shadow:0 10px 30px -8px rgba(0,0,0,.45);
+  transition:transform .3s ease;
+}
+.wa-float:hover{transform:scale(1.08)}
+.wa-float svg{width:1.85rem;height:1.85rem}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header" id="topo">
+  <div class="shell">
+    <a class="brand" href="https://www.rosabuffet.com.br">
+      <img src="images/logo.jpg" alt="" width="44" height="44" />
+      <span>Rosa Buffet</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Navegação do portfólio">
+      <a href="#galeria">Galeria</a>
+      <a href="#temas">Temas</a>
+      <a href="#orcamento">Orçamento</a>
+      <a href="https://www.rosabuffet.com.br">Voltar ao site</a>
+    </nav>
+
+    <a class="btn btn-gold btn-sm" href="https://wa.me/5592992073047?text=Ol%C3%A1!%20Vi%20o%20portf%C3%B3lio%20de%20voc%C3%AAs%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener">
+      <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.02h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.36c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.21-8.24 8.21Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42l-.47-.01c-.17 0-.43.06-.66.31s-.86.84-.86 2.05.88 2.38 1 2.54c.12.17 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+      Orçamento
+    </a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="shell">
+      <p class="eyebrow">Portfólio de Celebrações</p>
+      <h1>Cada festa que fazemos vira uma história.</h1>
+      <p>
+        Reunimos <strong>110 momentos reais</strong> de celebrações que ganharam vida
+        nos espaços da Rosa Buffet, em Manaus — de 15 anos e casamentos a festas
+        infantis, formaturas e aniversários. Explore por tema e imagine a sua.
+      </p>
+      <div class="cta-actions">
+        <a class="btn btn-gold" href="https://wa.me/5592992073047?text=Ol%C3%A1!%20Vi%20o%20portf%C3%B3lio%20de%20voc%C3%AAs%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener">Quero uma festa assim</a>
+        <a class="btn btn-ghost" href="#galeria">Ver as fotos</a>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b>110</b><span>Fotos reais</span></div>
+        <div class="stat"><b>5</b><span>Temas de festa</span></div>
+        <div class="stat"><b>800+</b><span>Eventos realizados</span></div>
+        <div class="stat"><b>15+</b><span>Anos de experiência</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery" id="galeria">
+    <div class="shell">
+      <div class="gallery-intro">
+        <p class="eyebrow">Galeria</p>
+        <h2>Momentos que já aconteceram aqui</h2>
+        <p>
+          Nenhuma imagem de banco de dados: todas as fotos abaixo são de festas
+          produzidas pela nossa equipe. Filtre por tema e clique em qualquer foto
+          para ampliar.
+        </p>
+      </div>
+
+      <div class="filters" id="filtros" role="group" aria-label="Filtrar fotos por tema"></div>
+
+      <div class="grid" id="grade"></div>
+
+      <div class="load-more" id="verMais" hidden>
+        <p id="contador"></p>
+        <button class="btn btn-dark" type="button" id="btnVerMais">
+          Ver mais fotos
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+
+      <noscript>
+        <p style="text-align:center;color:var(--gray-dark)">
+          Ative o JavaScript para navegar pela galeria, ou fale com a gente pelo
+          WhatsApp <a href="https://wa.me/5592992073047">(92) 99207-3047</a> que
+          enviamos as fotos.
+        </p>
+      </noscript>
+    </div>
+  </section>
+
+  <section class="themes" id="temas">
+    <div class="shell">
+      <div class="themes-head">
+        <p class="eyebrow">Por tema</p>
+        <h2>O que a gente celebra</h2>
+        <p>Cada tipo de festa tem uma produção própria — da decoração ao cardápio.</p>
+      </div>
+
+      <div class="theme-grid">
+        <button class="theme-card" type="button" data-tema="quinze-anos">
+          <img src="images/portfolio/quinze-anos/quinze-anos-01.jpg" alt="Festa de 15 anos realizada pela Rosa Buffet" loading="lazy" />
+          <span class="veil"></span>
+          <span class="label"><strong>15 Anos</strong><span>30 fotos</span></span>
+        </button>
+        <button class="theme-card" type="button" data-tema="casamentos">
+          <img src="images/portfolio/casamentos/casamentos-01.jpg" alt="Casamento realizado pela Rosa Buffet" loading="lazy" />
+          <span class="veil"></span>
+          <span class="label"><strong>Casamentos</strong><span>29 fotos</span></span>
+        </button>
+        <button class="theme-card" type="button" data-tema="infantil">
+          <img src="images/portfolio/infantil/infantil-01.jpg" alt="Festa infantil realizada pela Rosa Buffet" loading="lazy" />
+          <span class="veil"></span>
+          <span class="label"><strong>Festas Infantis</strong><span>33 fotos</span></span>
+        </button>
+        <button class="theme-card" type="button" data-tema="formaturas">
+          <img src="images/portfolio/formaturas/formaturas-01.jpg" alt="Formatura realizada pela Rosa Buffet" loading="lazy" />
+          <span class="veil"></span>
+          <span class="label"><strong>Formaturas</strong><span>17 fotos</span></span>
+        </button>
+        <button class="theme-card" type="button" data-tema="aniversarios">
+          <img src="images/portfolio/aniversarios/aniversarios-01.jpg" alt="Aniversário realizado pela Rosa Buffet" loading="lazy" />
+          <span class="veil"></span>
+          <span class="label"><strong>Aniversários</strong><span>1 foto</span></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="orcamento">
+    <div class="shell">
+      <p class="eyebrow">Vamos conversar</p>
+      <h2>A próxima foto desse portfólio pode ser a sua festa.</h2>
+      <p>
+        Conte pra gente a data, o tema e quantos convidados você espera. Montamos
+        um orçamento personalizado, sem compromisso.
+      </p>
+      <div class="cta-actions">
+        <a class="btn btn-gold" href="https://wa.me/5592992073047?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20meu%20evento." target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.02h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.36c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.21-8.24 8.21Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42l-.47-.01c-.17 0-.43.06-.66.31s-.86.84-.86 2.05.88 2.38 1 2.54c.12.17 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+          Falar no WhatsApp
+        </a>
+        <a class="btn btn-ghost" href="https://www.instagram.com/rosabuffetoficial_/" target="_blank" rel="noopener">Ver o Instagram</a>
+      </div>
+
+      <div class="cta-info">
+        <span><a href="tel:+5592992073047">(92) 99207-3047</a></span>
+        <span><a href="mailto:contato@rosabuffet.com.br">contato@rosabuffet.com.br</a></span>
+        <span><a href="https://www.google.com/maps/search/?api=1&amp;query=Rua+S%C3%A3o+Jo%C3%A3o+310+Cidade+de+Deus+Manaus+AM" target="_blank" rel="noopener">Rua São João, 310 — Cidade de Deus, Manaus/AM</a></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="shell">
+    <span>© <span id="ano">2026</span> Rosa Buffet &amp; Eventos — Manaus/AM</span>
+    <span><a href="https://www.rosabuffet.com.br">www.rosabuffet.com.br</a></span>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/5592992073047?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20meu%20evento." target="_blank" rel="noopener" aria-label="Falar com a Rosa Buffet no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.02h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.36c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.21-8.24 8.21Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42l-.47-.01c-.17 0-.43.06-.66.31s-.86.84-.86 2.05.88 2.38 1 2.54c.12.17 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+</a>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visualização ampliada" hidden>
+  <button class="lb-btn lb-close" type="button" id="lbFechar" aria-label="Fechar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <button class="lb-btn lb-prev" type="button" id="lbAnterior" aria-label="Foto anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  <button class="lb-btn lb-next" type="button" id="lbProxima" aria-label="Próxima foto">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+  <figure>
+    <img id="lbImagem" src="" alt="" />
+    <figcaption id="lbLegenda"></figcaption>
+  </figure>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Fotos reais de /public/images/portfolio, agrupadas por tema.
+  // Formato compacto por foto: [caminho, largura, altura].
+  var CATEGORIAS = [
+    {"slug":"quinze-anos","label":"15 Anos","images":[
+      ["images/portfolio/quinze-anos/quinze-anos-01.jpg",640,427],
+      ["images/portfolio/quinze-anos/quinze-anos-02.jpg",640,427],
+      ["images/portfolio/quinze-anos/quinze-anos-03.jpg",640,853],
+      ["images/portfolio/quinze-anos/quinze-anos-04.jpg",852,1280],
+      ["images/portfolio/quinze-anos/quinze-anos-05.jpg",852,1280],
+      ["images/portfolio/quinze-anos/quinze-anos-06.jpg",1066,1600],
+      ["images/portfolio/quinze-anos/quinze-anos-07.jpg",852,1280],
+      ["images/portfolio/quinze-anos/quinze-anos-08.jpg",1066,1600],
+      ["images/portfolio/quinze-anos/quinze-anos-09.jpg",1280,852],
+      ["images/portfolio/quinze-anos/quinze-anos-10.jpg",1600,1066],
+      ["images/portfolio/quinze-anos/quinze-anos-11.jpg",1600,1066],
+      ["images/portfolio/quinze-anos/quinze-anos-12.jpg",1066,1600],
+      ["images/portfolio/quinze-anos/quinze-anos-13.jpg",852,1280],
+      ["images/portfolio/quinze-anos/quinze-anos-14.jpg",1066,1600],
+      ["images/portfolio/quinze-anos/quinze-anos-15.jpg",1600,1064],
+      ["images/portfolio/quinze-anos/quinze-anos-16.jpg",1600,1066],
+      ["images/portfolio/quinze-anos/quinze-anos-17.jpg",1600,1064],
+      ["images/portfolio/quinze-anos/quinze-anos-18.jpg",1280,854],
+      ["images/portfolio/quinze-anos/quinze-anos-19.jpg",1280,854],
+      ["images/portfolio/quinze-anos/quinze-anos-20.jpg",854,1280],
+      ["images/portfolio/quinze-anos/quinze-anos-21.jpg",1280,854],
+      ["images/portfolio/quinze-anos/quinze-anos-22.jpg",1280,854],
+      ["images/portfolio/quinze-anos/quinze-anos-23.jpg",854,1280],
+      ["images/portfolio/quinze-anos/quinze-anos-24.jpg",1280,854],
+      ["images/portfolio/quinze-anos/quinze-anos-25.jpg",854,1280],
+      ["images/portfolio/quinze-anos/quinze-anos-26.jpg",854,1280],
+      ["images/portfolio/quinze-anos/quinze-anos-27.jpg",1280,854],
+      ["images/portfolio/quinze-anos/quinze-anos-28.jpg",1280,1062],
+      ["images/portfolio/quinze-anos/quinze-anos-29.jpg",1280,854],
+      ["images/portfolio/quinze-anos/quinze-anos-30.jpg",1280,854]
+    ]},
+    {"slug":"casamentos","label":"Casamentos","images":[
+      ["images/portfolio/casamentos/casamentos-01.jpg",640,853],
+      ["images/portfolio/casamentos/casamentos-02.jpg",1600,1066],
+      ["images/portfolio/casamentos/casamentos-03.jpg",1600,1066],
+      ["images/portfolio/casamentos/casamentos-04.jpg",1600,1066],
+      ["images/portfolio/casamentos/casamentos-05.jpg",1600,1066],
+      ["images/portfolio/casamentos/casamentos-06.jpg",1600,1066],
+      ["images/portfolio/casamentos/casamentos-07.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-08.jpg",854,1280],
+      ["images/portfolio/casamentos/casamentos-09.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-10.jpg",854,1280],
+      ["images/portfolio/casamentos/casamentos-11.jpg",854,1280],
+      ["images/portfolio/casamentos/casamentos-12.jpg",1066,1600],
+      ["images/portfolio/casamentos/casamentos-13.jpg",1600,1308],
+      ["images/portfolio/casamentos/casamentos-14.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-15.jpg",1600,1066],
+      ["images/portfolio/casamentos/casamentos-16.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-17.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-18.jpg",1066,1600],
+      ["images/portfolio/casamentos/casamentos-19.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-20.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-21.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-22.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-23.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-24.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-25.jpg",1600,1068],
+      ["images/portfolio/casamentos/casamentos-26.jpg",1280,854],
+      ["images/portfolio/casamentos/casamentos-27.jpg",640,427],
+      ["images/portfolio/casamentos/casamentos-28.jpg",640,862],
+      ["images/portfolio/casamentos/casamentos-29.jpg",640,862]
+    ]},
+    {"slug":"infantil","label":"Festas Infantis","images":[
+      ["images/portfolio/infantil/infantil-01.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-02.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-03.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-04.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-05.jpg",1600,1066],
+      ["images/portfolio/infantil/infantil-06.jpg",854,1280],
+      ["images/portfolio/infantil/infantil-07.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-08.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-09.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-10.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-11.jpg",1600,1066],
+      ["images/portfolio/infantil/infantil-12.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-13.jpg",854,1280],
+      ["images/portfolio/infantil/infantil-14.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-15.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-16.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-17.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-18.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-19.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-20.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-21.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-22.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-23.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-24.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-25.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-26.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-27.jpg",854,1280],
+      ["images/portfolio/infantil/infantil-28.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-29.jpg",1280,854],
+      ["images/portfolio/infantil/infantil-30.jpg",1600,1066],
+      ["images/portfolio/infantil/infantil-31.jpg",1066,1600],
+      ["images/portfolio/infantil/infantil-32.jpg",1600,1066],
+      ["images/portfolio/infantil/infantil-33.jpg",1280,852]
+    ]},
+    {"slug":"formaturas","label":"Formaturas","images":[
+      ["images/portfolio/formaturas/formaturas-01.jpg",1600,900],
+      ["images/portfolio/formaturas/formaturas-02.jpg",1280,854],
+      ["images/portfolio/formaturas/formaturas-03.jpg",854,1280],
+      ["images/portfolio/formaturas/formaturas-04.jpg",1280,854],
+      ["images/portfolio/formaturas/formaturas-05.jpg",1280,854],
+      ["images/portfolio/formaturas/formaturas-06.jpg",854,1280],
+      ["images/portfolio/formaturas/formaturas-07.jpg",1280,854],
+      ["images/portfolio/formaturas/formaturas-08.jpg",854,1280],
+      ["images/portfolio/formaturas/formaturas-09.jpg",1280,854],
+      ["images/portfolio/formaturas/formaturas-10.jpg",854,1280],
+      ["images/portfolio/formaturas/formaturas-11.jpg",1600,1066],
+      ["images/portfolio/formaturas/formaturas-12.jpg",854,1280],
+      ["images/portfolio/formaturas/formaturas-13.jpg",1600,1066],
+      ["images/portfolio/formaturas/formaturas-14.jpg",1280,854],
+      ["images/portfolio/formaturas/formaturas-15.jpg",1600,1066],
+      ["images/portfolio/formaturas/formaturas-16.jpg",1600,1066],
+      ["images/portfolio/formaturas/formaturas-17.jpg",640,469]
+    ]},
+    {"slug":"aniversarios","label":"Aniversários","images":[
+      ["images/portfolio/aniversarios/aniversarios-01.jpg",640,681]
+    ]}
+  ];
+
+  var TODAS = "todas";
+  var INICIAL = 12; // ~3 linhas em 4 colunas no desktop
+  var PASSO = 12;
+
+  var filtroAtivo = TODAS;
+  var visiveis = INICIAL;
+  var fotos = [];       // lista achatada do filtro atual
+  var indiceLightbox = null;
+  var gatilhoLightbox = null; // elemento que abriu o lightbox (para devolver o foco)
+
+  var elFiltros = document.getElementById("filtros");
+  var elGrade = document.getElementById("grade");
+  var elVerMais = document.getElementById("verMais");
+  var elContador = document.getElementById("contador");
+  var btnVerMais = document.getElementById("btnVerMais");
+  var lightbox = document.getElementById("lightbox");
+  var lbImagem = document.getElementById("lbImagem");
+  var lbLegenda = document.getElementById("lbLegenda");
+
+  function achatar(slug) {
+    var origem = slug === TODAS
+      ? CATEGORIAS
+      : CATEGORIAS.filter(function (c) { return c.slug === slug; });
+
+    return origem.reduce(function (acc, c) {
+      c.images.forEach(function (img) {
+        acc.push({ src: img[0], w: img[1], h: img[2], categoria: c.label });
+      });
+      return acc;
+    }, []);
+  }
+
+  function montarFiltros() {
+    var itens = [{ slug: TODAS, label: "Todas", total: achatar(TODAS).length }];
+    CATEGORIAS.forEach(function (c) {
+      itens.push({ slug: c.slug, label: c.label, total: c.images.length });
+    });
+
+    itens.forEach(function (item) {
+      var botao = document.createElement("button");
+      botao.type = "button";
+      botao.className = "filter";
+      botao.setAttribute("aria-pressed", String(item.slug === filtroAtivo));
+      botao.dataset.slug = item.slug;
+      botao.innerHTML = item.label + '<span class="count">' + item.total + "</span>";
+      botao.addEventListener("click", function () { aplicarFiltro(item.slug); });
+      elFiltros.appendChild(botao);
+    });
+  }
+
+  function aplicarFiltro(slug) {
+    filtroAtivo = slug;
+    visiveis = INICIAL;
+    Array.prototype.forEach.call(elFiltros.children, function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.slug === slug));
+    });
+    renderizar();
+  }
+
+  function renderizar() {
+    fotos = achatar(filtroAtivo);
+    var mostrar = fotos.slice(0, visiveis);
+
+    elGrade.innerHTML = "";
+    mostrar.forEach(function (foto, i) {
+      var card = document.createElement("button");
+      card.type = "button";
+      card.className = "card";
+      card.style.animationDelay = Math.min(i, 11) * 0.04 + "s";
+      card.setAttribute("aria-label", "Ampliar foto de " + foto.categoria);
+      card.addEventListener("click", function () { abrirLightbox(i, card); });
+
+      var img = document.createElement("img");
+      img.src = foto.src;
+      img.width = foto.w;
+      img.height = foto.h;
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.alt = "Evento de " + foto.categoria + " realizado pela Rosa Buffet";
+
+      var tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = foto.categoria;
+
+      card.appendChild(img);
+      card.appendChild(tag);
+      elGrade.appendChild(card);
+    });
+
+    var faltam = visiveis < fotos.length;
+    elVerMais.hidden = !faltam;
+    if (faltam) {
+      elContador.textContent = "Mostrando " + mostrar.length + " de " + fotos.length + " fotos";
+    }
+  }
+
+  btnVerMais.addEventListener("click", function () {
+    visiveis += PASSO;
+    renderizar();
+  });
+
+  /* ---------- Lightbox ---------- */
+
+  function mostrarFoto() {
+    var foto = fotos[indiceLightbox];
+    if (!foto) return;
+    lbImagem.src = foto.src;
+    lbImagem.alt = "Evento de " + foto.categoria + " realizado pela Rosa Buffet";
+    lbLegenda.textContent = foto.categoria + " · " + (indiceLightbox + 1) + " / " + fotos.length;
+  }
+
+  function abrirLightbox(indice, gatilho) {
+    indiceLightbox = indice;
+    gatilhoLightbox = gatilho || null;
+    mostrarFoto();
+    lightbox.hidden = false;
+    requestAnimationFrame(function () { lightbox.classList.add("is-open"); });
+    document.body.style.overflow = "hidden";
+    document.getElementById("lbFechar").focus();
+  }
+
+  function fecharLightbox() {
+    lightbox.classList.remove("is-open");
+    document.body.style.overflow = "";
+    window.setTimeout(function () {
+      lightbox.hidden = true;
+      lbImagem.src = "";
+    }, 250);
+    if (gatilhoLightbox) gatilhoLightbox.focus();
+    indiceLightbox = null;
+  }
+
+  function navegar(passo) {
+    if (indiceLightbox === null) return;
+    indiceLightbox = (indiceLightbox + passo + fotos.length) % fotos.length;
+    mostrarFoto();
+  }
+
+  document.getElementById("lbFechar").addEventListener("click", fecharLightbox);
+  document.getElementById("lbAnterior").addEventListener("click", function (e) {
+    e.stopPropagation();
+    navegar(-1);
+  });
+  document.getElementById("lbProxima").addEventListener("click", function (e) {
+    e.stopPropagation();
+    navegar(1);
+  });
+  lightbox.addEventListener("click", function (e) {
+    if (e.target === lightbox || e.target.tagName === "FIGURE") fecharLightbox();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (indiceLightbox === null) return;
+    if (e.key === "Escape") fecharLightbox();
+    if (e.key === "ArrowLeft") navegar(-1);
+    if (e.key === "ArrowRight") navegar(1);
+  });
+
+  // Arrastar para o lado no celular
+  var toqueX = null;
+  lightbox.addEventListener("touchstart", function (e) {
+    toqueX = e.changedTouches[0].clientX;
+  }, { passive: true });
+  lightbox.addEventListener("touchend", function (e) {
+    if (toqueX === null) return;
+    var delta = e.changedTouches[0].clientX - toqueX;
+    if (Math.abs(delta) > 50) navegar(delta < 0 ? 1 : -1);
+    toqueX = null;
+  }, { passive: true });
+
+  /* ---------- Cartões de tema ---------- */
+
+  Array.prototype.forEach.call(document.querySelectorAll(".theme-card"), function (card) {
+    card.addEventListener("click", function () {
+      aplicarFiltro(card.dataset.tema);
+      document.getElementById("galeria").scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  /* ---------- Cabeçalho ao rolar ---------- */
+
+  var header = document.querySelector(".site-header");
+  function aoRolar() {
+    header.classList.toggle("is-scrolled", window.scrollY > 40);
+  }
+  window.addEventListener("scroll", aoRolar, { passive: true });
+  aoRolar();
+
+  document.getElementById("ano").textContent = String(new Date().getFullYear());
+
+  montarFiltros();
+  renderizar();
+})();
+</script>
+
+</body>
+</html>
