@@ -220,54 +220,6 @@ export const processSteps: ProcessStep[] = [
   },
 ];
 
-export type Testimonial = {
-  name: string;
-  city: string;
-  rating: number;
-  quote: string;
-  initials: string;
-};
-
-/**
- * Depoimentos fictícios, usados apenas como demonstração de layout.
- * TODO: substituir por depoimentos reais de clientes da Rosa Buffet
- * antes de publicar o site em produção.
- */
-export const testimonials: Testimonial[] = [
-  {
-    name: "Camila Souza",
-    city: "Manaus, AM",
-    rating: 5,
-    quote:
-      "A equipe da Rosa Buffet transformou meu casamento em um sonho realizado. Cada detalhe foi pensado com muito carinho e profissionalismo.",
-    initials: "CS",
-  },
-  {
-    name: "Rafael Almeida",
-    city: "Manaus, AM",
-    rating: 5,
-    quote:
-      "Contratamos para um evento corporativo e a organização foi impecável do início ao fim. Recomendo sem hesitar.",
-    initials: "RA",
-  },
-  {
-    name: "Juliana Ferreira",
-    city: "Manaus, AM",
-    rating: 5,
-    quote:
-      "A festa de 15 anos da minha filha ficou incrível. Estrutura, decoração e atendimento de altíssimo nível.",
-    initials: "JF",
-  },
-  {
-    name: "Marcos Vinícius",
-    city: "Manaus, AM",
-    rating: 5,
-    quote:
-      "Profissionalismo do início ao fim. O buffet foi elogiado por todos os convidados e a decoração superou nossas expectativas.",
-    initials: "MV",
-  },
-];
-
 export type FaqItem = {
   question: string;
   answer: string;

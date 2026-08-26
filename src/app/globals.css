@@ -56,3 +56,23 @@ body {
   outline: 2px solid var(--color-gold);
   outline-offset: 3px;
 }
+
+/* Carrossel infinito de depoimentos (Testimonials.tsx): a faixa é
+   renderizada em dobro e translada exatamente metade da própria
+   largura, então o loop fecha sem salto perceptível. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 150s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
