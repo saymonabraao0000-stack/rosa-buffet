@@ -60,12 +60,13 @@ src/
     layout/                # Navbar, Footer, WhatsAppFloatingButton
     sections/               # uma seção da home ou do portfólio por arquivo
     quiz/                   # PartyQuiz.tsx e QuizCalendar.tsx, usados só em /orcamento
-    crm/                    # LoginForm, StatusForm, SinalToggle, NoteForm — os pedaços interativos do CRM
+    crm/                    # CrmSidebar, LoginForm, StatusForm, SinalToggle, NoteForm — os pedaços do CRM
     ui/                     # botões, contadores, wrappers genéricos
   lib/
     site-config.ts          # dados institucionais centrais (contato, endereço, links, nav pública — /crm não entra aqui)
-    site-data.ts             # conteúdo das seções da home (diferenciais, serviços, depoimentos, FAQ)
+    site-data.ts             # conteúdo das seções da home (diferenciais, serviços, FAQ — depoimentos saiu daqui, ver abaixo)
     portfolio-data.ts        # dados gerados das fotos do portfólio (ver seção "Fotos")
+    testimonials-data.ts       # lista gerada das capturas de depoimentos reais (ver seção "Fotos")
     quiz-data.ts              # temas/faixas de convidados/cardápio/opcionais do simulador (preços ilustrativos — ver Pendências)
     availability-data.ts       # só reservationDeposit (R$500, valor real) e o helper formatISODate — datas reservadas de verdade vêm do banco agora
     db/client.ts               # cliente Postgres (Neon), singleton exportado como `sql`
@@ -85,6 +86,7 @@ public/
   images/
     eventos/                # fotos reais soltas, usadas na home (hero, about, galeria, cards de serviço)
     portfolio/<tema>/        # as 110 fotos do portfólio, organizadas por tema
+    depoimentos/             # 30 capturas de tela reais de depoimentos (ver seção "Fotos")
   portfolio.html             # segundo portfólio, standalone (ver seção "Dois portfólios")
 ```
 
@@ -96,6 +98,7 @@ public/
   - As dimensões foram extraídas com `sharp`. **`sharp` não está em `package.json`** (nem em `dependencies` nem em `devDependencies`) — só sobrou um rastro dele em `package-lock.json`, o que indica que foi instalado ad-hoc (`npm i -D sharp` + script descartável) na sessão que gerou o arquivo, e não há script de geração commitado no repositório.
   - **Para adicionar fotos**: coloque o(s) arquivo(s) na pasta do tema em `public/images/portfolio/<tema>/`, depois regenere `portfolio-data.ts` — reinstale `sharp` temporariamente, leia as dimensões de cada arquivo da pasta e reescreva o array `portfolioCategories` (ou peça para o Claude fazer isso). Não edite as dimensões à mão.
 - As duas telas de portfólio ([celebracoes/page.tsx](src/app/celebracoes/page.tsx) e `public/portfolio.html`) consomem esse mesmo conjunto de 110 fotos — mudar as fotos do portfólio afeta as duas.
+- **Depoimentos** (seção "Depoimentos" da home, [Testimonials.tsx](src/components/sections/Testimonials.tsx)): 30 capturas de tela reais de conversas com clientes (Instagram/WhatsApp), fornecidas pelo dono do negócio, em `public/images/depoimentos/depoimento-01.jpeg` a `depoimento-30.jpeg`. Catalogadas com dimensões reais em [testimonials-data.ts](src/lib/testimonials-data.ts), mesmo esquema do portfólio (mas sem sharp — usei Pillow/Python, que já estava disponível na sessão). Renderizadas em carrossel infinito CSS puro (`.animate-marquee` em [globals.css](src/app/globals.css)). **Para adicionar mais**: solte o arquivo em `public/images/depoimentos/`, renomeie para o próximo `depoimento-NN.jpeg` e adicione a entrada com as dimensões reais em `testimonials-data.ts`.
 
 ## Os dois portfólios (e por que ambos existem)
 
@@ -155,12 +158,13 @@ Adicionado para dar suporte ao `/orcamento` (captura de lead) e ao `/crm` (paine
 ## Pendências / TODOs em aberto
 
 - **Domínio `www.rosabuffet.com.br` ainda não existe** — não resolve no DNS (`Non-existent domain`, confirmado em 2026-08-25). `siteConfig.url` em [site-config.ts:13](src/lib/site-config.ts#L13) já aponta para ele, e esse valor alimenta `canonical`, `sitemap.ts`, `robots.ts` e as meta tags Open Graph/Twitter em `layout.tsx` — ou seja, hoje o preview de link do WhatsApp/redes sociais aponta para um endereço fora do ar. Trocar `siteConfig.url` assim que o domínio definitivo estiver registrado e resolvendo.
-- **Depoimentos fictícios**: os 4 depoimentos em [site-data.ts:236-269](src/lib/site-data.ts#L236-L269) (Camila Souza, Rafael Almeida, Juliana Ferreira, Marcos Vinícius) são inventados para preencher o layout — há um TODO explícito no código dizendo para substituí-los por depoimentos reais antes de considerar o site "pronto" com esse conteúdo publicado como se fosse real.
 - **Links placeholder em `site-config.ts`**:
   - `social.facebook` ([site-config.ts:41](src/lib/site-config.ts#L41)) tem TODO explícito — aponta para `https://www.facebook.com/`, a home genérica do Facebook, não a página da empresa.
   - `googleMapsUrl`/`googleMapsEmbedUrl` ([site-config.ts:33-36](src/lib/site-config.ts#L33-L36)) **não têm TODO no código**, mas são apenas uma URL de busca do Google Maps montada a partir do endereço em texto (`query=Rua+São+João...`), não um link para uma ficha/perfil real do Google Business da Rosa Buffet. Funciona, mas vale trocar por um link de perfil real quando existir um.
 - Vários cards de serviço em [site-data.ts](src/lib/site-data.ts) (festas infantis, eventos corporativos, chá revelação, buffet completo) ainda usam fotos de banco de imagens (Unsplash) como placeholder — cada um tem um TODO próprio no código indicando isso; substituir por fotos reais quando disponíveis, adicionando o arquivo em `public/images/eventos/` e trocando a URL.
 - **Preços ilustrativos no simulador `/orcamento`**: o preço por convidado de cada nível de cardápio (`buffetTiers`) e o valor de cada opcional (`addons`), ambos em [quiz-data.ts](src/lib/quiz-data.ts), são valores inventados só para o cálculo funcionar de ponta a ponta — há um TODO explícito no topo de cada um. Cada card no quiz já mostra "(estimativa)" ao lado do valor, e o resultado final tem um aviso de que é sujeito a confirmação, mas os números em si **não são reais** e precisam ser substituídos pelos valores de custo por convidado da Rosa Buffet antes de tratar a estimativa como confiável.
-- **Banco de dados provisionado mas ainda sem dados reais**: até o primeiro lead fechado (`status = 'fechado'`) com data marcada, `/crm/agenda` e o calendário do simulador não têm nenhuma data pra mostrar como indisponível — não é um bug, só reflete que a agenda está vazia até a equipe começar a fechar eventos pelo CRM.
+- **Banco de dados tem leads fictícios de demonstração**: 10 leads de exemplo (nomes como "Ana Beatriz Souza", "Rafael Costa Lima" etc., alguns com notas) foram inseridos direto no banco pra o dono ver o CRM populado antes de ter clientes reais nele. Combinado que o Claude apaga quando o dono pedir — **se você é uma sessão futura e não recebeu esse pedido, não assuma que são dados reais nem os edite como se fossem**. Fora eles, o banco fica vazio até a equipe usar o `/orcamento`/`/crm/leads/novo` de verdade — não é bug, só reflete que ainda não começaram a operar por lá.
+- **Senha do CRM é fraca**: `CRM_PASSWORD` está como `"rosa"` — fácil de adivinhar, sem limite de tentativas de login. Foi a senha que o dono escolheu de propósito (queria algo simples), mas veio com aviso explícito de que deveria trocar antes do CRM ter dado de cliente real valendo a pena proteger. Trocar em Vercel → projeto rosa-buffet → Settings → Environment Variables → `CRM_PASSWORD` (nos três ambientes) + `vercel env pull .env.local` local.
+- **Sem aviso de privacidade/LGPD**: o quiz coleta nome e telefone de visitantes reais e grava num banco — dado pessoal, sob a LGPD. Hoje não existe nenhuma política de privacidade nem aviso de consentimento na etapa de contato do quiz. Ainda não foi pedido para o dono, mas é uma lacuna real, não só estética.
 - **Sem proteção contra spam nas Server Actions públicas do quiz** (`createLeadAction`/`updateLeadAction`): qualquer um pode chamar essas ações diretamente via POST (é como Server Actions funcionam — não há como restringir isso só pelo `proxy.ts`, que nem cobre `/orcamento`). Dado o porte do negócio, não foi adicionado CAPTCHA/rate limit; um honeypot simples seria a mitigação mais barata se leads falsos virarem um problema real no CRM.
 - **`updated_at` de `leads` é setado manualmente em cada `UPDATE`** (não há trigger no banco) — se alguém adicionar uma nova função de escrita em [leads.ts](src/lib/crm/leads.ts), precisa lembrar de incluir `updated_at = now()` também.
