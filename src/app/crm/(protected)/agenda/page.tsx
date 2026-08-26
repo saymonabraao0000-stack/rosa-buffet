@@ -16,8 +16,8 @@ export default async function CrmAgendaPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-ink">Agenda</h1>
-      <p className="mt-2 text-sm text-gray-dark">
+      <h1 className="font-display text-3xl text-cream">Agenda</h1>
+      <p className="mt-2 text-sm text-cream/60">
         Datas de eventos com status &quot;Fechado&quot; — são elas que aparecem como indisponíveis
         no calendário do simulador (/orcamento).
       </p>
@@ -28,28 +28,28 @@ export default async function CrmAgendaPage() {
           return (
             <li
               key={lead.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink/10 bg-white/50 p-4"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4"
             >
               <div>
                 <Link
                   href={`/crm/leads/${lead.id}`}
-                  className="focus-gold font-semibold text-ink hover:text-gold"
+                  className="focus-gold font-semibold text-cream hover:text-gold"
                 >
                   {lead.nome}
                 </Link>
-                <p className="text-sm text-gray-dark">
+                <p className="text-sm text-cream/60">
                   {tema?.label ?? "Tema não informado"}
                   {lead.sinalPago ? " · sinal pago" : " · sinal pendente"}
                 </p>
               </div>
-              <span className="text-sm font-medium text-ink">
+              <span className="text-sm font-medium text-cream">
                 {lead.dataEvento && dateFormatter.format(new Date(`${lead.dataEvento}T00:00:00`))}
               </span>
             </li>
           );
         })}
         {eventos.length === 0 && (
-          <li className="rounded-xl border border-ink/10 bg-white/50 p-6 text-center text-sm text-gray-dark">
+          <li className="rounded-xl border border-cream/10 bg-cream/5 p-6 text-center text-sm text-cream/60">
             Nenhum evento fechado ainda.
           </li>
         )}

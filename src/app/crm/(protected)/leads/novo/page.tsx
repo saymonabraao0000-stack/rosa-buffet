@@ -4,8 +4,8 @@ import { buffetTiers, guestRanges, quizThemes } from "@/lib/quiz-data";
 export default function CrmNovoLeadPage() {
   return (
     <div className="max-w-xl">
-      <h1 className="font-display text-3xl text-ink">Novo lead</h1>
-      <p className="mt-2 text-sm text-gray-dark">
+      <h1 className="font-display text-3xl text-cream">Novo lead</h1>
+      <p className="mt-2 text-sm text-cream/60">
         Para clientes que chegaram por telefone, Instagram ou indicação — não passaram pelo simulador.
       </p>
 
@@ -74,14 +74,14 @@ function TextField({
   type?: string;
 }) {
   return (
-    <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+    <label className="flex flex-col gap-1 text-sm font-medium text-cream">
       {label}
       <input
         type={type}
         name={name}
         required={required}
         placeholder={placeholder}
-        className="focus-gold rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm font-normal text-ink outline-none focus:border-gold"
+        className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm font-normal text-cream placeholder:text-cream/30 outline-none focus:border-gold [color-scheme:dark]"
       />
     </label>
   );
@@ -99,12 +99,12 @@ function SelectField({
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+    <label className="flex flex-col gap-1 text-sm font-medium text-cream">
       {label}
       <select
         name={name}
         defaultValue={defaultValue}
-        className="focus-gold rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm font-normal text-ink outline-none focus:border-gold"
+        className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm font-normal text-cream outline-none focus:border-gold"
       >
         {children}
       </select>

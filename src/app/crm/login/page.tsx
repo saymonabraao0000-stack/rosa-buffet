@@ -3,7 +3,7 @@ import LoginForm from "@/components/crm/LoginForm";
 
 export default function CrmLoginPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-cream px-6">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-ink-soft px-6">
       <Image
         src="/images/logo-header.png"
         alt="Rosa Buffet"

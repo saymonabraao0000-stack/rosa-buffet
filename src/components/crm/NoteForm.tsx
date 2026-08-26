@@ -25,12 +25,12 @@ export default function NoteForm({ leadId }: { leadId: string }) {
         required
         rows={2}
         placeholder="Adicionar anotação..."
-        className="focus-gold w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+        className="focus-gold w-full rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream placeholder:text-cream/30 outline-none focus:border-gold"
       />
       <button
         type="submit"
         disabled={isPending}
-        className="focus-gold self-start rounded-full bg-ink px-4 py-2 text-xs font-semibold text-cream transition-colors hover:bg-ink-soft disabled:opacity-60"
+        className="focus-gold self-start rounded-full bg-cream/10 px-4 py-2 text-xs font-semibold text-cream transition-colors hover:bg-cream/15 disabled:opacity-60"
       >
         {isPending ? "Salvando..." : "Adicionar anotação"}
       </button>

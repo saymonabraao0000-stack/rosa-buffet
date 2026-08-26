@@ -12,7 +12,7 @@ export default function LoginForm() {
   return (
     <form action={formAction} className="flex w-full max-w-sm flex-col gap-4">
       <div>
-        <label htmlFor="password" className="mb-2 block text-sm font-medium text-ink">
+        <label htmlFor="password" className="mb-2 block text-sm font-medium text-cream">
           Senha do CRM
         </label>
         <input
@@ -21,10 +21,10 @@ export default function LoginForm() {
           type="password"
           required
           autoFocus
-          className="focus-gold w-full rounded-lg border border-ink/15 bg-cream px-4 py-3 text-ink outline-none focus:border-gold"
+          className="focus-gold w-full rounded-lg border border-cream/15 bg-ink px-4 py-3 text-cream outline-none focus:border-gold"
         />
       </div>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
       <button
         type="submit"
         disabled={isPending}

@@ -1,10 +1,16 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { buildWhatsappUrl } from "@/lib/site-config";
 
 export default function WhatsAppFloatingButton() {
+  const pathname = usePathname();
+  // O /crm é uma ferramenta interna da equipe — o botão de "solicitar
+  // orçamento" é pro visitante do site público, não faz sentido lá dentro.
+  if (pathname.startsWith("/crm")) return null;
+
   return (
     <motion.a
       href={buildWhatsappUrl()}

@@ -44,23 +44,23 @@ export default async function CrmLeadsPage({
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-ink">Leads</h1>
+      <h1 className="font-display text-3xl text-cream">Leads</h1>
 
-      <form method="GET" className="mt-6 flex flex-wrap items-end gap-3 rounded-xl border border-ink/10 bg-white/50 p-4">
+      <form method="GET" className="mt-6 flex flex-wrap items-end gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4">
         <Field label="Buscar">
           <input
             type="text"
             name="q"
             defaultValue={params.q}
             placeholder="Nome ou telefone"
-            className="focus-gold rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream placeholder:text-cream/30 outline-none focus:border-gold"
           />
         </Field>
         <Field label="Status">
           <select
             name="status"
             defaultValue={params.status ?? ""}
-            className="focus-gold rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
           >
             <option value="">Todos</option>
             {Object.entries(STATUS_LABELS).map(([value, label]) => (
@@ -74,7 +74,7 @@ export default async function CrmLeadsPage({
           <select
             name="tema"
             defaultValue={params.tema ?? ""}
-            className="focus-gold rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
           >
             <option value="">Todos</option>
             {quizThemes.map((t) => (
@@ -89,7 +89,7 @@ export default async function CrmLeadsPage({
             type="date"
             name="from"
             defaultValue={params.from}
-            className="focus-gold rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold [color-scheme:dark]"
           />
         </Field>
         <Field label="Até">
@@ -97,7 +97,7 @@ export default async function CrmLeadsPage({
             type="date"
             name="to"
             defaultValue={params.to}
-            className="focus-gold rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold [color-scheme:dark]"
           />
         </Field>
         <button
@@ -107,15 +107,15 @@ export default async function CrmLeadsPage({
           Filtrar
         </button>
         {(params.q || params.status || params.tema || params.from || params.to) && (
-          <Link href="/crm/leads" className="focus-gold text-sm font-medium text-gray-dark hover:text-ink">
+          <Link href="/crm/leads" className="focus-gold text-sm font-medium text-cream/60 hover:text-cream">
             Limpar
           </Link>
         )}
       </form>
 
-      <div className="mt-6 overflow-x-auto rounded-xl border border-ink/10">
+      <div className="mt-6 overflow-x-auto rounded-xl border border-cream/10">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="bg-ink/5 text-xs font-semibold uppercase tracking-wide text-gray-dark">
+          <thead className="bg-cream/5 text-xs font-semibold uppercase tracking-wide text-cream/60">
             <tr>
               <th className="px-4 py-3">Nome</th>
               <th className="px-4 py-3">Telefone</th>
@@ -125,22 +125,22 @@ export default async function CrmLeadsPage({
               <th className="px-4 py-3">Criado em</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-ink/10">
+          <tbody className="divide-y divide-cream/10">
             {leadsList.map((lead) => {
               const tema = quizThemes.find((t) => t.slug === lead.temaSlug);
               return (
-                <tr key={lead.id} className="transition-colors hover:bg-gold-soft/10">
+                <tr key={lead.id} className="transition-colors hover:bg-cream/5">
                   <td className="px-4 py-3">
                     <Link
                       href={`/crm/leads/${lead.id}`}
-                      className="focus-gold font-medium text-ink hover:text-gold"
+                      className="focus-gold font-medium text-cream hover:text-gold"
                     >
                       {lead.nome}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-gray-dark">{lead.telefone}</td>
-                  <td className="px-4 py-3 text-gray-dark">{tema?.label ?? "—"}</td>
-                  <td className="px-4 py-3 text-gray-dark">
+                  <td className="px-4 py-3 text-cream/60">{lead.telefone}</td>
+                  <td className="px-4 py-3 text-cream/60">{tema?.label ?? "—"}</td>
+                  <td className="px-4 py-3 text-cream/60">
                     {lead.dataEvento
                       ? dateTimeFormatter.format(new Date(`${lead.dataEvento}T00:00:00`))
                       : "—"}
@@ -148,7 +148,7 @@ export default async function CrmLeadsPage({
                   <td className="px-4 py-3">
                     <StatusBadge status={lead.status} />
                   </td>
-                  <td className="px-4 py-3 text-gray-dark">
+                  <td className="px-4 py-3 text-cream/60">
                     {dateTimeFormatter.format(new Date(lead.createdAt))}
                   </td>
                 </tr>
@@ -156,7 +156,7 @@ export default async function CrmLeadsPage({
             })}
             {leadsList.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-dark">
+                <td colSpan={6} className="px-4 py-8 text-center text-cream/60">
                   Nenhum lead encontrado.
                 </td>
               </tr>
@@ -170,7 +170,7 @@ export default async function CrmLeadsPage({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="flex flex-col gap-1 text-xs font-medium text-gray-dark">
+    <label className="flex flex-col gap-1 text-xs font-medium text-cream/60">
       {label}
       {children}
     </label>
@@ -178,11 +178,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const STATUS_STYLES: Record<LeadStatus, string> = {
-  novo: "bg-blue-100 text-blue-700",
-  contatado: "bg-amber-100 text-amber-700",
-  orcamento_enviado: "bg-purple-100 text-purple-700",
-  fechado: "bg-green-100 text-green-700",
-  perdido: "bg-gray-200 text-gray-600",
+  novo: "bg-blue-500/15 text-blue-300",
+  contatado: "bg-amber-500/15 text-amber-300",
+  orcamento_enviado: "bg-purple-500/15 text-purple-300",
+  fechado: "bg-green-500/15 text-green-300",
+  perdido: "bg-cream/10 text-cream/50",
 };
 
 function StatusBadge({ status }: { status: LeadStatus }) {
