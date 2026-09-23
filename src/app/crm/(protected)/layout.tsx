@@ -6,9 +6,10 @@ export default async function CrmProtectedLayout({ children }: { children: React
   await requireSession();
 
   return (
-    <div className="flex min-h-screen bg-ink-soft text-cream">
+    <div className="min-h-screen bg-ink-soft text-cream lg:flex">
       <CrmSidebar />
-      <main className="flex-1 overflow-x-auto px-8 py-10">
+      {/* pb-24 no celular: espaço para a barra de abas fixa embaixo */}
+      <main className="min-w-0 flex-1 px-4 pt-6 pb-24 sm:px-8 lg:py-10">
         <div className="mx-auto max-w-6xl">{children}</div>
       </main>
     </div>

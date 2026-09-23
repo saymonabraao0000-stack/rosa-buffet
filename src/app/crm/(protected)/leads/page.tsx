@@ -51,8 +51,8 @@ export default async function CrmLeadsPage({
     <div>
       <h1 className="font-display text-3xl text-cream">Leads</h1>
 
-      <form method="GET" className="mt-6 flex flex-wrap items-end gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4">
-        <Field label="Buscar">
+      <form method="GET" className="mt-6 grid grid-cols-2 items-end gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4 md:flex md:flex-wrap">
+        <Field label="Buscar" wide>
           <input
             type="text"
             name="q"
@@ -128,7 +128,47 @@ export default async function CrmLeadsPage({
         )}
       </form>
 
-      <div className="mt-6 overflow-x-auto rounded-xl border border-cream/10">
+      {/* Celular: cartões. Tabela a partir de md. */}
+      <ul className="mt-6 flex flex-col gap-3 md:hidden">
+        {leadsList.map((lead) => {
+          const tema = quizThemes.find((t) => t.slug === lead.temaSlug);
+          return (
+            <li key={lead.id}>
+              <Link
+                href={`/crm/leads/${lead.id}`}
+                className="focus-gold block rounded-xl border border-cream/10 bg-cream/5 p-4 active:bg-cream/10"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="font-medium text-cream">{lead.nome}</span>
+                  <StatusBadge status={lead.status} />
+                </div>
+                {isQuizIncomplete(lead) && (
+                  <span className="mt-1 block text-xs text-amber-300/80">{quizStepLabel(lead)}</span>
+                )}
+                <p className="mt-2 text-sm text-cream/60">{lead.telefone}</p>
+                <p className="mt-1 text-xs text-cream/50">
+                  {[
+                    tema?.label,
+                    lead.dataEvento
+                      ? `festa ${dateTimeFormatter.format(new Date(`${lead.dataEvento}T00:00:00`))}`
+                      : undefined,
+                    `criado ${dateTimeFormatter.format(new Date(lead.createdAt))}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              </Link>
+            </li>
+          );
+        })}
+        {leadsList.length === 0 && (
+          <li className="rounded-xl border border-cream/10 p-6 text-center text-sm text-cream/60">
+            Nenhum lead encontrado.
+          </li>
+        )}
+      </ul>
+
+      <div className="mt-6 hidden overflow-x-auto rounded-xl border border-cream/10 md:block">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead className="bg-cream/5 text-xs font-semibold uppercase tracking-wide text-cream/60">
             <tr>
@@ -186,9 +226,11 @@ export default async function CrmLeadsPage({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, wide, children }: { label: string; wide?: boolean; children: React.ReactNode }) {
   return (
-    <label className="flex flex-col gap-1 text-xs font-medium text-cream/60">
+    <label
+      className={`flex min-w-0 flex-col gap-1 text-xs font-medium text-cream/60 [&>*]:w-full md:[&>*]:w-auto ${wide ? "col-span-2" : ""}`}
+    >
       {label}
       {children}
     </label>
