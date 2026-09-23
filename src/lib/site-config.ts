@@ -19,7 +19,6 @@ export const siteConfig = {
 
   phoneDisplay: "(92) 99207-3047",
 
-  email: "contato@rosabuffet.com.br",
 
   address: {
     street: "Rua São João, 310",
