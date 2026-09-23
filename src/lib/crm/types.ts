@@ -50,6 +50,8 @@ export type LeadFilters = Partial<{
   dateFrom: string;
   dateTo: string;
   q: string;
+  /** Só leads do simulador que pararam antes do orçamento. */
+  incompleto: boolean;
 }>;
 
 /** Dados do lead editáveis no CRM (cadastro manual e tela de edição). */

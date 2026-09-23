@@ -1,5 +1,6 @@
 import { getThemeLabel } from "@/lib/quiz-data";
 import type { Lead } from "./types";
+import { isQuizIncomplete } from "./quiz-progress";
 
 // Link "Abrir WhatsApp" da ficha do lead, já com a primeira mensagem escrita
 // (a equipe só revisa e envia).
@@ -17,8 +18,11 @@ export function buildLeadWhatsappUrl(lead: Lead): string {
     lead.dataEvento ? formatDate(lead.dataEvento) : undefined,
   ].filter(Boolean);
 
-  const text =
-    lead.source === "quiz"
+  const text = isQuizIncomplete(lead)
+    ? `Olá, ${primeiroNome}! Aqui é da Rosa Buffet. Vi que você começou uma simulação de festa no nosso site` +
+      (detalhes.length ? ` (${detalhes.join(", ")})` : "") +
+      " e não chegou a terminar. Posso te ajudar a montar o orçamento?"
+    : lead.source === "quiz"
       ? `Olá, ${primeiroNome}! Aqui é da Rosa Buffet. Vi que você fez uma simulação no nosso site` +
         (detalhes.length ? ` (${detalhes.join(", ")})` : "") +
         ". Posso te ajudar com o orçamento?"

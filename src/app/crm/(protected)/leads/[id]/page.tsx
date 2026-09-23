@@ -8,6 +8,7 @@ import SinalToggle from "@/components/crm/SinalToggle";
 import NoteForm from "@/components/crm/NoteForm";
 import DeleteLeadButton from "@/components/crm/DeleteLeadButton";
 import { buildLeadWhatsappUrl } from "@/lib/crm/whatsapp";
+import { quizStepLabel } from "@/lib/crm/quiz-progress";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -113,7 +114,7 @@ export default async function CrmLeadDetailPage({
                     : undefined
                 }
               />
-              <Field label="Chegou até a etapa" value={lead.currentStep ?? undefined} />
+              <Field label="Andamento no simulador" value={quizStepLabel(lead)} />
             </dl>
           </section>
 

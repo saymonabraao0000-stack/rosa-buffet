@@ -1,5 +1,6 @@
 import "server-only";
 import { sql } from "@/lib/db/client";
+import { QUIZ_DONE_STEPS } from "./quiz-progress";
 import type {
   DashboardStats,
   Lead,
@@ -51,8 +52,8 @@ function mapLeadRow(row: any): Lead {
 
 export async function createLead(input: { nome: string; telefone: string }): Promise<{ id: string }> {
   const rows = await sql`
-    insert into leads (nome, telefone, source)
-    values (${input.nome}, ${input.telefone}, 'quiz')
+    insert into leads (nome, telefone, source, current_step)
+    values (${input.nome}, ${input.telefone}, 'quiz', 'contato')
     returning id
   `;
   return { id: rows[0].id };
@@ -114,6 +115,11 @@ export async function listLeads(filters: LeadFilters): Promise<Lead[]> {
   if (filters.q) {
     params.push(`%${filters.q}%`);
     conditions.push(`(nome ilike $${params.length} or telefone ilike $${params.length})`);
+  }
+
+  if (filters.incompleto) {
+    params.push(QUIZ_DONE_STEPS);
+    conditions.push(`source = 'quiz' and coalesce(current_step, 'contato') <> all($${params.length})`);
   }
 
   const where = conditions.length ? `where ${conditions.join(" and ")}` : "";

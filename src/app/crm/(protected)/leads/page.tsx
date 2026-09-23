@@ -3,6 +3,7 @@ import Link from "next/link";
 import { listLeads } from "@/lib/crm/leads";
 import type { LeadFilters, LeadStatus } from "@/lib/crm/types";
 import { quizThemes } from "@/lib/quiz-data";
+import { isQuizIncomplete, quizStepLabel } from "@/lib/crm/quiz-progress";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,7 @@ type SearchParams = {
   from?: string;
   to?: string;
   q?: string;
+  incompleto?: string;
 };
 
 export default async function CrmLeadsPage({
@@ -41,6 +43,7 @@ export default async function CrmLeadsPage({
     dateFrom: params.from || undefined,
     dateTo: params.to || undefined,
     q: params.q || undefined,
+    incompleto: params.incompleto === "1" || undefined,
   };
   const leadsList = await listLeads(filters);
 
@@ -86,6 +89,16 @@ export default async function CrmLeadsPage({
             ))}
           </select>
         </Field>
+        <Field label="Simulação">
+          <select
+            name="incompleto"
+            defaultValue={params.incompleto ?? ""}
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
+          >
+            <option value="">Todas</option>
+            <option value="1">Parou no meio</option>
+          </select>
+        </Field>
         <Field label="De">
           <input
             type="date"
@@ -108,7 +121,7 @@ export default async function CrmLeadsPage({
         >
           Filtrar
         </button>
-        {(params.q || params.status || params.tema || params.from || params.to) && (
+        {(params.q || params.status || params.tema || params.from || params.to || params.incompleto) && (
           <Link href="/crm/leads" className="focus-gold text-sm font-medium text-cream/60 hover:text-cream">
             Limpar
           </Link>
@@ -139,6 +152,9 @@ export default async function CrmLeadsPage({
                     >
                       {lead.nome}
                     </Link>
+                    {isQuizIncomplete(lead) && (
+                      <span className="mt-1 block text-xs text-amber-300/80">{quizStepLabel(lead)}</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-cream/60">{lead.telefone}</td>
                   <td className="px-4 py-3 text-cream/60">{tema?.label ?? "—"}</td>
