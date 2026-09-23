@@ -17,7 +17,7 @@ export default function Testimonials() {
         <SectionHeading title="Quem viveu, recomenda." light />
       </Container>
 
-      <div className="relative mt-16">
+      <div className="marquee-viewport relative mt-16">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-ink to-transparent sm:w-32" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-ink to-transparent sm:w-32" />
 
@@ -32,6 +32,10 @@ export default function Testimonials() {
                 alt="Depoimento de cliente da Rosa Buffet"
                 width={shot.w}
                 height={shot.h}
+                // Largura real na tela (altura máx. 384px no desktop): sem
+                // isto o Next baixava cada print com 1920px, ~700 MB de
+                // imagem decodificada no carrossel — pesado demais no iPhone.
+                sizes={`${Math.ceil((384 * shot.w) / shot.h)}px`}
                 className="h-full w-auto object-cover"
               />
             </div>

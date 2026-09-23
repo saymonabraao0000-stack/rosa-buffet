@@ -82,8 +82,26 @@ body {
 
 .animate-marquee {
   animation: marquee 150s linear infinite;
+  will-change: transform;
 }
 
-.animate-marquee:hover {
-  animation-play-state: paused;
+/* Pausa pra ler só em aparelho com mouse. No celular o toque deixa o
+   :hover "grudado" e o carrossel ficava parado depois de tocado. */
+@media (hover: hover) and (pointer: fine) {
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+}
+
+/* Com "Reduzir movimento" ligado a regra global acima zera a animação e
+   a faixa ficava travada no início, sem acesso aos outros depoimentos.
+   Nesse caso ela vira uma fileira parada que se arrasta com o dedo. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+  .marquee-viewport {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
