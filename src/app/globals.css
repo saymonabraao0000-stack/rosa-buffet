@@ -70,7 +70,9 @@ body {
 
 /* Carrossel infinito de depoimentos (Testimonials.tsx): a faixa é
    renderizada em dobro e translada exatamente metade da própria
-   largura, então o loop fecha sem salto perceptível. */
+   largura. Cada item carrega o próprio espaçamento (padding à direita,
+   não `gap`), então as duas metades têm a mesma largura e o loop fecha
+   sem salto. Roda sempre, sem pausa — pedido do Saymon (2026-09-23). */
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -85,23 +87,11 @@ body {
   will-change: transform;
 }
 
-/* Pausa pra ler só em aparelho com mouse. No celular o toque deixa o
-   :hover "grudado" e o carrossel ficava parado depois de tocado. */
-@media (hover: hover) and (pointer: fine) {
-  .animate-marquee:hover {
-    animation-play-state: paused;
-  }
-}
-
-/* Com "Reduzir movimento" ligado a regra global acima zera a animação e
-   a faixa ficava travada no início, sem acesso aos outros depoimentos.
-   Nesse caso ela vira uma fileira parada que se arrasta com o dedo. */
+/* A regra global de "Reduzir movimento" zera todas as animações; o
+   carrossel é exceção de propósito e continua rodando devagar. */
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee {
-    animation: none;
-  }
-  .marquee-viewport {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    animation-duration: 150s !important;
+    animation-iteration-count: infinite !important;
   }
 }

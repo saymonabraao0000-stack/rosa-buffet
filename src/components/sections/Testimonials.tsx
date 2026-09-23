@@ -4,10 +4,10 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { testimonialScreenshots } from "@/lib/testimonials-data";
 
 // Depoimentos reais (capturas de conversas de clientes) em carrossel
-// infinito. A faixa é duplicada uma vez — a animação (.animate-marquee,
-// definida em globals.css) translada -50%, ou seja, exatamente o fim da
-// primeira cópia, então o loop fecha sem salto. Pausa ao passar o mouse
-// pra dar tempo de ler.
+// infinito, sempre rodando. A faixa é duplicada uma vez — a animação
+// (.animate-marquee, definida em globals.css) translada -50%, ou seja,
+// exatamente o fim da primeira cópia. O espaço entre os prints é padding
+// de cada item (não `gap`) pra as duas metades terem a mesma largura.
 export default function Testimonials() {
   const track = [...testimonialScreenshots, ...testimonialScreenshots];
 
@@ -17,27 +17,29 @@ export default function Testimonials() {
         <SectionHeading title="Quem viveu, recomenda." light />
       </Container>
 
-      <div className="marquee-viewport relative mt-16">
+      <div className="relative mt-16">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-ink to-transparent sm:w-32" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-ink to-transparent sm:w-32" />
 
-        <div className="flex w-max animate-marquee gap-5">
+        <div className="flex w-max animate-marquee">
           {track.map((shot, index) => (
-            <div
-              key={`${shot.src}-${index}`}
-              className="h-72 shrink-0 overflow-hidden rounded-2xl border border-cream/10 sm:h-80 lg:h-96"
-            >
-              <Image
-                src={shot.src}
-                alt="Depoimento de cliente da Rosa Buffet"
-                width={shot.w}
-                height={shot.h}
-                // Largura real na tela (altura máx. 384px no desktop): sem
-                // isto o Next baixava cada print com 1920px, ~700 MB de
-                // imagem decodificada no carrossel — pesado demais no iPhone.
-                sizes={`${Math.ceil((384 * shot.w) / shot.h)}px`}
-                className="h-full w-auto object-cover"
-              />
+            <div key={`${shot.src}-${index}`} className="shrink-0 pr-5">
+              <div className="h-72 overflow-hidden rounded-2xl border border-cream/10 sm:h-80 lg:h-96">
+                <Image
+                  src={shot.src}
+                  alt="Depoimento de cliente da Rosa Buffet"
+                  width={shot.w}
+                  height={shot.h}
+                  // Largura real na tela (altura máx. 384px no desktop): sem
+                  // isto o Next baixava cada print com 1920px, ~700 MB de
+                  // imagem decodificada no carrossel — pesado demais no iPhone.
+                  sizes={`${Math.ceil((384 * shot.w) / shot.h)}px`}
+                  // Todos carregados de uma vez: a faixa se move, e print
+                  // entrando em branco na tela quebrava a ilusão do infinito.
+                  loading="eager"
+                  className="h-full w-auto object-cover"
+                />
+              </div>
             </div>
           ))}
         </div>
