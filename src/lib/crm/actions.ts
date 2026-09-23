@@ -12,7 +12,7 @@ import {
 } from "./session";
 import * as leads from "./leads";
 import * as notes from "./notes";
-import type { LeadStatus, ManualLeadInput } from "./types";
+import type { LeadDetailsInput, LeadStatus, ManualLeadInput } from "./types";
 
 export type LoginState = { error?: string } | undefined;
 
@@ -45,10 +45,7 @@ export async function updateLeadStatusAction(
 ): Promise<void> {
   await requireSession();
   await leads.updateLeadStatus(id, status, status === "perdido" ? (perdidoMotivo ?? null) : null);
-  revalidatePath(`/crm/leads/${id}`);
-  revalidatePath("/crm/leads");
-  revalidatePath("/crm/agenda");
-  revalidatePath("/crm");
+  revalidateLeadPages(id);
 }
 
 export async function markSinalPagoAction(id: string, paid: boolean): Promise<void> {
@@ -65,22 +62,49 @@ export async function addNoteAction(leadId: string, text: string): Promise<void>
   revalidatePath(`/crm/leads/${leadId}`);
 }
 
-export async function createManualLeadAction(formData: FormData): Promise<void> {
-  await requireSession();
-
+// Lê os campos de <LeadFields> (formulários de novo lead e de edição).
+function readLeadDetails(formData: FormData): LeadDetailsInput {
   const nome = String(formData.get("nome") ?? "").trim();
   const telefone = String(formData.get("telefone") ?? "").trim();
   if (!nome || !telefone) {
     throw new Error("Nome e telefone são obrigatórios.");
   }
-
-  const input: ManualLeadInput = {
+  return {
     nome,
     telefone,
     temaSlug: (formData.get("temaSlug") as string) || null,
     guestRangeSlug: (formData.get("guestRangeSlug") as string) || null,
     dataEvento: (formData.get("dataEvento") as string) || null,
     buffetTierSlug: (formData.get("buffetTierSlug") as string) || null,
+  };
+}
+
+function revalidateLeadPages(id: string) {
+  revalidatePath(`/crm/leads/${id}`);
+  revalidatePath("/crm/leads");
+  revalidatePath("/crm/agenda");
+  revalidatePath("/crm");
+}
+
+export async function updateLeadAction(id: string, formData: FormData): Promise<void> {
+  await requireSession();
+  await leads.updateLeadDetails(id, readLeadDetails(formData));
+  revalidateLeadPages(id);
+  redirect(`/crm/leads/${id}`);
+}
+
+export async function deleteLeadAction(id: string): Promise<void> {
+  await requireSession();
+  await leads.deleteLead(id);
+  revalidateLeadPages(id);
+  redirect("/crm/leads");
+}
+
+export async function createManualLeadAction(formData: FormData): Promise<void> {
+  await requireSession();
+
+  const input: ManualLeadInput = {
+    ...readLeadDetails(formData),
     status: ((formData.get("status") as string) || "novo") as ManualLeadInput["status"],
   };
 

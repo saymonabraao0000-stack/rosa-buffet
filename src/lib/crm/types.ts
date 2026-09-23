@@ -52,13 +52,17 @@ export type LeadFilters = Partial<{
   q: string;
 }>;
 
-export type ManualLeadInput = {
+/** Dados do lead editáveis no CRM (cadastro manual e tela de edição). */
+export type LeadDetailsInput = {
   nome: string;
   telefone: string;
   temaSlug: string | null;
   guestRangeSlug: string | null;
   dataEvento: string | null;
   buffetTierSlug: string | null;
+};
+
+export type ManualLeadInput = LeadDetailsInput & {
   status: LeadStatus;
 };
 

@@ -6,6 +6,9 @@ import { getGuestLabel, getPartyPackageLabel, getThemeLabel } from "@/lib/quiz-d
 import StatusForm from "@/components/crm/StatusForm";
 import SinalToggle from "@/components/crm/SinalToggle";
 import NoteForm from "@/components/crm/NoteForm";
+import DeleteLeadButton from "@/components/crm/DeleteLeadButton";
+import { buildLeadWhatsappUrl } from "@/lib/crm/whatsapp";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -58,14 +61,22 @@ export default async function CrmLeadDetailPage({
             criado em {dateTimeFullFormatter.format(new Date(lead.createdAt))}
           </p>
         </div>
-        <a
-          href={`https://wa.me/55${lead.telefone.replace(/\D/g, "")}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="focus-gold rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft"
-        >
-          Abrir WhatsApp
-        </a>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/crm/leads/${lead.id}/editar`}
+            className="focus-gold rounded-full border border-cream/20 px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:border-gold hover:text-gold"
+          >
+            Editar
+          </Link>
+          <a
+            href={buildLeadWhatsappUrl(lead)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="focus-gold rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft"
+          >
+            Abrir WhatsApp
+          </a>
+        </div>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -135,6 +146,9 @@ export default async function CrmLeadDetailPage({
             </h2>
             <SinalToggle leadId={lead.id} sinalPago={lead.sinalPago} />
           </section>
+          <div className="flex justify-end">
+            <DeleteLeadButton leadId={lead.id} nome={lead.nome} />
+          </div>
         </aside>
       </div>
     </div>

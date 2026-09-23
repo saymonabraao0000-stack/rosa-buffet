@@ -3,6 +3,7 @@ import { sql } from "@/lib/db/client";
 import type {
   DashboardStats,
   Lead,
+  LeadDetailsInput,
   LeadFilters,
   LeadProgressPatch,
   LeadStatus,
@@ -150,6 +151,21 @@ export async function createManualLead(input: ManualLeadInput): Promise<{ id: st
     returning id
   `;
   return { id: rows[0].id };
+}
+
+export async function updateLeadDetails(id: string, input: LeadDetailsInput): Promise<void> {
+  await sql`
+    update leads
+    set nome = ${input.nome}, telefone = ${input.telefone}, tema_slug = ${input.temaSlug},
+        guest_range_slug = ${input.guestRangeSlug}, data_evento = ${input.dataEvento},
+        buffet_tier_slug = ${input.buffetTierSlug}, updated_at = now()
+    where id = ${id}
+  `;
+}
+
+/** Apaga o lead; as anotações vão junto (on delete cascade em lead_notes). */
+export async function deleteLead(id: string): Promise<void> {
+  await sql`delete from leads where id = ${id}`;
 }
 
 /** Datas de eventos fechados — usado pelo calendário do quiz pra saber o que já está reservado. */
