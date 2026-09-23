@@ -6,7 +6,9 @@ Contexto para qualquer sessão do Claude Code que trabalhe neste repositório. E
 
 Site institucional da **Rosa Buffet**, buffet e produção de eventos em Manaus-AM, com um simulador de orçamento em quiz (`/orcamento`) e um CRM interno (`/crm`) para acompanhar os leads que ele gera. Next.js 16 (App Router) + Tailwind CSS v4. O site institucional em si continua sem CMS (conteúdo/fotos vivem no repositório), mas **o projeto deixou de ser 100% estático**: há um banco de dados Postgres e Server Actions por trás do simulador e do CRM (ver seção dedicada).
 
-Publicado na Vercel: projeto `rosa-buffet`, organização `saymonabraao0000-stacks-projects`. Deploy automático a cada push em `main`. Deploys de preview de outras branches exigem login na Vercel para visualização; só a produção (branch `main`) é pública sem login.
+**NO AR em https://rosabuffeteventos.com.br desde 2026-09-23** (com e sem www), na **Cloudflare**: Worker `rosa-buffet` (conta saymonabraao0000, Workers Builds ligado ao GitHub, build `npx opennextjs-cloudflare build`, deploy `npx opennextjs-cloudflare deploy`). Por enquanto a branch de produção na Cloudflare é **`cloudflare`** — todo push nela publica. Nameservers: `armfazh.ns.cloudflare.com` / `veda.ns.cloudflare.com`. Endereço de teste: https://rosa-buffet.saymonabraao0000.workers.dev. Secrets do Worker: `DATABASE_URL`, `CRM_PASSWORD`, `SESSION_SECRET`, `NTFY_TOPIC`.
+
+A publicação antiga na **Vercel** (projeto `rosa-buffet`, org `saymonabraao0000-stacks-projects`, deploy a cada push em `main`) ainda existe: o plano Hobby não permite uso comercial, por isso a saída. O banco Neon foi criado pela integração da Vercel — a conta Vercel precisa continuar existindo (ou o banco ser transferido) enquanto o site usar esse banco. Pendente: fazer o merge da `cloudflare` na `main`, trocar a branch de produção da Cloudflare para `main` e desligar o deploy da Vercel.
 
 Repositório GitHub: `saymonabraao0000-stack/rosa-buffet`.
 
