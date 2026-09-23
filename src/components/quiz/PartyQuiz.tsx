@@ -253,7 +253,7 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
               transition={{ duration: 0.35, ease: "easeOut" }}
             >
               {step !== "welcome" && step !== "resultado" && (
-                <div className="mb-3 flex items-center justify-between">
+                <div className="reveal mb-3 flex items-center justify-between">
                   <span className="flex items-center gap-2 text-sm font-semibold text-gold">
                     {String(ANSWERABLE_STEPS.indexOf(step) + 1).padStart(2, "0")}
                     <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

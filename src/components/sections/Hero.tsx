@@ -36,7 +36,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-[520px] lg:max-w-[560px]"
+          className="reveal max-w-[520px] lg:max-w-[560px]"
         >
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
             <MapPin className="h-4 w-4" aria-hidden="true" />

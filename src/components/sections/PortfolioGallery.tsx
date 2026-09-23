@@ -101,7 +101,7 @@ export default function PortfolioGallery() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="columns-2 gap-4 md:columns-3 lg:columns-4 [&>*]:mb-4"
+          className="reveal columns-2 gap-4 md:columns-3 lg:columns-4 [&>*]:mb-4"
         >
           {visibleImages.map((img, index) => (
             <button

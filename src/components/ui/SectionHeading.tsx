@@ -23,7 +23,7 @@ export default function SectionHeading({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className={`flex flex-col gap-4 ${isCenter ? "items-center text-center" : "items-start text-left"}`}
+      className={`reveal flex flex-col gap-4 ${isCenter ? "items-center text-center" : "items-start text-left"}`}
     >
       <h2
         className={`font-display text-3xl leading-tight sm:text-4xl md:text-5xl ${

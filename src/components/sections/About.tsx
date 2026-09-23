@@ -14,7 +14,7 @@ export default function About() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-2xl"
+          className="reveal relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-2xl"
         >
           <Image
             src={aboutImage}
@@ -31,7 +31,7 @@ export default function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="flex flex-col gap-5"
+          className="reveal flex flex-col gap-5"
         >
           <span className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">
             Sobre a Rosa Buffet

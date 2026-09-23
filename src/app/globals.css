@@ -52,6 +52,17 @@ body {
   }
 }
 
+/* Elementos que entram com animação do framer-motion (fade/slide).
+   No fim da animação o framer-motion grava `transform: none; opacity: 1`
+   e o WebKit (Safari e todo navegador no iPhone) desmonta a camada de
+   composição do elemento e o repinta — nesse quadro ele some e volta
+   ("piscada" no fim da animação). Manter a camada viva evita a troca. */
+.reveal {
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
 .focus-gold:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 3px;

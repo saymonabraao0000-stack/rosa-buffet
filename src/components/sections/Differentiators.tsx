@@ -24,7 +24,7 @@ export default function Differentiators() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.5, delay: (index % 4) * 0.08, ease: "easeOut" }}
-                className="group flex flex-col gap-4 rounded-2xl border border-ink/5 bg-cream p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                className="reveal group flex flex-col gap-4 rounded-2xl border border-ink/5 bg-cream p-8 shadow-sm transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-gold transition-colors duration-300 group-hover:bg-gold group-hover:text-ink">
                   <Icon className="h-6 w-6" aria-hidden="true" />

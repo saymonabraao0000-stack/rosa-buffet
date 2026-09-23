@@ -33,7 +33,7 @@ export default function Gallery() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: (index % 8) * 0.05, ease: "easeOut" }}
-              className={`focus-gold group relative overflow-hidden rounded-xl ${
+              className={`reveal focus-gold group relative overflow-hidden rounded-xl ${
                 index % 5 === 0 ? "col-span-2 row-span-2" : ""
               }`}
               aria-label={`Ampliar imagem: ${image.alt}`}
@@ -55,7 +55,7 @@ export default function Gallery() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="mt-12 flex justify-center"
+          className="reveal mt-12 flex justify-center"
         >
           <Link
             href="/celebracoes"

@@ -19,7 +19,7 @@ export default function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="font-display text-3xl text-cream sm:text-4xl md:text-5xl"
+          className="reveal font-display text-3xl text-cream sm:text-4xl md:text-5xl"
         >
           Seu evento merece ser inesquecível.
         </motion.h2>
@@ -28,7 +28,7 @@ export default function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-          className="max-w-xl text-base leading-relaxed text-cream/75 sm:text-lg"
+          className="reveal max-w-xl text-base leading-relaxed text-cream/75 sm:text-lg"
         >
           Nossa equipe está pronta para transformar sua ideia em uma
           celebração única. Garanta sua data com um sinal de apenas R${" "}
@@ -39,7 +39,7 @@ export default function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-          className="flex flex-col items-center gap-4 sm:flex-row"
+          className="reveal flex flex-col items-center gap-4 sm:flex-row"
         >
           <WhatsAppButton
             size="lg"

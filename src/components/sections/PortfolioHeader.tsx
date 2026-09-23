@@ -19,7 +19,7 @@ export default function PortfolioHeader() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-xs font-semibold uppercase tracking-[0.35em] text-gold-soft"
+          className="reveal text-xs font-semibold uppercase tracking-[0.35em] text-gold-soft"
         >
           Portfólio de Celebrações
         </motion.span>
@@ -27,7 +27,7 @@ export default function PortfolioHeader() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.05, ease: "easeOut" }}
-          className="max-w-3xl font-display text-4xl leading-tight text-cream sm:text-5xl md:text-6xl"
+          className="reveal max-w-3xl font-display text-4xl leading-tight text-cream sm:text-5xl md:text-6xl"
         >
           Cada festa, uma história.
         </motion.h1>
@@ -35,7 +35,7 @@ export default function PortfolioHeader() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-          className="max-w-2xl text-base leading-relaxed text-cream/75 sm:text-lg"
+          className="reveal max-w-2xl text-base leading-relaxed text-cream/75 sm:text-lg"
         >
           Reunimos {total} momentos reais de celebrações que ganharam vida em
           nossos espaços — de 15 anos e casamentos a festas infantis e
@@ -45,6 +45,7 @@ export default function PortfolioHeader() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+          className="reveal"
         >
           <WhatsAppButton size="lg" label="Quero uma festa assim" />
         </motion.div>

@@ -21,7 +21,7 @@ export default function Location() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="flex flex-col justify-center gap-6 rounded-2xl bg-ink p-10 text-cream"
+            className="reveal flex flex-col justify-center gap-6 rounded-2xl bg-ink p-10 text-cream"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 text-gold">
               <MapPin className="h-6 w-6" aria-hidden="true" />
@@ -48,7 +48,7 @@ export default function Location() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="relative aspect-video w-full overflow-hidden rounded-2xl shadow-sm ring-1 ring-ink/5 lg:aspect-auto"
+            className="reveal relative aspect-video w-full overflow-hidden rounded-2xl shadow-sm ring-1 ring-ink/5 lg:aspect-auto"
           >
             {showMap ? (
               <iframe
