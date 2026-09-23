@@ -13,11 +13,11 @@ export const siteConfig = {
   url: "https://www.rosabuffet.com.br",
 
   // TODO: substituir pelo número oficial de WhatsApp da empresa, caso mude.
-  whatsappNumber: "5592994598954",
+  whatsappNumber: "5592992073047",
   whatsappDefaultMessage:
     "Olá! Gostaria de solicitar um orçamento para meu evento.",
 
-  phoneDisplay: "(92) 99459-8954",
+  phoneDisplay: "(92) 99207-3047",
 
   email: "contato@rosabuffet.com.br",
 
