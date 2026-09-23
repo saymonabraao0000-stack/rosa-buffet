@@ -10,7 +10,7 @@ export const siteConfig = {
   tagline: "Buffet e Produção de Eventos em Manaus",
   description:
     "A Rosa Buffet é referência em buffet, decoração e produção de eventos em Manaus. Solicite seu orçamento pelo WhatsApp.",
-  url: "https://www.rosabuffet.com.br",
+  url: "https://rosabuffeteventos.com.br",
 
   // TODO: substituir pelo número oficial de WhatsApp da empresa, caso mude.
   whatsappNumber: "5592992073047",
