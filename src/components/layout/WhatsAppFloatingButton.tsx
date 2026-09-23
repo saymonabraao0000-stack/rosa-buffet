@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { buildWhatsappUrl } from "@/lib/site-config";
 
 export default function WhatsAppFloatingButton() {
@@ -24,7 +24,7 @@ export default function WhatsAppFloatingButton() {
       whileTap={{ scale: 0.95 }}
       className="focus-gold fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gold text-ink shadow-[0_10px_30px_-8px_rgba(201,162,39,0.7)] sm:bottom-8 sm:right-8"
     >
-      <MessageCircle className="h-7 w-7" aria-hidden="true" />
+      <WhatsAppIcon className="h-8 w-8" aria-hidden="true" />
     </motion.a>
   );
 }

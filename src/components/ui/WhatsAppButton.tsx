@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { buildWhatsappUrl } from "@/lib/site-config";
 
 type WhatsAppButtonProps = {
@@ -39,7 +39,7 @@ export default function WhatsAppButton({
       rel="noopener noreferrer"
       className={`focus-gold inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide transition-all duration-300 hover:-translate-y-0.5 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
     >
-      {showIcon && <MessageCircle className="h-4 w-4" aria-hidden="true" />}
+      {showIcon && <WhatsAppIcon className="h-4 w-4" aria-hidden="true" />}
       {label}
     </a>
   );

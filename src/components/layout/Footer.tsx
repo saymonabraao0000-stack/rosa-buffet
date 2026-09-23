@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { MapPin, MessageCircle, Phone } from "lucide-react";
+import { MapPin, Phone } from "lucide-react";
 import Container from "@/components/ui/Container";
-import { FacebookIcon, InstagramIcon } from "@/components/ui/SocialIcons";
+import { FacebookIcon, InstagramIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
 
 export default function Footer() {
@@ -92,7 +92,7 @@ export default function Footer() {
                 aria-label="WhatsApp da Rosa Buffet"
                 className="focus-gold flex h-10 w-10 items-center justify-center rounded-full border border-cream/15 transition-colors hover:border-gold hover:text-gold"
               >
-                <MessageCircle className="h-5 w-5" aria-hidden="true" />
+                <WhatsAppIcon className="h-5 w-5" aria-hidden="true" />
               </a>
             </div>
           </div>
