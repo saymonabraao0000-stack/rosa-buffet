@@ -55,10 +55,6 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: ["/images/logo.jpg"],
   },
-  icons: {
-    icon: "/images/logo.jpg",
-    apple: "/images/logo.jpg",
-  },
   robots: {
     index: true,
     follow: true,
