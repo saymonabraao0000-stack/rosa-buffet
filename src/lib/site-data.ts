@@ -15,8 +15,8 @@ import {
  * Rosa Buffet, vindas de /public/images/eventos/ e /public/images/portfolio/.
  */
 
-// Foto real: salão próprio da Rosa Buffet totalmente montado.
-export const heroImage = "/images/eventos/salao-15-anos.jpg";
+// Foto real: vista ampla do salão próprio da Rosa Buffet, com mesas e lustre.
+export const heroImage = "/images/eventos/hero-salao.jpg";
 
 // Foto real: casamento realizado pela Rosa Buffet.
 export const aboutImage = "/images/eventos/casamento-noivos.jpg";
@@ -121,7 +121,7 @@ export const services: Service[] = [
     description:
       "Confraternizações, lançamentos e conferências com estrutura profissional completa.",
     // Foto real: salão montado com mesas e ambientação formal.
-    image: "/images/portfolio/casamentos/casamentos-04.jpg",
+    image: "/images/portfolio/casamentos/casamentos-15.jpg",
   },
   {
     slug: "cha-revelacao",

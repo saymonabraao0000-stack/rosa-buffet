@@ -60,7 +60,7 @@ export default function Navbar() {
             <Link
               key={item.href}
               href={resolveHref(item.href)}
-              className="focus-gold whitespace-nowrap text-sm font-medium uppercase tracking-wide text-cream/85 transition-colors hover:text-gold"
+              className="focus-gold whitespace-nowrap text-[15px] font-medium text-cream/85 transition-colors hover:text-gold [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]"
             >
               {item.label}
             </Link>
@@ -98,7 +98,7 @@ export default function Navbar() {
                     key={item.href}
                     href={resolveHref(item.href)}
                     onClick={() => setMenuOpen(false)}
-                    className="focus-gold text-base font-medium uppercase tracking-wide text-cream/90 transition-colors hover:text-gold"
+                    className="focus-gold text-base font-medium text-cream/90 transition-colors hover:text-gold"
                   >
                     {item.label}
                   </Link>
