@@ -4,12 +4,13 @@ import { redirect } from "next/navigation";
 import { SESSION_COOKIE_NAME, isValidSessionCookieValue } from "./session";
 
 /**
- * Confirma a sessão do CRM dentro de cada Server Action/página protegida.
+ * Confirma a sessão do CRM dentro de cada página e Server Action protegida.
  *
- * O proxy.ts já bloqueia /crm/** sem sessão válida, mas Server Actions não
- * herdam essa proteção automaticamente (são POSTs para a rota onde são
- * chamadas — um refactor que exclua essa rota do matcher do proxy remove a
- * proteção sem avisar). Por isso cada ação sensível chama isto de novo.
+ * Não existe proxy.ts/middleware: o adaptador da Cloudflare (OpenNext) não
+ * suporta o proxy em runtime Node do Next 16. A proteção do /crm é toda esta
+ * checagem — no layout de (protected), no topo de cada página (o layout não
+ * roda de novo em navegação client-side) e dentro de cada Server Action
+ * sensível (Server Actions não herdam a proteção da página).
  */
 export async function requireSession(): Promise<void> {
   const jar = await cookies();

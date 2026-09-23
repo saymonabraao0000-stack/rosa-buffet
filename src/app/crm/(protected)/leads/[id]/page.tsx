@@ -1,3 +1,4 @@
+import { requireSession } from "@/lib/crm/require-session";
 import { notFound } from "next/navigation";
 import { getLeadById } from "@/lib/crm/leads";
 import { listNotesForLead } from "@/lib/crm/notes";
@@ -33,6 +34,7 @@ export default async function CrmLeadDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireSession();
   const { id } = await params;
   const [lead, notes] = await Promise.all([getLeadById(id), listNotesForLead(id)]);
 

@@ -1,3 +1,4 @@
+import { requireSession } from "@/lib/crm/require-session";
 import Link from "next/link";
 import { getConfirmedEvents } from "@/lib/crm/leads";
 import { quizThemes } from "@/lib/quiz-data";
@@ -12,6 +13,7 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
 });
 
 export default async function CrmAgendaPage() {
+  await requireSession();
   const eventos = await getConfirmedEvents();
 
   return (

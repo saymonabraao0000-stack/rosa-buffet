@@ -1,7 +1,9 @@
+import { requireSession } from "@/lib/crm/require-session";
 import { createManualLeadAction } from "@/lib/crm/actions";
 import { guestOptions, partyPackages, quizThemes } from "@/lib/quiz-data";
 
-export default function CrmNovoLeadPage() {
+export default async function CrmNovoLeadPage() {
+  await requireSession();
   return (
     <div className="max-w-xl">
       <h1 className="font-display text-3xl text-cream">Novo lead</h1>

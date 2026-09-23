@@ -1,3 +1,4 @@
+import { requireSession } from "@/lib/crm/require-session";
 import Link from "next/link";
 import { listLeads } from "@/lib/crm/leads";
 import type { LeadFilters, LeadStatus } from "@/lib/crm/types";
@@ -32,6 +33,7 @@ export default async function CrmLeadsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await requireSession();
   const params = await searchParams;
   const filters: LeadFilters = {
     status: (params.status as LeadStatus) || undefined,

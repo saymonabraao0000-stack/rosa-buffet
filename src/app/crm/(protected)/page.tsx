@@ -1,3 +1,4 @@
+import { requireSession } from "@/lib/crm/require-session";
 import Link from "next/link";
 import { getDashboardStats } from "@/lib/crm/leads";
 
@@ -23,6 +24,7 @@ function parseISODate(iso: string) {
 }
 
 export default async function CrmDashboardPage() {
+  await requireSession();
   const stats = await getDashboardStats();
   const totalLeads = Object.values(stats.porStatus).reduce((a, b) => a + b, 0);
 
