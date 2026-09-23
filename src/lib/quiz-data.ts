@@ -22,130 +22,111 @@ export const quizThemes: QuizTheme[] = [
   { slug: "outro", label: "Corporativo / Outro" },
 ];
 
-export type GuestRange = {
+export type GuestOption = {
   slug: string;
   label: string;
-  estimateGuests: number;
+  /** null = "mais de 150" — fora das faixas com preço fechado, fica sob consulta. */
+  guests: number | null;
 };
 
-export const guestRanges: GuestRange[] = [
-  { slug: "ate-50", label: "Até 50 convidados", estimateGuests: 50 },
-  { slug: "51-100", label: "51 a 100 convidados", estimateGuests: 80 },
-  { slug: "101-150", label: "101 a 150 convidados", estimateGuests: 130 },
-  { slug: "151-250", label: "151 a 250 convidados", estimateGuests: 200 },
-  { slug: "mais-250", label: "Mais de 250 convidados", estimateGuests: 300 },
+// As faixas batem exatamente com as 4 quantidades que a Rosa Buffet
+// realmente precifica (ver partyPackages abaixo) — não são faixas
+// arbitrárias, são as únicas quantidades com preço fechado.
+export const guestOptions: GuestOption[] = [
+  { slug: "80", label: "Até 80 convidados", guests: 80 },
+  { slug: "100", label: "Até 100 convidados", guests: 100 },
+  { slug: "120", label: "Até 120 convidados", guests: 120 },
+  { slug: "150", label: "Até 150 convidados", guests: 150 },
+  { slug: "mais-150", label: "Mais de 150 convidados", guests: null },
 ];
 
 /**
- * Valores ILUSTRATIVOS, usados apenas para o simulador funcionar de ponta a
- * ponta em produção enquanto os valores reais não chegam.
- * TODO: substituir pelo preço real por convidado de cada nível de cardápio
- * da Rosa Buffet antes de tratar a estimativa exibida como confiável.
+ * Os dois pacotes fechados da Rosa Buffet — valores REAIS, informados pelo
+ * dono do negócio em 2026-08-25 (ver public/PDFs/Rosa-Buffet-Pacote-*.pdf
+ * para a lista completa do que está incluso em cada um).
+ *
+ * São pacotes fechados: cerimonial, fotografia, bolo, doces, salão,
+ * decoração, buffet, DJ e cabine fotográfica já vêm inclusos nos dois —
+ * não dá para adicionar ou remover item avulso, por isso o quiz não tem
+ * mais uma etapa de "opcionais".
  */
-export type BuffetTier = {
+export type PartyPackage = {
   slug: string;
   label: string;
-  description: string;
-  pricePerGuest: number;
+  tagline: string;
+  /** O que diferencia esse pacote do outro (não é a lista completa). */
+  highlights: string[];
+  pricesByGuests: Record<number, number>;
+  note?: string;
+  /**
+   * Se definido, o pacote só aparece no quiz quando o tema escolhido está
+   * nessa lista (ex.: Kids só faz sentido para festa infantil). Sem esse
+   * campo, o pacote aparece pra qualquer tema — é o caso do Premium e do
+   * Gold, que são genéricos.
+   */
+  themes?: string[];
 };
 
-export const buffetTiers: BuffetTier[] = [
-  {
-    slug: "essencial",
-    label: "Essencial",
-    description:
-      "Cardápio completo com entrada, prato principal e sobremesa em opções clássicas.",
-    pricePerGuest: 120,
-  },
-  {
-    slug: "completo",
-    label: "Completo",
-    description:
-      "Cardápio ampliado, estações temáticas e montagem de mesa mais elaborada.",
-    pricePerGuest: 180,
-  },
+export const partyPackages: PartyPackage[] = [
   {
     slug: "premium",
     label: "Premium",
-    description:
-      "Experiência gastronômica completa, com curadoria de chef e serviço à francesa.",
-    pricePerGuest: 260,
+    tagline: "Elegância sob medida",
+    highlights: [
+      "2 pratos quentes · 100 doces finos",
+      "Cerimonial, fotografia, bolo de 3 andares, decoração completa, DJ e cabine fotográfica inclusos",
+    ],
+    pricesByGuests: { 80: 9999, 100: 10999, 120: 12500, 150: 13999 },
+    note: "Pacote com poucas vagas — consulte a disponibilidade da sua data. Parcelamos em até 8x sem juros.",
+  },
+  {
+    slug: "gold",
+    label: "Gold",
+    tagline: "O mais completo",
+    highlights: [
+      "3 pratos quentes · 200 doces finos · open bar",
+      "Tudo do Premium, mais filmagem/book externo, mais um suco e playground/sala de jogos",
+    ],
+    pricesByGuests: { 80: 12999, 100: 13999, 120: 14999, 150: 16999 },
+  },
+  {
+    slug: "kids",
+    label: "Kids",
+    tagline: "Feito pra fazer criança sorrir",
+    highlights: [
+      "Decoração temática completa · pista de dança em LED · painel 2×2 · playground (pula-pula, casinha de bolinhas, pebolim, flíperama)",
+      "Cerimonialista e palhaço acompanhando o dia todo, além de cabine fotográfica e lembrancinhas para os convidados",
+    ],
+    pricesByGuests: { 80: 9999, 100: 10999, 120: 12500, 150: 13999 },
+    note: "Valores conforme o Pacote Kids da Rosa Buffet — consulte disponibilidade da sua data.",
+    themes: ["infantil"],
   },
 ];
 
-/** Valores ILUSTRATIVOS — mesmo aviso do cardápio acima. */
-export type Addon = {
-  slug: string;
-  label: string;
-  description: string;
-} & ({ kind: "flat"; price: number } | { kind: "perGuest"; price: number });
+export function getPackagePrice(pkgSlug: string, guests: number | null): number | null {
+  if (guests == null) return null;
+  const pkg = partyPackages.find((p) => p.slug === pkgSlug);
+  return pkg?.pricesByGuests[guests] ?? null;
+}
 
-export const addons: Addon[] = [
-  {
-    slug: "cabine-fotos",
-    label: "Cabine de fotos",
-    description: "Cabine com props e impressão na hora para os convidados.",
-    kind: "flat",
-    price: 1200,
-  },
-  {
-    slug: "dj",
-    label: "DJ e som profissional",
-    description: "Som, iluminação de pista e DJ durante todo o evento.",
-    kind: "flat",
-    price: 1800,
-  },
-  {
-    slug: "decoracao-premium",
-    label: "Decoração temática premium",
-    description: "Ambientação autoral acima do padrão incluso no cardápio.",
-    kind: "perGuest",
-    price: 25,
-  },
-  {
-    slug: "doces",
-    label: "Mesa de doces personalizada",
-    description: "Mesa de doces com identidade visual do evento.",
-    kind: "perGuest",
-    price: 18,
-  },
-  {
-    slug: "open-bar",
-    label: "Open bar / drinks especiais",
-    description: "Bar de drinks não alcoólicos e coquetéis para os convidados.",
-    kind: "perGuest",
-    price: 45,
-  },
-  {
-    slug: "cerimonialista",
-    label: "Cerimonialista dedicada",
-    description: "Acompanhamento completo do roteiro e do cronograma do dia.",
-    kind: "flat",
-    price: 2200,
-  },
-];
+/**
+ * Labels tolerantes para exibir leads antigos no CRM: leads criados antes
+ * dessa mudança de preços podem ter slugs de um formato anterior (faixas
+ * tipo "51-100", tier "essencial", addons) que não existem mais nas listas
+ * acima. Em vez de quebrar a página, essas funções caem no slug cru quando
+ * não encontram — melhor mostrar o dado bruto do que sumir com ele.
+ */
+export function getThemeLabel(slug: string | null): string | undefined {
+  if (!slug) return undefined;
+  return quizThemes.find((t) => t.slug === slug)?.label ?? slug;
+}
 
-export function calculateEstimate({
-  guests,
-  buffetTierSlug,
-  addonSlugs,
-}: {
-  guests: number;
-  buffetTierSlug: string;
-  addonSlugs: string[];
-}) {
-  const tier = buffetTiers.find((t) => t.slug === buffetTierSlug);
-  const buffetTotal = (tier?.pricePerGuest ?? 0) * guests;
-  const addonsTotal = addonSlugs.reduce((sum, slug) => {
-    const addon = addons.find((a) => a.slug === slug);
-    if (!addon) return sum;
-    return sum + (addon.kind === "flat" ? addon.price : addon.price * guests);
-  }, 0);
-  const total = buffetTotal + addonsTotal;
-  const round = (n: number) => Math.round(n / 50) * 50;
-  return {
-    total,
-    min: round(total * 0.9),
-    max: round(total * 1.1),
-  };
+export function getGuestLabel(slug: string | null): string | undefined {
+  if (!slug) return undefined;
+  return guestOptions.find((g) => g.slug === slug)?.label ?? slug;
+}
+
+export function getPartyPackageLabel(slug: string | null): string | undefined {
+  if (!slug) return undefined;
+  return partyPackages.find((p) => p.slug === slug)?.label ?? slug;
 }

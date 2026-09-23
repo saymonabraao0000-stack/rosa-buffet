@@ -11,18 +11,9 @@ import {
 } from "lucide-react";
 
 /**
- * As imagens em "/images/eventos/..." são fotos REAIS de eventos
- * realizados pela Rosa Buffet.
- *
- * Alguns cards (festas infantis, eventos corporativos, chá revelação
- * e buffet gastronômico) ainda usam imagens de banco de imagens livre
- * (Unsplash) como placeholder, pois não havia foto real disponível.
- * Para substituí-las, basta trocar a URL por um arquivo em
- * /public/images/eventos/... — nenhum outro ajuste é necessário.
+ * Todas as imagens abaixo são fotos REAIS de eventos realizados pela
+ * Rosa Buffet, vindas de /public/images/eventos/ e /public/images/portfolio/.
  */
-function unsplash(id: string, w = 1200, q = 80) {
-  return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=${q}`;
-}
 
 // Foto real: salão próprio da Rosa Buffet totalmente montado.
 export const heroImage = "/images/eventos/salao-15-anos.jpg";
@@ -100,8 +91,8 @@ export const services: Service[] = [
     title: "Festas Infantis",
     description:
       "Celebrações encantadoras e sofisticadas, com decoração exclusiva e atenção a cada detalhe.",
-    // TODO: substituir por foto real de festa infantil quando disponível.
-    image: unsplash("1558636508-e0db3814bd1d"),
+    // Foto real: decoração temática de festa infantil.
+    image: "/images/portfolio/infantil/infantil-01.jpg",
   },
   {
     slug: "casamentos",
@@ -129,16 +120,16 @@ export const services: Service[] = [
     title: "Eventos Corporativos",
     description:
       "Confraternizações, lançamentos e conferências com estrutura profissional completa.",
-    // TODO: substituir por foto real de evento corporativo quando disponível.
-    image: unsplash("1511578314322-379afb476865"),
+    // Foto real: salão montado com mesas e ambientação formal.
+    image: "/images/portfolio/casamentos/casamentos-04.jpg",
   },
   {
     slug: "cha-revelacao",
     title: "Chá Revelação",
     description:
       "Momentos únicos transformados em celebrações delicadas e cheias de emoção.",
-    // TODO: substituir por foto real de chá revelação quando disponível.
-    image: unsplash("1519225421980-715cb0215aed"),
+    // Foto real: decoração em tons de azul, próxima ao clima de um chá revelação.
+    image: "/images/portfolio/quinze-anos/quinze-anos-08.jpg",
   },
   {
     slug: "formaturas",
@@ -159,8 +150,8 @@ export const services: Service[] = [
     title: "Buffet Completo",
     description:
       "Gastronomia refinada, do coquetel de boas-vindas à sobremesa, para todos os paladares.",
-    // TODO: substituir por foto real do buffet/gastronomia quando disponível.
-    image: unsplash("1467003909585-2f8a72700288"),
+    // Foto real: mesa de doces e sobremesas servida pela Rosa Buffet.
+    image: "/images/portfolio/casamentos/casamentos-20.jpg",
   },
   {
     slug: "producao-de-eventos",
@@ -190,34 +181,6 @@ export const galleryImages: { src: string; alt: string }[] = [
   { src: "/images/eventos/casamento-bolo-verde.jpg", alt: "Bolo e decoração verde e dourada de casamento" },
   { src: "/images/eventos/casamento-noivos.jpg", alt: "Noivos em recepção elegante" },
   { src: "/images/eventos/quinze-anos-quadro.jpg", alt: "Detalhe decorativo de festa de 15 anos" },
-];
-
-export type ProcessStep = {
-  title: string;
-  description: string;
-};
-
-export const processSteps: ProcessStep[] = [
-  {
-    title: "Você entra em contato",
-    description: "Fale com nossa equipe pelo WhatsApp e conte um pouco sobre o seu evento.",
-  },
-  {
-    title: "Entendemos seu evento",
-    description: "Ouvimos seus objetivos, estilo e expectativas para desenhar a proposta ideal.",
-  },
-  {
-    title: "Elaboramos um orçamento personalizado",
-    description: "Apresentamos uma proposta sob medida, com transparência em cada detalhe.",
-  },
-  {
-    title: "Organizamos todos os detalhes",
-    description: "Cuidamos do planejamento completo, da decoração ao cardápio e cronograma.",
-  },
-  {
-    title: "Realizamos uma celebração inesquecível",
-    description: "No grande dia, nossa equipe garante que tudo aconteça com excelência.",
-  },
 ];
 
 export type FaqItem = {

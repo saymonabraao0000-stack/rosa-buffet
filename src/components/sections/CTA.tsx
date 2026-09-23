@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import { reservationDeposit } from "@/lib/availability-data";
 
 export default function CTA() {
   return (
@@ -30,7 +31,8 @@ export default function CTA() {
           className="max-w-xl text-base leading-relaxed text-cream/75 sm:text-lg"
         >
           Nossa equipe está pronta para transformar sua ideia em uma
-          celebração única.
+          celebração única. Garanta sua data com um sinal de apenas R${" "}
+          {reservationDeposit}.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 24 }}

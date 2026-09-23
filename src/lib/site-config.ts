@@ -41,23 +41,12 @@ export const siteConfig = {
     facebook: "https://www.facebook.com/",
   },
 
-  // Números institucionais em destaque na seção "Sobre".
-  // Fáceis de atualizar conforme a empresa evolui.
-  stats: [
-    { label: "Anos de experiência", value: 15, suffix: "+" },
-    { label: "Eventos realizados", value: 800, suffix: "+" },
-    { label: "Clientes satisfeitos", value: 1200, suffix: "+" },
-    { label: "Profissionais especializados", value: 40, suffix: "+" },
-  ],
-
   nav: [
     { label: "Início", href: "#inicio" },
     { label: "Sobre", href: "#sobre" },
     { label: "Serviços", href: "#servicos" },
     { label: "Celebrações", href: "/celebracoes" },
     { label: "Simulador", href: "/orcamento" },
-    { label: "Galeria", href: "#galeria" },
-    { label: "Depoimentos", href: "#depoimentos" },
     { label: "Contato", href: "#contato" },
   ],
 } as const;

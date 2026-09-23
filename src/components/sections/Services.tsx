@@ -13,7 +13,6 @@ export default function Services() {
     <section id="servicos" className="bg-cream py-24 sm:py-32">
       <Container>
         <SectionHeading
-          eyebrow="Nossos serviços"
           title="Soluções completas para cada tipo de celebração."
           description="Do planejamento à execução, cuidamos de cada detalhe para que seu evento seja perfeito."
         />

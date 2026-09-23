@@ -14,11 +14,7 @@ export default function Testimonials() {
   return (
     <section id="depoimentos" className="overflow-hidden bg-ink py-24 sm:py-32">
       <Container>
-        <SectionHeading
-          eyebrow="Depoimentos"
-          title="Quem viveu, recomenda."
-          light
-        />
+        <SectionHeading title="Quem viveu, recomenda." light />
       </Container>
 
       <div className="relative mt-16">

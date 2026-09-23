@@ -10,7 +10,6 @@ export default function Differentiators() {
     <section className="bg-gray-light py-24 sm:py-32">
       <Container>
         <SectionHeading
-          eyebrow="Nossos diferenciais"
           title="Excelência em cada detalhe do seu evento."
           description="Uma estrutura completa pensada para que você viva o seu evento sem preocupações."
         />

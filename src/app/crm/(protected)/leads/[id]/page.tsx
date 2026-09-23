@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getLeadById } from "@/lib/crm/leads";
 import { listNotesForLead } from "@/lib/crm/notes";
-import { addons, buffetTiers, guestRanges, quizThemes } from "@/lib/quiz-data";
+import { getGuestLabel, getPartyPackageLabel, getThemeLabel } from "@/lib/quiz-data";
 import StatusForm from "@/components/crm/StatusForm";
 import SinalToggle from "@/components/crm/SinalToggle";
 import NoteForm from "@/components/crm/NoteForm";
@@ -38,10 +38,13 @@ export default async function CrmLeadDetailPage({
 
   if (!lead) notFound();
 
-  const tema = quizThemes.find((t) => t.slug === lead.temaSlug);
-  const guestRange = guestRanges.find((g) => g.slug === lead.guestRangeSlug);
-  const buffetTier = buffetTiers.find((b) => b.slug === lead.buffetTierSlug);
-  const chosenAddons = addons.filter((a) => lead.addonSlugs.includes(a.slug));
+  const temaLabel = getThemeLabel(lead.temaSlug);
+  const guestLabel = getGuestLabel(lead.guestRangeSlug);
+  const pacoteLabel = getPartyPackageLabel(lead.buffetTierSlug);
+  // Leads antigos podem ter opcionais avulsos (addonSlugs) de antes do
+  // simulador virar pacotes fechados — não existe mais lista de labels
+  // pra eles, então mostramos o slug cru mesmo.
+  const addonSlugsAntigos = lead.addonSlugs ?? [];
 
   return (
     <div>
@@ -68,8 +71,8 @@ export default async function CrmLeadDetailPage({
           <section className="rounded-xl border border-cream/10 bg-cream/5 p-5">
             <h2 className="mb-4 font-display text-lg text-cream">Respostas do simulador</h2>
             <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
-              <Field label="Tema" value={tema?.label} />
-              <Field label="Convidados" value={guestRange?.label} />
+              <Field label="Tema" value={temaLabel} />
+              <Field label="Convidados" value={guestLabel} />
               <Field
                 label="Data desejada"
                 value={
@@ -80,13 +83,15 @@ export default async function CrmLeadDetailPage({
                       : "—"
                 }
               />
-              <Field label="Cardápio" value={buffetTier?.label} />
-              <div className="col-span-full">
-                <dt className="text-xs font-semibold uppercase tracking-wide text-cream/60">Opcionais</dt>
-                <dd className="mt-1 text-cream">
-                  {chosenAddons.length ? chosenAddons.map((a) => a.label).join(", ") : "Nenhum"}
-                </dd>
-              </div>
+              <Field label="Pacote" value={pacoteLabel} />
+              {addonSlugsAntigos.length > 0 && (
+                <div className="col-span-full">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-cream/60">
+                    Opcionais (cadastro antigo)
+                  </dt>
+                  <dd className="mt-1 text-cream">{addonSlugsAntigos.join(", ")}</dd>
+                </div>
+              )}
               <Field
                 label="Estimativa"
                 value={

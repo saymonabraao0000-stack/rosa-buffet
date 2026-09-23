@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 
 type SectionHeadingProps = {
-  eyebrow?: string;
   title: string;
   description?: string;
   align?: "left" | "center";
@@ -11,7 +10,6 @@ type SectionHeadingProps = {
 };
 
 export default function SectionHeading({
-  eyebrow,
   title,
   description,
   align = "center",
@@ -27,15 +25,6 @@ export default function SectionHeading({
       transition={{ duration: 0.7, ease: "easeOut" }}
       className={`flex flex-col gap-4 ${isCenter ? "items-center text-center" : "items-start text-left"}`}
     >
-      {eyebrow && (
-        <span
-          className={`text-xs font-semibold uppercase tracking-[0.3em] ${
-            light ? "text-gold-soft" : "text-gold"
-          }`}
-        >
-          {eyebrow}
-        </span>
-      )}
       <h2
         className={`font-display text-3xl leading-tight sm:text-4xl md:text-5xl ${
           light ? "text-cream" : "text-ink"

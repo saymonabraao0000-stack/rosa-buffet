@@ -10,10 +10,7 @@ export default function Location() {
   return (
     <section id="contato" className="bg-gray-light py-24 sm:py-32">
       <Container>
-        <SectionHeading
-          eyebrow="Localização"
-          title="Venha nos conhecer em Manaus."
-        />
+        <SectionHeading title="Venha nos conhecer em Manaus." />
 
         <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
           <motion.div

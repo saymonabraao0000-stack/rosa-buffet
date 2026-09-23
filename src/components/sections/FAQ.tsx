@@ -13,7 +13,7 @@ export default function FAQ() {
   return (
     <section className="bg-cream py-24 sm:py-32">
       <Container className="max-w-3xl">
-        <SectionHeading eyebrow="Dúvidas frequentes" title="Perguntas frequentes." />
+        <SectionHeading title="Perguntas frequentes." />
 
         <div className="mt-14 flex flex-col divide-y divide-ink/10 border-y border-ink/10">
           {faqItems.map((item, index) => {

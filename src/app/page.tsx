@@ -5,7 +5,6 @@ import About from "@/components/sections/About";
 import Differentiators from "@/components/sections/Differentiators";
 import Services from "@/components/sections/Services";
 import Gallery from "@/components/sections/Gallery";
-import Process from "@/components/sections/Process";
 import Testimonials from "@/components/sections/Testimonials";
 import CTA from "@/components/sections/CTA";
 import Location from "@/components/sections/Location";
@@ -21,7 +20,6 @@ export default function Home() {
         <Differentiators />
         <Services />
         <Gallery />
-        <Process />
         <Testimonials />
         <CTA />
         <Location />

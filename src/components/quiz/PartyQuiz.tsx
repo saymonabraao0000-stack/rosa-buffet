@@ -17,10 +17,9 @@ import { reservationDeposit, formatISODate } from "@/lib/availability-data";
 import { createLeadAction, updateLeadAction } from "@/lib/quiz/actions";
 import type { LeadProgressPatch } from "@/lib/crm/types";
 import {
-  addons,
-  buffetTiers,
-  calculateEstimate,
-  guestRanges,
+  getPackagePrice,
+  guestOptions,
+  partyPackages,
   quizThemes,
 } from "@/lib/quiz-data";
 
@@ -30,14 +29,13 @@ const STEPS = [
   "tema",
   "convidados",
   "data",
-  "buffet",
-  "opcionais",
+  "pacote",
   "resultado",
 ] as const;
 
 type Step = (typeof STEPS)[number];
 
-const ANSWERABLE_STEPS: Step[] = ["contato", "tema", "convidados", "data", "buffet", "opcionais"];
+const ANSWERABLE_STEPS: Step[] = ["contato", "tema", "convidados", "data", "pacote"];
 
 const currency = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -63,8 +61,7 @@ type Answers = {
   guestSlug: string | null;
   date: Date | null;
   dateSkipped: boolean;
-  buffetSlug: string | null;
-  addonSlugs: string[];
+  pacoteSlug: string | null;
 };
 
 const initialAnswers: Answers = {
@@ -75,8 +72,7 @@ const initialAnswers: Answers = {
   guestSlug: null,
   date: null,
   dateSkipped: false,
-  buffetSlug: null,
-  addonSlugs: [],
+  pacoteSlug: null,
 };
 
 type PartyQuizProps = {
@@ -90,18 +86,13 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
   const step = STEPS[stepIndex];
 
   const tema = quizThemes.find((t) => t.slug === answers.temaSlug) ?? null;
-  const guestRange = guestRanges.find((g) => g.slug === answers.guestSlug) ?? null;
-  const buffetTier = buffetTiers.find((b) => b.slug === answers.buffetSlug) ?? null;
-  const chosenAddons = addons.filter((a) => answers.addonSlugs.includes(a.slug));
+  const guestOption = guestOptions.find((g) => g.slug === answers.guestSlug) ?? null;
+  const pacote = partyPackages.find((p) => p.slug === answers.pacoteSlug) ?? null;
 
-  const estimate = useMemo(() => {
-    if (!guestRange || !buffetTier) return null;
-    return calculateEstimate({
-      guests: guestRange.estimateGuests,
-      buffetTierSlug: buffetTier.slug,
-      addonSlugs: answers.addonSlugs,
-    });
-  }, [guestRange, buffetTier, answers.addonSlugs]);
+  const price = useMemo(() => {
+    if (!pacote || !guestOption) return null;
+    return getPackagePrice(pacote.slug, guestOption.guests);
+  }, [pacote, guestOption]);
 
   const canAdvance = (() => {
     switch (step) {
@@ -116,8 +107,8 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
         return !!answers.guestSlug;
       case "data":
         return answers.dateSkipped || !!answers.date;
-      case "buffet":
-        return !!answers.buffetSlug;
+      case "pacote":
+        return !!answers.pacoteSlug;
       default:
         return true;
     }
@@ -167,21 +158,21 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
     goNext();
   };
 
-  const handleSeeEstimate = () => {
-    if (estimate) {
-      saveProgress({
-        addonSlugs: answers.addonSlugs,
-        estimateMin: estimate.min,
-        estimateMax: estimate.max,
-        currentStep: "resultado",
-      });
-    }
-    goNext();
+  const selectPackageAndAdvance = (pacoteSlug: string) => {
+    const pkgPrice = guestOption ? getPackagePrice(pacoteSlug, guestOption.guests) : null;
+    selectAndAdvance(
+      { pacoteSlug },
+      {
+        buffetTierSlug: pacoteSlug,
+        ...(pkgPrice != null ? { estimateMin: pkgPrice, estimateMax: pkgPrice } : {}),
+      },
+    );
   };
 
   // Enter avança nas duas primeiras etapas (boas-vindas e contato); as
-  // demais têm botão próprio ("Continuar") porque envolvem uma escolha que
-  // vale a pena o usuário conferir antes de seguir (data com sinal, opcionais).
+  // demais têm botão próprio ou avançam sozinhas ao escolher — a de data tem
+  // botão próprio porque tem uma nota (sinal) que vale a pena o usuário ler
+  // antes de seguir.
   useEffect(() => {
     if (step !== "welcome" && step !== "contato") return;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -202,24 +193,25 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
         : ((ANSWERABLE_STEPS.indexOf(step) + 1) / ANSWERABLE_STEPS.length) * 100;
 
   const whatsappMessage = useMemo(() => {
-    if (!estimate) return "";
+    if (!pacote || !guestOption) return "";
     const lines = [
       `Olá! Fiz uma simulação no site e gostaria de um orçamento para minha festa.`,
       answers.nome ? `Nome: ${answers.nome}` : null,
       tema ? `Tema: ${tema.label}` : null,
-      guestRange ? `Convidados: ${guestRange.label}` : null,
+      `Convidados: ${guestOption.label}`,
       answers.dateSkipped
         ? `Data: ainda não decidida`
         : answers.date
           ? `Data desejada: ${dateFormatter.format(answers.date)}`
           : null,
-      buffetTier ? `Cardápio: ${buffetTier.label}` : null,
-      `Opcionais: ${chosenAddons.length ? chosenAddons.map((a) => a.label).join(", ") : "nenhum"}`,
-      `Estimativa do simulador: ${currency.format(estimate.min)} a ${currency.format(estimate.max)}`,
-      `Podem confirmar disponibilidade e o valor exato?`,
+      `Pacote: ${pacote.label}`,
+      price != null
+        ? `Valor do pacote: ${currency.format(price)}`
+        : `Valor: sob consulta (mais de 150 convidados)`,
+      `Podem confirmar disponibilidade e fechar os detalhes?`,
     ].filter(Boolean);
     return lines.join("\n");
-  }, [answers, tema, guestRange, buffetTier, chosenAddons, estimate]);
+  }, [answers, tema, guestOption, pacote, price]);
 
   return (
     <div className="relative flex min-h-screen flex-col bg-cream">
@@ -339,6 +331,18 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
                       pressione <span className="font-semibold text-ink">Enter</span>
                     </span>
                   </div>
+                  <p className="mt-4 text-xs text-gray-dark">
+                    Ao continuar, você concorda com nossa{" "}
+                    <Link
+                      href="/privacidade"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="focus-gold font-medium text-ink underline underline-offset-2 hover:text-gold"
+                    >
+                      Política de Privacidade
+                    </Link>
+                    .
+                  </p>
                 </div>
               )}
 
@@ -393,14 +397,17 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
                     Mais ou menos quantos convidados?
                   </h2>
                   <div className="mt-6 flex flex-col gap-3">
-                    {guestRanges.map((g, i) => (
+                    {guestOptions.map((g, i) => (
                       <button
                         key={g.slug}
                         type="button"
                         onClick={() =>
                           selectAndAdvance(
                             { guestSlug: g.slug },
-                            { guestRangeSlug: g.slug, estimatedGuests: g.estimateGuests },
+                            {
+                              guestRangeSlug: g.slug,
+                              ...(g.guests != null ? { estimatedGuests: g.guests } : {}),
+                            },
                           )
                         }
                         className={`focus-gold flex items-center gap-3 rounded-xl border px-5 py-4 text-left text-ink transition-colors ${
@@ -459,99 +466,60 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
                 </div>
               )}
 
-              {step === "buffet" && (
+              {step === "pacote" && (
                 <div>
                   <h2 className="font-display text-2xl text-ink sm:text-3xl">
-                    Qual nível de cardápio combina com a festa?
-                  </h2>
-                  <div className="mt-6 flex flex-col gap-3">
-                    {buffetTiers.map((b, i) => (
-                      <button
-                        key={b.slug}
-                        type="button"
-                        onClick={() =>
-                          selectAndAdvance({ buffetSlug: b.slug }, { buffetTierSlug: b.slug })
-                        }
-                        className={`focus-gold flex items-start gap-3 rounded-xl border px-5 py-4 text-left transition-colors ${
-                          answers.buffetSlug === b.slug
-                            ? "border-gold bg-gold-soft/15"
-                            : "border-ink/10 hover:border-gold/60"
-                        }`}
-                      >
-                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border border-ink/15 text-xs font-semibold text-gray-dark">
-                          {letterFor(i)}
-                        </span>
-                        <span>
-                          <span className="block font-semibold text-ink">{b.label}</span>
-                          <span className="mt-1 block text-sm text-gray-dark">{b.description}</span>
-                          <span className="mt-1.5 block text-xs font-medium text-gold">
-                            ≈ {currency.format(b.pricePerGuest)} por convidado (estimativa)
-                          </span>
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {step === "opcionais" && (
-                <div>
-                  <h2 className="font-display text-2xl text-ink sm:text-3xl">
-                    Quer incluir algum opcional?
+                    Qual pacote combina com a festa?
                   </h2>
                   <p className="mt-2 text-sm text-gray-dark">
-                    Marque quantos quiser, ou nenhum — dá pra decidir isso depois também.
+                    Os dois já incluem cerimonial, fotografia, bolo de 3 andares, decoração
+                    completa, DJ e cabine fotográfica — a diferença está abaixo.
                   </p>
                   <div className="mt-6 flex flex-col gap-3">
-                    {addons.map((addon) => {
-                      const selected = answers.addonSlugs.includes(addon.slug);
+                    {partyPackages
+                      .filter((p) => !p.themes || p.themes.includes(answers.temaSlug ?? ""))
+                      .map((p, i) => {
+                      const pkgPrice = guestOption ? getPackagePrice(p.slug, guestOption.guests) : null;
                       return (
                         <button
-                          key={addon.slug}
+                          key={p.slug}
                           type="button"
-                          onClick={() =>
-                            setAnswers((a) => ({
-                              ...a,
-                              addonSlugs: selected
-                                ? a.addonSlugs.filter((s) => s !== addon.slug)
-                                : [...a.addonSlugs, addon.slug],
-                            }))
-                          }
+                          onClick={() => selectPackageAndAdvance(p.slug)}
                           className={`focus-gold flex items-start gap-3 rounded-xl border px-5 py-4 text-left transition-colors ${
-                            selected ? "border-gold bg-gold-soft/15" : "border-ink/10 hover:border-gold/60"
+                            answers.pacoteSlug === p.slug
+                              ? "border-gold bg-gold-soft/15"
+                              : "border-ink/10 hover:border-gold/60"
                           }`}
                         >
-                          <span
-                            className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
-                              selected ? "border-gold bg-gold text-ink" : "border-ink/20 text-transparent"
-                            }`}
-                          >
-                            <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border border-ink/15 text-xs font-semibold text-gray-dark">
+                            {letterFor(i)}
                           </span>
                           <span>
-                            <span className="block font-semibold text-ink">{addon.label}</span>
-                            <span className="mt-1 block text-sm text-gray-dark">{addon.description}</span>
-                            <span className="mt-1.5 block text-xs font-medium text-gold">
-                              {addon.kind === "flat"
-                                ? `${currency.format(addon.price)} (estimativa)`
-                                : `≈ ${currency.format(addon.price)} por convidado (estimativa)`}
+                            <span className="block font-semibold text-ink">
+                              {p.label} — {p.tagline}
                             </span>
+                            <ul className="mt-1 list-disc pl-4 text-sm text-gray-dark">
+                              {p.highlights.map((h) => (
+                                <li key={h}>{h}</li>
+                              ))}
+                            </ul>
+                            <span className="mt-1.5 block text-sm font-semibold text-gold">
+                              {pkgPrice != null
+                                ? `${currency.format(pkgPrice)} para ${guestOption?.label.toLowerCase()}`
+                                : "Sob consulta"}
+                            </span>
+                            {p.note && (
+                              <span className="mt-1 block text-xs text-gray-dark">{p.note}</span>
+                            )}
                           </span>
                         </button>
                       );
                     })}
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleSeeEstimate}
-                    className="focus-gold mt-6 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft"
-                  >
-                    Ver estimativa
-                  </button>
                 </div>
               )}
 
-              {step === "resultado" && estimate && (
+              {step === "resultado" && pacote && guestOption && (
                 <div>
                   <PartyPopper className="h-9 w-9 text-gold" aria-hidden="true" />
                   <h2 className="mt-4 font-display text-2xl text-ink sm:text-3xl">
@@ -566,7 +534,7 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
                     </div>
                     <div className="flex justify-between border-b border-ink/10 py-2 sm:justify-start sm:gap-2">
                       <dt className="font-medium text-ink">Convidados:</dt>
-                      <dd>{guestRange?.label}</dd>
+                      <dd>{guestOption?.label}</dd>
                     </div>
                     <div className="flex justify-between border-b border-ink/10 py-2 sm:justify-start sm:gap-2">
                       <dt className="font-medium text-ink">Data:</dt>
@@ -576,15 +544,9 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
                           : dateFormatter.format(answers.date)}
                       </dd>
                     </div>
-                    <div className="flex justify-between border-b border-ink/10 py-2 sm:justify-start sm:gap-2">
-                      <dt className="font-medium text-ink">Cardápio:</dt>
-                      <dd>{buffetTier?.label}</dd>
-                    </div>
                     <div className="col-span-full border-b border-ink/10 py-2">
-                      <dt className="font-medium text-ink">Opcionais:</dt>
-                      <dd className="mt-1">
-                        {chosenAddons.length ? chosenAddons.map((a) => a.label).join(", ") : "Nenhum"}
-                      </dd>
+                      <dt className="font-medium text-ink">Pacote:</dt>
+                      <dd className="mt-1">{pacote.label} — {pacote.tagline}</dd>
                     </div>
                   </dl>
 
@@ -593,7 +555,7 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
                       Valor estimado
                     </span>
                     <p className="mt-2 font-display text-3xl text-ink sm:text-4xl">
-                      {currency.format(estimate.min)} – {currency.format(estimate.max)}
+                      {price != null ? currency.format(price) : "Sob consulta"}
                     </p>
                     <p className="mt-3 text-xs leading-relaxed text-gray-dark">
                       *Estimativa gerada pelo simulador, sujeita a confirmação com

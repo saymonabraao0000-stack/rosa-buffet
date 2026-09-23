@@ -98,8 +98,13 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-cream/10 py-6 text-center text-xs text-cream/50">
-          © {year} {siteConfig.fullName}. Todos os direitos reservados.
+        <div className="flex flex-col items-center gap-2 border-t border-cream/10 py-6 text-center text-xs text-cream/50 sm:flex-row sm:justify-between">
+          <span>
+            © {year} {siteConfig.fullName}. Todos os direitos reservados.
+          </span>
+          <a href="/privacidade" className="focus-gold transition-colors hover:text-gold">
+            Política de Privacidade
+          </a>
         </div>
       </Container>
     </footer>

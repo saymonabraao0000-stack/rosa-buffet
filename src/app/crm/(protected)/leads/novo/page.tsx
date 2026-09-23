@@ -1,5 +1,5 @@
 import { createManualLeadAction } from "@/lib/crm/actions";
-import { buffetTiers, guestRanges, quizThemes } from "@/lib/quiz-data";
+import { guestOptions, partyPackages, quizThemes } from "@/lib/quiz-data";
 
 export default function CrmNovoLeadPage() {
   return (
@@ -24,18 +24,18 @@ export default function CrmNovoLeadPage() {
 
         <SelectField label="Convidados (opcional)" name="guestRangeSlug">
           <option value="">—</option>
-          {guestRanges.map((g) => (
+          {guestOptions.map((g) => (
             <option key={g.slug} value={g.slug}>
               {g.label}
             </option>
           ))}
         </SelectField>
 
-        <SelectField label="Cardápio (opcional)" name="buffetTierSlug">
+        <SelectField label="Pacote (opcional)" name="buffetTierSlug">
           <option value="">—</option>
-          {buffetTiers.map((b) => (
-            <option key={b.slug} value={b.slug}>
-              {b.label}
+          {partyPackages.map((p) => (
+            <option key={p.slug} value={p.slug}>
+              {p.label}
             </option>
           ))}
         </SelectField>

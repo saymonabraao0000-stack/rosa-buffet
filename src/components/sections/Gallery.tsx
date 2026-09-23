@@ -19,7 +19,6 @@ export default function Gallery() {
     <section id="galeria" className="bg-gray-light py-24 sm:py-32">
       <Container>
         <SectionHeading
-          eyebrow="Galeria"
           title="Momentos que já ganharam vida em nossos eventos."
           description="Uma amostra da sofisticação e do cuidado que aplicamos em cada celebração."
         />
