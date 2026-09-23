@@ -102,9 +102,15 @@ export default function Footer() {
           <span>
             © {year} {siteConfig.fullName}. Todos os direitos reservados.
           </span>
-          <a href="/privacidade" className="focus-gold transition-colors hover:text-gold">
-            Política de Privacidade
-          </a>
+          <div className="flex items-center gap-4">
+            <a href="/privacidade" className="focus-gold transition-colors hover:text-gold">
+              Política de Privacidade
+            </a>
+            {/* Atalho da equipe para o CRM interno (fora da nav pública de propósito). */}
+            <a href="/crm" rel="nofollow" className="focus-gold transition-colors hover:text-gold">
+              Área restrita
+            </a>
+          </div>
         </div>
       </Container>
     </footer>

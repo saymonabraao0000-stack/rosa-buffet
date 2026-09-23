@@ -146,7 +146,7 @@ Adicionado para dar suporte ao `/orcamento` (captura de lead) e ao `/crm` (paine
 
 `.gitignore` já ignora `.env*`, então `.env.local` nunca vai pro git.
 
-**`/crm` não está em `siteConfig.nav`** — de propósito, é uma ferramenta interna, não um link público do site. Acesso é por URL direta + login.
+**`/crm` não está em `siteConfig.nav`** — de propósito, é uma ferramenta interna. O único link para ele é um atalho discreto "Área restrita" na barra inferior do [Footer.tsx](src/components/layout/Footer.tsx) (`rel="nofollow"`, pedido do Saymon em 2026-09-23), e `robots.ts` bloqueia `/crm` para buscadores.
 
 ## Fluxo de publicação
 
