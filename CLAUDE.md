@@ -8,7 +8,7 @@ Site institucional da **Rosa Buffet**, buffet e produção de eventos em Manaus-
 
 **NO AR em https://rosabuffeteventos.com.br desde 2026-09-23** (com e sem www), na **Cloudflare**: Worker `rosa-buffet` (conta saymonabraao0000, Workers Builds ligado ao GitHub, build `npx opennextjs-cloudflare build`, deploy `npx opennextjs-cloudflare deploy`). Por enquanto a branch de produção na Cloudflare é **`cloudflare`** — todo push nela publica. Nameservers: `armfazh.ns.cloudflare.com` / `veda.ns.cloudflare.com`. Endereço de teste: https://rosa-buffet.saymonabraao0000.workers.dev. Secrets do Worker: `DATABASE_URL`, `CRM_PASSWORD`, `SESSION_SECRET`, `NTFY_TOPIC`.
 
-A publicação antiga na **Vercel** (projeto `rosa-buffet`, org `saymonabraao0000-stacks-projects`, deploy a cada push em `main`) ainda existe: o plano Hobby não permite uso comercial, por isso a saída. O banco Neon foi criado pela integração da Vercel — a conta Vercel precisa continuar existindo (ou o banco ser transferido) enquanto o site usar esse banco. Pendente: fazer o merge da `cloudflare` na `main`, trocar a branch de produção da Cloudflare para `main` e desligar o deploy da Vercel.
+A publicação antiga na **Vercel** (projeto `rosa-buffet`, org `saymonabraao0000-stacks-projects`, deploy a cada push em `main`) ainda existe: o plano Hobby não permite uso comercial, por isso a saída. Desde 2026-09-24 a branch padrão do GitHub é `cloudflare` (a `main` ficou com a versão antiga da Vercel). Pendente: desligar o projeto da Vercel.
 
 Repositório GitHub: `saymonabraao0000-stack/rosa-buffet`.
 
@@ -37,7 +37,7 @@ npm run start   # serve o build de produção
 npm run lint    # eslint
 
 npx vercel link                     # conecta esta pasta ao projeto rosa-buffet na Vercel (uma vez só)
-npx vercel env pull .env.local      # baixa DATABASE_URL/CRM_PASSWORD/SESSION_SECRET pro ambiente local
+# (vercel env pull NÃO serve mais: o banco saiu da Vercel em 2026-09-24 — o .env.local tem o DATABASE_URL do Neon próprio)
 node --env-file=.env.local db/apply.mjs   # aplica db/schema.sql no banco (idempotente, pode rodar de novo)
 ```
 
@@ -155,7 +155,7 @@ O resultado calcula uma faixa de valor estimado (`calculateEstimate` em [quiz-da
 
 Adicionado para dar suporte ao `/orcamento` (captura de lead) e ao `/crm` (painel interno). Antes disso o site era 100% estático; agora depende de Postgres em produção.
 
-**Banco**: Postgres via [Neon](https://neon.tech), provisionado como Marketplace Integration da Vercel (dashboard → projeto `rosa-buffet` → Storage → Neon). Isso injeta `DATABASE_URL` automaticamente nos ambientes Production/Preview/Development da Vercel. Localmente: `npx vercel link` uma vez, depois `npx vercel env pull .env.local` sempre que as env vars mudarem no dashboard.
+**Banco**: Postgres no **[Neon](https://neon.tech), conta própria do Saymon** (login com o GitHub saymonabraao0000-stack), projeto `rosa-buffet` (id `hidden-surf-41864124`), Postgres 18, AWS us-east-1, desde **2026-09-24**. Começou limpo: só o schema, sem copiar os leads de teste do banco antigo. O banco antigo (criado pela integração Neon da Vercel, endpoint `ep-muddy-king-…`) ficou parado como segurança — endereço guardado em `.env.antigo` (fora do git); **pode ser apagado a partir de 2026-10-01**. **Backup**: GitHub Actions `.github/workflows/backup-banco.yml` roda `pg_dump` todo dia às 3h de Manaus (e manualmente em Actions → Backup do banco); o `.dump` fica como artefato por 90 dias; usa o secret `DATABASE_URL_BACKUP` (conexão direta, sem `-pooler`). Restaurar: `pg_restore --clean --no-owner -d "<url>" arquivo.dump`.
 
 **Cliente**: [src/lib/db/client.ts](src/lib/db/client.ts) usa `@neondatabase/serverless` (não `@vercel/postgres` — esse pacote foi descontinuado pela Vercel em 2025; o caminho atual é `@neondatabase/serverless` direto). Exporta `sql`, uma tagged template. **Sem ORM** — as duas tabelas (`leads`, `lead_notes`) são pequenas o bastante pra SQL escrito à mão em [src/lib/crm/leads.ts](src/lib/crm/leads.ts) e [notes.ts](src/lib/crm/notes.ts) valer mais a pena que a cerimônia de um ORM. Filtros dinâmicos (a busca de `/crm/leads`) usam `sql.query(texto, params)` em vez da tagged template, para montar o `WHERE` condicionalmente.
 
