@@ -20,10 +20,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function OrcamentoPage() {
-  const [bookedDates, precos] = await Promise.all([
+export default async function OrcamentoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ origem?: string }>;
+}) {
+  const [bookedDates, precos, params] = await Promise.all([
     getBookedDates(),
     getSetting<PrecosSetting>("precos", getDefaultPrecos()),
+    searchParams,
   ]);
-  return <PartyQuiz bookedDates={bookedDates} precos={precos} />;
+  // ?origem=instagram (link da bio, /links) marca o lead no CRM. Validado de
+  // novo no servidor em createLead — aqui só repassa.
+  return <PartyQuiz bookedDates={bookedDates} precos={precos} origem={params.origem} />;
 }

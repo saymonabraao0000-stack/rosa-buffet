@@ -9,7 +9,8 @@ export default function WhatsAppFloatingButton() {
   const pathname = usePathname();
   // O /crm é uma ferramenta interna da equipe — o botão de "solicitar
   // orçamento" é pro visitante do site público, não faz sentido lá dentro.
-  if (pathname.startsWith("/crm")) return null;
+  // /links tem o próprio botão de WhatsApp (página da bio do Instagram).
+  if (pathname.startsWith("/crm") || pathname === "/links") return null;
 
   return (
     <motion.a

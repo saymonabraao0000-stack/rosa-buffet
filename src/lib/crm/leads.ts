@@ -1,6 +1,7 @@
 import "server-only";
 import { sql } from "@/lib/db/client";
 import { QUIZ_DONE_STEPS } from "./quiz-progress";
+import { LEAD_ORIGENS } from "./types";
 import { addDaysISO, manausTodayISO } from "./manaus-date";
 import { checklistProntos } from "./checklist";
 import type {
@@ -70,10 +71,17 @@ function mapLeadRow(row: any): Lead {
 
 // Leads criados pelo quiz do site (/orcamento) sempre nascem com origem
 // "site" — quem preenche a ficha manual/edita escolhe a origem real.
-export async function createLead(input: { nome: string; telefone: string }): Promise<{ id: string }> {
+export async function createLead(input: {
+  nome: string;
+  telefone: string;
+  origem?: string;
+}): Promise<{ id: string }> {
+  // Só aceita origens conhecidas (vem de ?origem= na URL do simulador);
+  // qualquer outra coisa vira "site".
+  const origem = input.origem && input.origem in LEAD_ORIGENS ? input.origem : "site";
   const rows = await sql`
     insert into leads (nome, telefone, source, current_step, origem)
-    values (${input.nome}, ${input.telefone}, 'quiz', 'contato', 'site')
+    values (${input.nome}, ${input.telefone}, 'quiz', 'contato', ${origem})
     returning id
   `;
   return { id: rows[0].id };

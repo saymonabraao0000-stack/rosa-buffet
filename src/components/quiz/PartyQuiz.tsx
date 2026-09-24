@@ -80,9 +80,11 @@ type PartyQuizProps = {
   bookedDates: string[];
   /** Preços vindos do setting `precos` (Configurações → Pacotes e preços). */
   precos: PrecosSetting;
+  /** De onde a pessoa veio (ex.: "instagram" pelo link da bio). */
+  origem?: string;
 };
 
-export default function PartyQuiz({ bookedDates, precos }: PartyQuizProps) {
+export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
@@ -157,6 +159,7 @@ export default function PartyQuiz({ bookedDates, precos }: PartyQuizProps) {
     const { id } = await createLeadAction({
       nome: answers.nome.trim(),
       telefone: answers.telefone.trim(),
+      origem,
     });
     setAnswers((a) => ({ ...a, leadId: id }));
     setIsSubmittingLead(false);

@@ -11,6 +11,7 @@ import type { LeadProgressPatch } from "@/lib/crm/types";
 export async function createLeadAction(input: {
   nome: string;
   telefone: string;
+  origem?: string;
 }): Promise<{ id: string | null }> {
   try {
     const { id } = await createLead(input);
