@@ -72,6 +72,7 @@ src/
     api/
       depoimentos/route.ts    # GET: lista de depoimentos aprovados (para a home)
       cron/diario/route.ts    # POST: resumo diário às 8h (Cron Trigger Cloudflare)
+- **Alerta de lead sem resposta** (2026-09-24): Cron Trigger `*/15 * * * *` → `POST /api/cron/sem-resposta` ([sem-resposta.ts](src/lib/crm/sem-resposta.ts)). Lead do simulador ainda "novo" 1h depois gera um aviso no ntfy, uma vez só (`leads.alerta_sem_resposta_em`), só entre 7h e 22h de Manaus e para leads de até 3 dias. O `custom-worker.ts` escolhe a rota pelo `event.cron`; o token dos crons fica em [cron-auth.ts](src/lib/cron-auth.ts).
     layout.tsx             # metadata, JSON-LD (schema.org LocalBusiness), fontes
     robots.ts, sitemap.ts
   components/

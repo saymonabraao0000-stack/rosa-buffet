@@ -40,7 +40,15 @@ interface MinimalExecutionContext {
   waitUntil(promise: Promise<unknown>): void;
 }
 
-async function scheduled(_event: unknown, env: CronEnv, ctx: MinimalExecutionContext): Promise<void> {
+// Cada Cron Trigger do wrangler.jsonc chama uma rota interna:
+// "0 12 * * *" (8h Manaus) → resumo diário; "*/15 * * * *" → alerta de lead sem resposta.
+const ROTA_POR_CRON: Record<string, string> = {
+  "0 12 * * *": "/api/cron/diario",
+  "*/15 * * * *": "/api/cron/sem-resposta",
+};
+
+async function scheduled(event: { cron?: string }, env: CronEnv, ctx: MinimalExecutionContext): Promise<void> {
+  const rota = ROTA_POR_CRON[event?.cron ?? ""] ?? "/api/cron/diario";
   const secret = env.SESSION_SECRET;
   const self = env.WORKER_SELF_REFERENCE;
   if (!secret || !self) {
@@ -52,11 +60,11 @@ async function scheduled(_event: unknown, env: CronEnv, ctx: MinimalExecutionCon
 
   ctx.waitUntil(
     self
-      .fetch("https://self/api/cron/diario", {
+      .fetch(`https://self${rota}`, {
         method: "POST",
         headers: { "x-cron-token": token },
       })
-      .catch((err: unknown) => console.error("cron diario: falhou ao chamar a rota", err)),
+      .catch((err: unknown) => console.error(`cron ${rota}: falhou ao chamar a rota`, err)),
   );
 }
 

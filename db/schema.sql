@@ -184,3 +184,8 @@ create table if not exists party_photos (
 
 create index if not exists party_photos_tema_visivel_created_at_idx
   on party_photos (tema, visivel, created_at desc);
+
+-- Alerta de lead sem resposta (2026-09-24): marca quando o celular já foi
+-- avisado de que o lead do simulador continua "novo" depois de 1 hora, para
+-- avisar uma vez só.
+alter table leads add column if not exists alerta_sem_resposta_em timestamptz;

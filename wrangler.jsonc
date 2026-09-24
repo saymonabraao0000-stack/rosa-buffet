@@ -22,6 +22,6 @@
   // Resumo diário às 8h de Manaus (America/Manaus, UTC-4 fixo, sem horário
   // de verão) => 12h UTC.
   "triggers": {
-    "crons": ["0 12 * * *"]
+    "crons": ["0 12 * * *", "*/15 * * * *"]
   }
 }
