@@ -16,6 +16,7 @@ import {
 } from "@/components/crm/SettingsForms";
 import { GoogleAgendaSection } from "@/components/crm/GoogleAgendaSection";
 import { isGoogleConfigured, isGoogleConnected, getGoogleCalendarSetting } from "@/lib/google-calendar";
+import { PushSettings } from "@/components/crm/PushSettings";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,13 @@ export default async function CrmConfiguracoesPage() {
       </p>
 
       <div className="mt-8 flex flex-col gap-6">
+        <Section
+          title="Avisos no celular"
+          description="Notificação nativa do CRM (Web Push) quando chega lead novo ou algo precisa de atenção — sem depender de app terceiro."
+        >
+          <PushSettings />
+        </Section>
+
         <Section
           title="Condições de pagamento"
           description="Aparece no orçamento em PDF."

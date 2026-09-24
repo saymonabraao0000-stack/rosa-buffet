@@ -196,3 +196,23 @@ alter table leads add column if not exists alerta_sem_resposta_em timestamptz;
 -- relatório considera só quem tem.
 -- ============================================================================
 alter table leads add column if not exists primeiro_contato_em timestamptz;
+
+-- ============================================================================
+-- Web Push nativo (2026-09-24) — troca os avisos por ntfy.sh (recusando com
+-- 429 a partir dos IPs compartilhados da Cloudflare) por push direto do
+-- navegador (PWA), sem serviço terceiro no meio. Só aditivo.
+-- ============================================================================
+
+-- push_subscriptions: um registro por aparelho que ativou os avisos em
+-- Configurações. `endpoint`/`p256dh`/`auth` vêm de `pushManager.subscribe()`
+-- no navegador; `aparelho` é um nome amigável derivado do userAgent.
+create table if not exists push_subscriptions (
+  id             uuid primary key default gen_random_uuid(),
+  endpoint       text unique not null,
+  p256dh         text not null,
+  auth           text not null,
+  aparelho       text,
+  created_at     timestamptz not null default now(),
+  ultimo_ok_em   timestamptz,
+  ultimo_erro    text
+);

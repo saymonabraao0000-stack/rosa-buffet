@@ -8,6 +8,7 @@ import { LEAD_ORIGENS } from "@/lib/crm/types";
 import { CHECKLIST_TOTAL_ITENS } from "@/lib/crm/checklist";
 import RecompraOfertaButton from "@/components/crm/RecompraOfertaButton";
 import AvisarEsperaButton from "@/components/crm/AvisarEsperaButton";
+import { hasAnyPushSubscription } from "@/lib/webpush";
 
 export const dynamic = "force-dynamic";
 
@@ -38,10 +39,11 @@ function parseISODate(iso: string) {
 
 export default async function CrmDashboardPage() {
   await requireSession();
-  const [stats, recompras, datasLiberadas] = await Promise.all([
+  const [stats, recompras, datasLiberadas, temAvisoAtivo] = await Promise.all([
     getDashboardStats(),
     getRecompras(),
     getDatasLiberadasComEspera(),
+    hasAnyPushSubscription(),
   ]);
   const totalLeads = Object.values(stats.porStatus).reduce((a, b) => a + b, 0);
   const porOrigemOrdenado = [...stats.porOrigem].sort((a, b) => b.total - a.total);
@@ -50,6 +52,15 @@ export default async function CrmDashboardPage() {
   return (
     <div>
       <h1 className="font-display text-3xl text-cream">Dashboard</h1>
+
+      {!temAvisoAtivo && (
+        <Link
+          href="/crm/configuracoes"
+          className="focus-gold mt-4 block rounded-lg border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-cream/80 transition-colors hover:border-gold/50"
+        >
+          Ative os avisos no celular em <span className="text-gold">Configurações</span> para não perder um lead novo.
+        </Link>
+      )}
 
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatTile label="Leads este mês" value={stats.leadsEsteMes} />
