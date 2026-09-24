@@ -16,6 +16,12 @@
       "service": "rosa-buffet"
     }
   ],
+  // Logs do Worker (Observability) ligados aqui no código: se forem ligados só
+  // pelo painel, o próximo build (Workers Builds) desliga de novo.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "images": {
     "binding": "IMAGES"
   },

@@ -1,4 +1,19 @@
 import "server-only";
+import { sql } from "@/lib/db/client";
+
+// Guarda o resultado do último envio ao ntfy no setting `ntfy_status`
+// (diagnóstico: o Worker não tem log ligado por padrão). Nunca lança.
+async function registrarStatusNtfy(tipo: string, resultado: Record<string, unknown>) {
+  try {
+    const valor = JSON.stringify({ tipo, ...resultado, em: new Date().toISOString() });
+    await sql`
+      insert into settings (key, value, updated_at) values ('ntfy_status', ${valor}::jsonb, now())
+      on conflict (key) do update set value = excluded.value, updated_at = now()
+    `;
+  } catch (err) {
+    console.error("registrarStatusNtfy falhou:", err);
+  }
+}
 
 // Aviso de lead novo no celular via ntfy (https://ntfy.sh): quem assina o
 // tópico NTFY_TOPIC no app do ntfy recebe a notificação. O nome do tópico é o
@@ -7,7 +22,10 @@ import "server-only";
 // nunca o telefone. Sem NTFY_TOPIC configurada, não faz nada.
 export async function notifyNewLead(lead: { id: string; nome: string }, siteOrigin: string) {
   const topic = process.env.NTFY_TOPIC;
-  if (!topic) return;
+  if (!topic) {
+    await registrarStatusNtfy("novo_lead", { ok: false, erro: "NTFY_TOPIC ausente no ambiente" });
+    return;
+  }
 
   const primeiroNome = lead.nome.trim().split(/\s+/)[0] || "Alguém";
   try {
@@ -23,8 +41,14 @@ export async function notifyNewLead(lead: { id: string; nome: string }, siteOrig
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) console.error("notifyNewLead: ntfy respondeu", res.status);
+    await registrarStatusNtfy("novo_lead", {
+      ok: res.ok,
+      status: res.status,
+      ...(res.ok ? {} : { resposta: (await res.text().catch(() => "")).slice(0, 300) }),
+    });
   } catch (err) {
     console.error("notifyNewLead falhou:", err);
+    await registrarStatusNtfy("novo_lead", { ok: false, erro: err instanceof Error ? err.message : String(err) });
   }
 }
 
@@ -51,9 +75,15 @@ export async function notifyText(titulo: string, corpo: string, clickUrl?: strin
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) console.error("notifyText: ntfy respondeu", res.status);
+    await registrarStatusNtfy("texto", {
+      ok: res.ok,
+      status: res.status,
+      ...(res.ok ? {} : { resposta: (await res.text().catch(() => "")).slice(0, 300) }),
+    });
     return res.ok;
   } catch (err) {
     console.error("notifyText falhou:", err);
+    await registrarStatusNtfy("texto", { ok: false, erro: err instanceof Error ? err.message : String(err) });
     return false;
   }
 }
