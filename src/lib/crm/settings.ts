@@ -87,7 +87,8 @@ export const DEFAULT_VISITAS_CONFIG: VisitasConfig = {
   horaFim: "17:00",
   duracaoMinutos: 60,
   antecedenciaMinimaHoras: 12,
-  diasFrente: 30,
+  // Um ano: muita gente marca a festa do fim do ano com meses de antecedência.
+  diasFrente: 365,
   excluirDiasOcupados: true,
 };
 

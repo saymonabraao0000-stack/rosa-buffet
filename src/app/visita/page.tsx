@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import VisitaForm from "@/components/visita/VisitaForm";
 import { getFreeSlotsForRange } from "@/lib/visitas";
+import { manausTodayISO } from "@/lib/crm/manaus-date";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,7 @@ export default async function VisitaPage({
       <Navbar />
       <main className="min-h-screen bg-ink pt-28 pb-20 text-cream">
         <VisitaForm
+          hoje={manausTodayISO()}
           dias={dias}
           nomeInicial={params.nome ?? ""}
           telefoneInicial={params.tel ?? ""}

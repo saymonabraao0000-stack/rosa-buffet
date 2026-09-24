@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Navigation } from "lucide-react";
+import { CalendarCheck, MapPin, Navigation } from "lucide-react";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { siteConfig } from "@/lib/site-config";
@@ -32,15 +32,28 @@ export default function Location() {
                 {siteConfig.address.full}
               </p>
             </div>
-            <a
-              href={siteConfig.googleMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="focus-gold inline-flex w-fit items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold tracking-wide text-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold-soft"
-            >
-              <Navigation className="h-4 w-4" aria-hidden="true" />
-              Como chegar
-            </a>
+            <p className="text-sm leading-relaxed text-cream/75">
+              Quer ver o salão antes de fechar? Escolha o dia e o horário e
+              nossa equipe te recebe pessoalmente.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="/visita"
+                className="focus-gold inline-flex w-fit items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold tracking-wide text-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold-soft"
+              >
+                <CalendarCheck className="h-4 w-4" aria-hidden="true" />
+                Agendar visita ao salão
+              </a>
+              <a
+                href={siteConfig.googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-gold inline-flex w-fit items-center gap-2 rounded-full border border-cream/25 px-6 py-3 text-sm font-semibold tracking-wide text-cream transition-colors duration-300 hover:border-gold hover:text-gold"
+              >
+                <Navigation className="h-4 w-4" aria-hidden="true" />
+                Como chegar
+              </a>
+            </div>
           </motion.div>
 
           <motion.div

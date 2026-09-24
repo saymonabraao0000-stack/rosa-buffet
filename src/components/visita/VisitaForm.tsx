@@ -5,16 +5,10 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, Check, Clock, Download, MapPin } from "lucide-react";
 import Container from "@/components/ui/Container";
+import VisitaCalendar from "@/components/visita/VisitaCalendar";
 import { createVisitaAction } from "@/lib/visita/actions";
 import { siteConfig, buildWhatsappUrl } from "@/lib/site-config";
 import type { DiaComHorarios } from "@/lib/visitas";
-
-const dateFormatterCurto = new Intl.DateTimeFormat("pt-BR", {
-  weekday: "short",
-  day: "2-digit",
-  month: "short",
-  timeZone: "America/Manaus",
-});
 
 const dateFormatterCompleto = new Intl.DateTimeFormat("pt-BR", {
   weekday: "long",
@@ -27,11 +21,13 @@ const dateFormatterCompleto = new Intl.DateTimeFormat("pt-BR", {
 type Step = "dia" | "hora" | "dados" | "sucesso";
 
 export default function VisitaForm({
+  hoje,
   dias,
   nomeInicial,
   telefoneInicial,
   origem,
 }: {
+  hoje: string;
   dias: DiaComHorarios[];
   nomeInicial: string;
   telefoneInicial: string;
@@ -166,31 +162,18 @@ export default function VisitaForm({
                   Não há horários livres no momento. Fale com a gente pelo WhatsApp.
                 </p>
               ) : (
-                <div className="mt-4 -mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
-                  {dias.map((d) => {
-                    const partes = dateFormatterCurto.formatToParts(new Date(`${d.data}T12:00:00`));
-                    const dia = partes.find((p) => p.type === "day")?.value;
-                    const mes = partes.find((p) => p.type === "month")?.value;
-                    const semana = partes.find((p) => p.type === "weekday")?.value;
-                    return (
-                      <button
-                        key={d.data}
-                        type="button"
-                        onClick={() => {
-                          setDataEscolhida(d.data);
-                          setHoraEscolhida(null);
-                          setStep("hora");
-                        }}
-                        className={`focus-gold flex shrink-0 flex-col items-center gap-0.5 rounded-xl border px-4 py-3 text-center transition-colors ${
-                          dataEscolhida === d.data ? "border-gold bg-gold/15" : "border-cream/10 hover:border-gold/60"
-                        }`}
-                      >
-                        <span className="text-[11px] uppercase text-cream/65">{semana}</span>
-                        <span className="font-display text-lg text-cream">{dia}</span>
-                        <span className="text-[11px] text-cream/65">{mes}</span>
-                      </button>
-                    );
-                  })}
+                <div className="mt-5">
+                  <VisitaCalendar
+                    hoje={hoje}
+                    diasLivres={dias.map((d) => d.data)}
+                    selecionado={dataEscolhida}
+                    onSelect={(iso) => {
+                      setDataEscolhida(iso);
+                      setHoraEscolhida(null);
+                      setErro(null);
+                      setStep("hora");
+                    }}
+                  />
                 </div>
               )}
             </motion.div>

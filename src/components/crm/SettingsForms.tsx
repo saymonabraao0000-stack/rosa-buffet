@@ -309,7 +309,7 @@ export function VisitasConfigForm({ value }: { value: VisitasConfig }) {
             id="diasFrente"
             type="number"
             min={1}
-            max={90}
+            max={400}
             name="diasFrente"
             defaultValue={value.diasFrente}
             className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
