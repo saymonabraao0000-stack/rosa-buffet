@@ -7,6 +7,7 @@ import { Calendar, Check, Clock, Download, MapPin } from "lucide-react";
 import Container from "@/components/ui/Container";
 import VisitaCalendar from "@/components/visita/VisitaCalendar";
 import { createVisitaAction } from "@/lib/visita/actions";
+import { lerOrigemSalva } from "@/lib/origem-visitante";
 import { siteConfig, buildWhatsappUrl } from "@/lib/site-config";
 import type { DiaComHorarios } from "@/lib/visitas";
 
@@ -64,7 +65,7 @@ export default function VisitaForm({
       telefone,
       data: dataEscolhida,
       hora: horaEscolhida,
-      origem,
+      origem: origem ?? lerOrigemSalva(),
       empresa,
       elapsedMs,
     });

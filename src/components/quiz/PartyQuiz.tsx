@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import GoogleRating from "@/components/ui/GoogleRating";
+import { lerOrigemSalva } from "@/lib/origem-visitante";
 import QuizCalendar from "@/components/quiz/QuizCalendar";
 import { reservationDeposit, formatISODate } from "@/lib/availability-data";
 import { createLeadAction, updateLeadAction } from "@/lib/quiz/actions";
@@ -180,7 +181,8 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
     const { id } = await createLeadAction({
       nome: answers.nome.trim(),
       telefone: answers.telefone.trim(),
-      origem,
+      // ?origem= da URL vence; senão, de onde a pessoa chegou ao site (Google, Instagram).
+      origem: origem ?? lerOrigemSalva(),
       empresa,
       elapsedMs: elapsedSince(contatoShownAtRef.current),
     });

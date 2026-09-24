@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site-config";
 import { partyPackages } from "@/lib/quiz-data";
 import WhatsAppFloatingButton from "@/components/layout/WhatsAppFloatingButton";
+import OrigemTracker from "@/components/layout/OrigemTracker";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -125,6 +126,7 @@ export default function RootLayout({
         />
         {children}
         <WhatsAppFloatingButton />
+        <OrigemTracker />
       </body>
     </html>
   );
