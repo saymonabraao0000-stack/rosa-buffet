@@ -100,11 +100,15 @@ export async function submitTestimonialResponse(
   if (!existing) return { ok: false, error: "nao_encontrado" };
   if (existing.respondidoEm) return { ok: false, error: "ja_respondido" };
 
-  await sql`
+  // O `where respondido_em is null` + `returning` fecha a corrida de dois
+  // envios simultâneos: só o primeiro atualiza a linha, o segundo volta vazio.
+  const updated = await sql`
     update testimonials
     set nome = ${input.nome}, nota = ${input.nota}, texto = ${input.texto}, respondido_em = now()
     where token = ${token} and respondido_em is null
+    returning id
   `;
+  if (updated.length === 0) return { ok: false, error: "ja_respondido" };
   return { ok: true };
 }
 

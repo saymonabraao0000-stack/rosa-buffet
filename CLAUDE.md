@@ -22,6 +22,7 @@ Não há mais publicação alternativa no GitHub Pages — existiu por um tempo 
 - Tailwind CSS `^4` — sem `tailwind.config.js`; tokens definidos em `@theme inline` dentro de [globals.css](src/app/globals.css) (cores `--color-ink`, `--color-gold`, `--color-cream` etc., fontes `--font-display`/`--font-body`)
 - `framer-motion` para animações, `lucide-react` para ícones
 - `@neondatabase/serverless` — cliente do Postgres (ver seção "Backend")
+- `pdf-lib` — geração do orçamento em PDF (JS puro, roda no Cloudflare Workers)
 - ESLint 9 (flat config) com `eslint-config-next`
 - Fontes: Playfair Display (display) + Inter (corpo), carregadas via `next/font/google` em [layout.tsx](src/app/layout.tsx)
 
@@ -31,7 +32,7 @@ Não há testes automatizados configurados neste projeto.
 
 ```bash
 npm run dev     # servidor de desenvolvimento (localhost:3000)
-npm run build   # build de produção (o que a Vercel roda)
+npm run build   # build do Next (a Cloudflare roda `npx opennextjs-cloudflare build`, que chama este)
 npm run start   # serve o build de produção
 npm run lint    # eslint
 
@@ -50,12 +51,27 @@ src/
     orcamento/page.tsx      # simulador de orçamento em quiz (ver seção dedicada) — Server Component async, busca datas reservadas no banco
     crm/                    # CRM interno, não linkado na nav pública (ver seção "Backend")
       login/page.tsx
-      (protected)/           # route group: layout chama requireSession() e monta o chrome do CRM
+      google/
+        conectar/route.ts       # inicia OAuth do Google Agenda
+        callback/route.ts       # callback do OAuth (guarda refresh token)
+      leads/
+        [id]/orcamento/route.ts # PDF do orçamento (protegida por sessão)
+        exportar.csv/route.ts   # exportação CSV dos leads (protegida por sessão)
+      (protected)/            # route group: layout chama requireSession() e monta o chrome do CRM
         page.tsx                # dashboard
         leads/page.tsx          # lista + filtros
         leads/novo/page.tsx     # cadastro manual de lead
         leads/[id]/page.tsx     # ficha do lead
-        agenda/page.tsx         # datas de eventos fechados
+        leads/[id]/editar/page.tsx # edição de lead
+        agenda/page.tsx         # calendário mensal de festas e bloqueios
+        configuracoes/page.tsx  # preços, condições, Google Agenda, modelos WhatsApp
+        depoimentos/page.tsx    # fila de depoimentos para aprovar/recusar
+        funil/page.tsx          # kanban do funil (status em colunas)
+    depoimento/
+      [token]/page.tsx        # página pública de captação de depoimento (sem autenticação)
+    api/
+      depoimentos/route.ts    # GET: lista de depoimentos aprovados (para a home)
+      cron/diario/route.ts    # POST: resumo diário às 8h (Cron Trigger Cloudflare)
     layout.tsx             # metadata, JSON-LD (schema.org LocalBusiness), fontes
     robots.ts, sitemap.ts
   components/
@@ -71,6 +87,8 @@ src/
     testimonials-data.ts       # lista gerada das capturas de depoimentos reais (ver seção "Fotos")
     quiz-data.ts              # temas/faixas de convidados/cardápio/opcionais do simulador (preços ilustrativos — ver Pendências)
     availability-data.ts       # só reservationDeposit (R$500, valor real) e o helper formatISODate — datas reservadas de verdade vêm do banco agora
+    notify.ts                  # envia notificação via ntfy quando há novo lead
+    google-calendar.ts         # integração com Google Calendar API (criar/atualizar/apagar eventos)
     db/client.ts               # cliente Postgres (Neon), singleton exportado como `sql`
     crm/
       types.ts                   # Lead, LeadStatus, LeadFilters etc.
@@ -79,6 +97,19 @@ src/
       session.ts                 # assina/valida o cookie de sessão (HMAC, node:crypto puro)
       require-session.ts         # checagem de sessão chamada dentro de cada Server Action sensível
       actions.ts                 # Server Actions do CRM (login, logout, status, sinal, notas, lead manual)
+      settings.ts                # get/set das configurações do banco (preços, Google, etc) com fallback
+      settings-actions.ts        # Server Actions para editar configurações em Configurações
+      testimonials.ts            # consulta/escrita de depoimentos
+      testimonial-actions.ts     # Server Actions para pedidos/aprovação de depoimentos
+      google-actions.ts          # Server Actions para OAuth do Google Agenda
+      agenda-actions.ts          # Server Actions para bloquear/desbloquear datas
+      checklist.ts               # helpers para a festa (itens do checklist)
+      funil.ts                   # helpers do funil kanban (cálculo de colunas, contagens)
+      daily.ts                   # montagem do resumo diário (retornos, recompras, datas liberadas)
+      login-attempts.ts          # trava de login por IP (5 erros em 15 min)
+      manaus-date.ts             # conversões de data/hora para fuso de Manaus
+      whatsapp.ts                # helpers para URLs e templates de WhatsApp
+      phone-mask.ts              # máscara de telefone
     quiz/actions.ts             # Server Actions públicas chamadas pelo quiz (createLeadAction, updateLeadAction)
 db/
   schema.sql                 # schema do Postgres (tabelas leads e lead_notes), fonte da verdade
@@ -128,7 +159,14 @@ Adicionado para dar suporte ao `/orcamento` (captura de lead) e ao `/crm` (paine
 
 **Cliente**: [src/lib/db/client.ts](src/lib/db/client.ts) usa `@neondatabase/serverless` (não `@vercel/postgres` — esse pacote foi descontinuado pela Vercel em 2025; o caminho atual é `@neondatabase/serverless` direto). Exporta `sql`, uma tagged template. **Sem ORM** — as duas tabelas (`leads`, `lead_notes`) são pequenas o bastante pra SQL escrito à mão em [src/lib/crm/leads.ts](src/lib/crm/leads.ts) e [notes.ts](src/lib/crm/notes.ts) valer mais a pena que a cerimônia de um ORM. Filtros dinâmicos (a busca de `/crm/leads`) usam `sql.query(texto, params)` em vez da tagged template, para montar o `WHERE` condicionalmente.
 
-**Schema**: [db/schema.sql](db/schema.sql) é a fonte da verdade — não há ferramenta de migração. Pra aplicar: `node --env-file=.env.local db/apply.mjs` (idempotente, usa `create table if not exists`), ou colar o SQL direto no SQL Editor do Neon (Vercel → Storage → Neon → "Open in Neon Console"). Duas tabelas: `leads` (contato, origem quiz/manual, status do funil, todas as respostas do quiz, `current_step`, `sinal_pago`) e `lead_notes` (anotações datadas, sem coluna de autor — login único, não por pessoa).
+**Schema**: [db/schema.sql](db/schema.sql) é a fonte da verdade — não há ferramenta de migração. Pra aplicar: `node --env-file=.env.local db/apply.mjs` (idempotente, usa `create table if not exists`), ou colar o SQL direto no SQL Editor do Neon (Vercel → Storage → Neon → "Open in Neon Console"). **Regra obrigatória**: o banco só recebe mudanças **aditivas** (tabelas novas, colunas novas com `if not exists`) no fim do arquivo, nunca `drop`, nunca alterar/remover coluna ou constraint existente. Tabelas:
+- `leads`: contato, origem (site/instagram/etc), status do funil, respostas do quiz, `current_step`, `sinal_pago`, e colunas novas — `retornar_em` (lembrete), `origem` (rastreamento), `valor_fechado/sinal/pago` (financeiro), `pagamento_final_em`, `checklist` (festa), `recompra_avisada_em` (controle de recompra), `google_event_id` (sincronização).
+- `lead_notes`: anotações datadas (sem autor — login único, não por pessoa).
+- `settings` (novo): configurações editáveis (preços, condições de pagamento, link de avaliação, modelos de WhatsApp, tokens Google).
+- `blocked_dates` (novo): datas bloqueadas manualmente (entram junto em `getBookedDates()` para o simulador).
+- `waitlist` (novo): lista de espera para datas ocupadas.
+- `testimonials` (novo): depoimentos pendentes/aprovados/recusados com token público.
+- `login_attempts` (novo): registra falhas de login por IP para trava de 15 min após 5 erros em 15 min.
 
 **Server Actions em vez de API routes**: todas as mutações (criar/atualizar lead, login/logout, mudar status, marcar sinal pago, anotar, cadastro manual) são `"use server"` — chamadas direto de componentes cliente (`PartyQuiz.tsx`, os componentes em `src/components/crm/`) sem precisar de `route.ts`. Duas famílias:
 - [src/lib/quiz/actions.ts](src/lib/quiz/actions.ts) — públicas, sem checagem de sessão (é o site público respondendo o quiz).
@@ -138,37 +176,74 @@ Adicionado para dar suporte ao `/orcamento` (captura de lead) e ao `/crm` (paine
 
 **Sem `proxy.ts`/`middleware.ts`, de propósito** (removido em 2026-09-23 na migração para a Cloudflare): o adaptador `@opennextjs/cloudflare` ainda não suporta o proxy em runtime Node do Next 16. A proteção do `/crm` ficou toda no `requireSession()` (layout + cada página + cada Server Action). Não recriar o `proxy.ts` enquanto o site rodar na Cloudflare.
 
-**Env vars necessárias** (Vercel dashboard → Settings → Environment Variables, todas em Production/Preview/**Development** — sem marcar Development, `vercel env pull` não traz pro `.env.local`):
+**Env vars necessárias**: desde a migração para Cloudflare (2026-09-23), as env vars **não estão mais na Vercel**, mas no **Worker `rosa-buffet` da Cloudflare** (Cloudflare Dashboard → Workers & Pages → rosa-buffet → Settings → **Variables and Secrets**). O `.env.local` (ignorado por `.gitignore`) aponta para o banco de **PRODUÇÃO** — use `npx vercel env pull .env.local` para trazer `DATABASE_URL` localmente se precisar (só se houver integração Neon ativa na Vercel, senão coloque a URL do banco manualmente).
 
-| Nome | Pra quê |
-|---|---|
-| `DATABASE_URL` | Injetada automaticamente pela integração Neon |
-| `CRM_PASSWORD` | Senha compartilhada de `/crm/login` |
-| `SESSION_SECRET` | Chave HMAC do cookie de sessão — gerar com `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` |
-| `NTFY_TOPIC` | Tópico do [ntfy](https://ntfy.sh) que recebe o aviso de lead novo ([src/lib/notify.ts](src/lib/notify.ts)). O nome é o segredo. Sem ela, o site só não avisa. Fica como Secret no Worker da Cloudflare |
+| Nome | Tipo | Pra quê |
+|---|---|---|
+| `DATABASE_URL` | Env var | URL de conexão do Postgres (Neon) — para desenvolvimento local, puxada via `vercel env pull`. Em produção é Secret do Worker rosa-buffet na Cloudflare (já cadastrado). |
+| `CRM_PASSWORD` | Secret | Senha compartilhada de `/crm/login` — trocar valor antes de produção |
+| `SESSION_SECRET` | Secret | Chave HMAC do cookie de sessão e do token do cron — gerar com `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` |
+| `NTFY_TOPIC` | Secret | Tópico do [ntfy.sh](https://ntfy.sh) que recebe avisos de lead novo e resumo diário. O nome é o segredo. Sem ela, avisos não são enviados. |
+| `GOOGLE_CLIENT_ID` | Secret | ID do cliente OAuth 2.0 do Google Cloud (ativação em [Planos/google-agenda-ativacao.md](Planos/google-agenda-ativacao.md)). Sem ela, botão "Conectar Google Agenda" fica desabilitado. |
+| `GOOGLE_CLIENT_SECRET` | Secret | Chave secreta do cliente OAuth 2.0 do Google Cloud. Sem ela, idem. |
+| `SITE_ORIGIN` | Env var (opcional) | Origin completo do site (ex: `https://rosabuffeteventos.com.br`), usado em callbacks. Se vazio, assume `https://rosabuffeteventos.com.br`. |
 
 `.gitignore` já ignora `.env*`, então `.env.local` nunca vai pro git.
 
 **`/crm` não está em `siteConfig.nav`** — de propósito, é uma ferramenta interna. O único link para ele é um atalho discreto "Área restrita" na barra inferior do [Footer.tsx](src/components/layout/Footer.tsx) (`rel="nofollow"`, pedido do Saymon em 2026-09-23), e `robots.ts` bloqueia `/crm` para buscadores.
 
-**Recursos do CRM adicionados em 2026-09-23**: editar lead (`/crm/leads/[id]/editar`, campos compartilhados em [LeadFields.tsx](src/components/crm/LeadFields.tsx) com o cadastro manual) e excluir lead (botão com confirmação na ficha; as anotações vão junto por `on delete cascade`). O botão "Abrir WhatsApp" da ficha já abre com a primeira mensagem escrita ([src/lib/crm/whatsapp.ts](src/lib/crm/whatsapp.ts)). Quando o simulador cria um lead, `createLeadAction` dispara um aviso no celular via ntfy com `after()` (depois da resposta, sem atrasar o quiz) — só primeiro nome + link da ficha, nunca o telefone, porque o ntfy.sh é um serviço público. Quem recebe: Saymon (teste) e depois a Rosilene, assinando o tópico `NTFY_TOPIC` no app do ntfy. Follow-up de quem parou no meio: `current_step` guarda a última etapa respondida (o lead já nasce com `contato`); "pacote"/"resultado" = viu o orçamento, qualquer outra = parou no meio ([src/lib/crm/quiz-progress.ts](src/lib/crm/quiz-progress.ts)). A lista tem o filtro "Simulação → Parou no meio" e mostra em que etapa a pessoa parou; o WhatsApp desses leads sai com uma mensagem de retomada.
+## Recursos do CRM (setembro/2026)
+
+O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-melhorias-2026-09-24.md`) as seguintes capacidades (todos os itens da lista abaixo):
+
+1. **Lembrete de retorno** — data + atalhos (amanhã, 3 dias, 1 semana, limpar) na ficha; Dashboard mostra retornos de hoje/atrasados; Lista tem filtro.
+2. **Modelos de WhatsApp editáveis** — menu "Mais mensagens" na ficha com textos por fase (primeiro contato, retomar simulação, cobrar resposta, reserva confirmada, lembrete de saldo, pós-festa); variáveis (`{nome}`, `{tema}`, `{data}`, `{valor}`, etc) editáveis em Configurações.
+3. **Origem do lead** — rastreamento: `site`, `instagram`, `indicacao`, `google`, `whatsapp`, `passou_na_frente`, `outro`. Quiz grava `site` por padrão. Dashboard mostra distribuição por origem (% dos fechados).
+4. **Financeiro** — na ficha de festa fechada: valor fechado, sinal (default R$ 500), valor já pago, data pagamento final. Dashboard: faturamento do mês + a receber.
+5. **Agenda em calendário** — `/crm/agenda` monta calendário mensal; festas fechadas em dourado, bloqueios em cinza; clicar em dia livre → bloquear (com motivo); em bloqueado → desbloquear. `getBookedDates()` inclui bloqueios.
+6. **Trava de login** — 5 erros em 15 min → bloqueia 15 min. Registra IP do header `cf-connecting-ip` (fallback `x-forwarded-for`).
+7. **App no celular** — PWA manifest em `/crm` (nome "Rosa Buffet CRM", ícone, `display: standalone`). Sem service worker.
+8. **Festa do ano que vem** — festas infantil/aniversário/15 anos (temas repetíveis) com 1 ano completo em até 2 meses aparecem no dashboard; ao marcar, grava `recompra_avisada_em`. Entra no resumo diário.
+9. **Lista de espera** — quando data já está ocupada, ficha mostra "pôr na lista de espera". Agenda mostra espera por dia. Data liberada → alerta no dashboard com WhatsApp pronto.
+10. **Orçamento em PDF** — rota `GET /crm/leads/[id]/orcamento.pdf` (protegida por sessão), gerada com `pdf-lib`. Botão na ficha. Acentos em português aparecem correto.
+11. **Depoimentos com moderação** — na ficha (festas fechadas): "Pedir depoimento" gera token, link público `/depoimento/[token]` (nome, nota 1–5, texto, consentimento). CRM: `/crm/depoimentos` aprova/recusa. Site: seção nova (só aprovados) junto ao carrossel de prints, carregada via `GET /api/depoimentos`.
+12. **Preços e pacotes editáveis** — página `/crm/configuracoes`: tabela preços × pacotes × convidados, notas dos pacotes. Setting `precos` com fallback. `/orcamento` busca do banco dinamicamente.
+13. **Resumo diário às 8h** — Cron Trigger Cloudflare (`0 12 * * *` em UTC = 8h de Manaus). Monta: retornos de hoje/atrasados, festas da semana, leads novos 24h, recompras, datas liberadas → envia via ntfy se houver algo.
+14. **Google Agenda (OAuth)** — em Configurações: "Conectar Google Agenda" (OAuth 2.0, escopo `calendar.events`, `offline`). Callback guarda refresh token. Festa fechada com data → cria/atualiza evento de dia inteiro no Google; sai de fechado → apaga. Sem credenciais, botão desabilitado. (Guia de ativação: [Planos/google-agenda-ativacao.md](Planos/google-agenda-ativacao.md).)
+15. **Checklist da festa** — na ficha de festa fechada: cardápio, bolo, decoração, nº final convidados, horário, degustação, fornecedores/obs. Itens marcáveis, indicador "3/7 prontos" na agenda e dashboard.
+16. **Funil em colunas (kanban)** — `/crm/funil`: colunas por status; arrastar no computador, botão "Mover…" no celular. Perdido pede motivo.
+18. **Exportar CSV** — botão "Exportar CSV" na lista de leads (respeita filtros), rota `GET /crm/leads/exportar.csv` (UTF-8 com BOM, separador `;`).
+19. **Lead duplicado** — quando quiz cria lead com telefone igual a outro dos últimos 90 dias, marca na ficha e lista "Possível duplicado de {nome}" com link. Sem mesclar automático.
+
+**Item 17 (login por pessoa)** ficou para depois por decisão do Saymon em 2026-09-23 — mantém a senha única.
 
 ## Fluxo de publicação
 
-- Push em `main` → build automático na Vercel → publica em produção. Não precisa de passo manual.
-- Previews de outras branches existem mas pedem login Vercel pra ver.
-- Não há `vercel.json` no repositório — toda configuração de projeto/domínio/env vars da Vercel vive no dashboard, fora do controle de versão.
+**Produção é a branch `cloudflare`** na Cloudflare (não mais `main` na Vercel). Todo push em `cloudflare` dispara o build do OpenNext + deploy automático no Worker `rosa-buffet`. Não precisa de passo manual.
+
+- O Next roda via OpenNext (Cloudflare Workers); o `custom-worker.ts` é o `main` do wrangler e inclui o handler do cron diário (item 13).
+- Desenvolvimento: `npm run dev` (localhost:3000).
+- Build/teste local: `npx opennextjs-cloudflare build` + `npx wrangler dev` (simula Workers localmente).
+- Deploy: `npx opennextjs-cloudflare deploy` (ou apenas push em `cloudflare`).
+- Pendente: fazer merge da `cloudflare` na `main` e trocar a branch padrão do repo pra `cloudflare`.
 
 ## Pendências / TODOs em aberto
 
-- **Domínio definitivo: `rosabuffeteventos.com.br`** (sem o "e" do meio). **Registrado em 2026-09-23, vence em 2027-09-23** (renovação anual, paga por Pix pela dona). Titular: **CPF da Rosilene Moreira de Paula**, a dona (a ideia era o CNPJ do MEI 55.500.499/0001-98, mas saiu no CPF — é a mesma pessoa, deixado assim). Conta dela no Registro.br: ID `ROMPA342`, e-mail rosabuffet26@gmail.com. Contato técnico ficou `ROMPA342` — pendente trocar para o ID do Saymon. DNS ainda nos servidores do Registro.br (a/b.auto.dns.br), DNSSEC desligado. **Não usar `rosabuffet.com.br`**: é de OUTRO Rosa Buffet (titular Roselina Soares de Oliveira Barbeito). A dona é a mãe da Allyne, namorada do Saymon; o contato com ela passa pela Allyne. `siteConfig.url` em [site-config.ts:13](src/lib/site-config.ts#L13) e `email` ainda apontam para `rosabuffet.com.br` — trocar para `https://rosabuffeteventos.com.br` (sem www; o www redireciona) quando o domínio estiver apontado. Esse valor alimenta `canonical`, `sitemap.ts`, `robots.ts` e as meta tags Open Graph/Twitter em `layout.tsx`. Hospedagem decidida: Cloudflare Workers + OpenNext (branch `cloudflare`, Worker `rosa-buffet`, no ar em https://rosa-buffet.saymonabraao0000.workers.dev desde 2026-09-23); falta apontar o domínio e fazer o merge na `main`.
+- **Cadastrar env vars na Cloudflare** (Workers & Pages → rosa-buffet → Settings → Variables and Secrets):
+  - `NTFY_TOPIC` — tópico do ntfy.sh para avisos de lead novo e resumo diário. Sem ela, avisos não são enviados mas o site segue funcionando.
+  - `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` — para ativar a integração do Google Agenda (guia: [Planos/google-agenda-ativacao.md](Planos/google-agenda-ativacao.md)).
+- **Ativar Google Agenda** — após cadastrar as credenciais acima: Saymon criar projeto + OAuth no Google Cloud Console, depois Rosilene conecta em `/crm/configuracoes` e clica "Sincronizar agora" pra criar eventos das festas fechadas existentes. Guia completo: [Planos/google-agenda-ativacao.md](Planos/google-agenda-ativacao.md).
+- **Preencher configurações em `/crm/configuracoes`**:
+  - Link de avaliação do Google (para incluir na mensagem pós-festa).
+  - Revisar/ajustar preços dos pacotes (entrada inicial em [quiz-data.ts](src/lib/quiz-data.ts), agora editável no banco).
+  - Revisar/ajustar condições de pagamento (padrão: "Sinal de R$ 500 na reserva da data; restante até 7 dias antes da festa.").
+- **Domínio definitivo: `rosabuffeteventos.com.br`** — **Registrado em 2026-09-23, vence em 2027-09-23** (renovação anual, paga por Pix pela dona). Titular: **CPF da Rosilene Moreira de Paula** (CNPJ não era o caminho). Conta Registro.br: ID `ROMPA342`. Contato técnico ainda `ROMPA342` — pendente trocar para ID do Saymon. DNS nos servidores do Registro.br (a/b.auto.dns.br). **Não usar `rosabuffet.com.br`**: é de outro buffet (Roselina Soares). `siteConfig.url` em [site-config.ts:13](src/lib/site-config.ts#L13) ainda aponta `rosabuffet.com.br` — trocar para `https://rosabuffeteventos.com.br` quando o domínio estiver apontado. Hospedagem: Cloudflare Workers + OpenNext, branch `cloudflare`, Worker `rosa-buffet` (no ar em https://rosa-buffet.saymonabraao0000.workers.dev desde 2026-09-23). Pendente: apontar domínio + merge `cloudflare` → `main` + trocar branch padrão.
+- **Merge das branches** — `cloudflare` tem a produção funcionando; falta fazer merge na `main` (a Vercel ainda está lá mas sem receber push).
 - **Links placeholder em `site-config.ts`**:
-  - `social.facebook` ([site-config.ts:41](src/lib/site-config.ts#L41)) tem TODO explícito — aponta para `https://www.facebook.com/`, a home genérica do Facebook, não a página da empresa.
-  - `googleMapsUrl`/`googleMapsEmbedUrl` ([site-config.ts:33-36](src/lib/site-config.ts#L33-L36)) **não têm TODO no código**, mas são apenas uma URL de busca do Google Maps montada a partir do endereço em texto (`query=Rua+São+João...`), não um link para uma ficha/perfil real do Google Business da Rosa Buffet. Funciona, mas vale trocar por um link de perfil real quando existir um.
-- Vários cards de serviço em [site-data.ts](src/lib/site-data.ts) (festas infantis, eventos corporativos, chá revelação, buffet completo) ainda usam fotos de banco de imagens (Unsplash) como placeholder — cada um tem um TODO próprio no código indicando isso; substituir por fotos reais quando disponíveis, adicionando o arquivo em `public/images/eventos/` e trocando a URL.
-- **Preços ilustrativos no simulador `/orcamento`**: o preço por convidado de cada nível de cardápio (`buffetTiers`) e o valor de cada opcional (`addons`), ambos em [quiz-data.ts](src/lib/quiz-data.ts), são valores inventados só para o cálculo funcionar de ponta a ponta — há um TODO explícito no topo de cada um. Cada card no quiz já mostra "(estimativa)" ao lado do valor, e o resultado final tem um aviso de que é sujeito a confirmação, mas os números em si **não são reais** e precisam ser substituídos pelos valores de custo por convidado da Rosa Buffet antes de tratar a estimativa como confiável.
-- ~~Leads fictícios de demonstração~~: **apagados em 2026-09-23** a pedido do Saymon, junto com os testes (14 leads). O banco começou zerado para a operação real.
-- **Senha do CRM é fraca**: `CRM_PASSWORD` está como `"rosa"` — fácil de adivinhar, sem limite de tentativas de login. Foi a senha que o dono escolheu de propósito (queria algo simples), mas veio com aviso explícito de que deveria trocar antes do CRM ter dado de cliente real valendo a pena proteger. Trocar em Vercel → projeto rosa-buffet → Settings → Environment Variables → `CRM_PASSWORD` (nos três ambientes) + `vercel env pull .env.local` local.
-- **Sem aviso de privacidade/LGPD**: o quiz coleta nome e telefone de visitantes reais e grava num banco — dado pessoal, sob a LGPD. Hoje não existe nenhuma política de privacidade nem aviso de consentimento na etapa de contato do quiz. Ainda não foi pedido para o dono, mas é uma lacuna real, não só estética.
-- **Sem proteção contra spam nas Server Actions públicas do quiz** (`createLeadAction`/`updateLeadAction`): qualquer um pode chamar essas ações diretamente via POST (é como Server Actions funcionam — não há como restringir isso por rota). Dado o porte do negócio, não foi adicionado CAPTCHA/rate limit; um honeypot simples seria a mitigação mais barata se leads falsos virarem um problema real no CRM.
-- **`updated_at` de `leads` é setado manualmente em cada `UPDATE`** (não há trigger no banco) — se alguém adicionar uma nova função de escrita em [leads.ts](src/lib/crm/leads.ts), precisa lembrar de incluir `updated_at = now()` também.
+  - `social.facebook` ([site-config.ts:41](src/lib/site-config.ts#L41)): aponta para home genérica do Facebook, não a página real.
+  - `googleMapsUrl`/`googleMapsEmbedUrl` ([site-config.ts:33-36](src/lib/site-config.ts#L33-L36)): URL de busca por endereço em texto, não um perfil real do Google Business.
+- **Cards de serviço com fotos placeholder** — alguns em [site-data.ts](src/lib/site-data.ts) (infantil, corporativo, chá revelação) usam Unsplash; trocar por fotos reais quando disponíveis.
+- **Preços no simulador** — `quiz-data.ts` ainda tem fallback com valores ilustrativos, agora também editável em `/crm/configuracoes` (setting `precos`).
+- **Sem aviso de privacidade/LGPD** — quiz coleta nome/telefone e grava no banco. Não existe política de privacidade nem aviso de consentimento na etapa de contato. Lacuna real não resolvida.
+- **Sem proteção contra spam** — `createLeadAction`/`updateLeadAction` do quiz podem ser chamadas diretamente via POST. Sem CAPTCHA/rate limit; honeypot seria a mitigação mais barata se leads falsos virarem problema.
+- **`updated_at` é manual** — toda escrita em `leads` deve incluir `updated_at = now()` (sem trigger). Se adicionar função nova em [leads.ts](src/lib/crm/leads.ts), lembrar disso.
