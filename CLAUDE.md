@@ -241,6 +241,7 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 - **Links placeholder em [site-config.ts](src/lib/site-config.ts)**:
   - `googleMapsUrl`/`googleMapsEmbedUrl`: busca por endereço em texto — trocar pelo link do Perfil da Empresa quando houver acesso.
 - **Fotos pedidas à família (2026-09-24)** — evento corporativo, chá revelação, aniversário adulto (só há 2), salão, comida/buffet servido, equipe. Hoje `/festas/eventos-corporativos-manaus` e `/festas/cha-revelacao-manaus` e os cards de serviço correspondentes em [site-data.ts](src/lib/site-data.ts) usam fotos de outros temas.
+- **Anúncios na Meta (plano futuro, 2026-09-24)** — Saymon quer rodar anúncios das festas. O Facebook atual (`rosa.buffet.77`) é perfil pessoal; antes dos anúncios: criar Página de empresa (e trocar `social.facebook`), ligar ao Instagram, Gerenciador de Negócios, e instalar o Pixel da Meta no site. As páginas `/festas/*` e `/orcamento` podem servir de destino; página de vendas dedicada só se a campanha pedir.
 - **Vercel** — a partir de 2026-10-01, apagar o projeto antigo junto com o banco antigo da integração Neon.
 
 ## Google e SEO (fora do site)
