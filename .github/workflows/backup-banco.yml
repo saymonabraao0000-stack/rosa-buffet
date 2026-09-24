@@ -1,0 +1,50 @@
+# Backup diário do banco da Rosa Buffet (Neon Postgres).
+# Roda todo dia às 3h de Manaus (7h UTC) e também manualmente (aba Actions →
+# "Backup do banco" → Run workflow). O arquivo .dump fica guardado como
+# artefato por 90 dias (aba Actions → execução → Artifacts).
+#
+# Precisa do secret DATABASE_URL_BACKUP (Settings → Secrets and variables →
+# Actions): o endereço do banco SEM o "-pooler" no host (conexão direta —
+# o pg_dump não funciona bem pelo pooler).
+#
+# Restaurar: pg_restore --clean --no-owner -d "<endereço do banco>" backup.dump
+name: Backup do banco
+
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Instala o cliente do PostgreSQL 18
+        run: |
+          sudo apt-get install -y curl ca-certificates
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-18
+
+      - name: Gera o backup
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_BACKUP }}
+        run: |
+          test -n "$DATABASE_URL" || { echo "Falta o secret DATABASE_URL_BACKUP"; exit 1; }
+          FILE="rosa-buffet-$(date -u +%Y-%m-%d).dump"
+          /usr/lib/postgresql/18/bin/pg_dump --format=custom --no-owner --no-privileges --file="$FILE" "$DATABASE_URL"
+          ls -lh "$FILE"
+          # Confere que o arquivo abre e tem as tabelas principais.
+          /usr/lib/postgresql/18/bin/pg_restore --list "$FILE" | grep -E "TABLE DATA public (leads|settings)"
+          echo "FILE=$FILE" >> "$GITHUB_ENV"
+
+      - name: Guarda o backup por 90 dias
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.FILE }}
+          path: ${{ env.FILE }}
+          retention-days: 90
+          if-no-files-found: error
