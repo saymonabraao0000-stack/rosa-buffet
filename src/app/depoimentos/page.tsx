@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageHeader from "@/components/layout/PageHeader";
+import GoogleRating from "@/components/ui/GoogleRating";
 import Testimonials from "@/components/sections/Testimonials";
 import { siteConfig } from "@/lib/site-config";
 
@@ -34,7 +35,9 @@ export default function DepoimentosPage() {
         <PageHeader
           title="Depoimentos"
           description="Conversas e avaliações reais de quem já comemorou com a gente."
-        />
+        >
+          <GoogleRating className="mt-2" />
+        </PageHeader>
         <Testimonials />
       </main>
       <Footer />

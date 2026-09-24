@@ -34,6 +34,16 @@ export const siteConfig = {
   googleMapsEmbedUrl:
     "https://www.google.com/maps?q=Rua+São+João,+310+-+Cidade+de+Deus,+Manaus+-+AM&output=embed",
 
+  // Nota e número de avaliações do Perfil da Empresa no Google ("Rosa Buffet
+  // Eventos"). Atualizar à mão de tempos em tempos. Conferido em 2026-09-24.
+  // TODO: trocar `url` pelo link direto das avaliações quando houver acesso
+  // de administrador ao perfil.
+  googleReviews: {
+    rating: 4.6,
+    count: 266,
+    url: "https://www.google.com/maps/search/?api=1&query=Rosa+Buffet+Eventos+R.+S%C3%A3o+Jo%C3%A3o+310+Cidade+de+Deus+Manaus",
+  },
+
   social: {
     instagram: "https://www.instagram.com/rosabuffetoficial_/",
     facebook: "https://www.facebook.com/rosa.buffet.77",

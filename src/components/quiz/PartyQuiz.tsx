@@ -12,6 +12,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import GoogleRating from "@/components/ui/GoogleRating";
 import QuizCalendar from "@/components/quiz/QuizCalendar";
 import { reservationDeposit, formatISODate } from "@/lib/availability-data";
 import { createLeadAction, updateLeadAction } from "@/lib/quiz/actions";
@@ -335,6 +336,7 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                     Leva menos de 2 minutos · pressione{" "}
                     <span className="font-semibold text-ink">Enter</span>
                   </p>
+                  <GoogleRating tone="light" className="mt-8" />
                 </div>
               )}
 

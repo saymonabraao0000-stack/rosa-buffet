@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import Container from "@/components/ui/Container";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import GoogleRating from "@/components/ui/GoogleRating";
 import { heroImage } from "@/lib/site-data";
 
 export default function Hero() {
@@ -53,11 +54,12 @@ export default function Hero() {
             no nosso salão em Manaus.
           </p>
 
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col items-start gap-5">
             <WhatsAppButton
               size="lg"
               label="Solicitar orçamento"
             />
+            <GoogleRating />
           </div>
         </motion.div>
       </Container>
