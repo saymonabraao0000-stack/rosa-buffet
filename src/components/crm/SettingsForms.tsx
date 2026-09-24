@@ -144,8 +144,29 @@ export function PrecosForm({ value }: { value: PrecosSetting }) {
               key={pkg.slug}
               className="rounded-lg border border-cream/10 bg-ink p-4"
             >
-              <h3 className="font-display text-lg text-cream">{pkg.label}</h3>
-              <p className="text-xs text-cream/50">{pkg.tagline}</p>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-display text-lg text-cream">{pkg.label}</h3>
+                  <p className="text-xs text-cream/50">{pkg.tagline}</p>
+                </div>
+                <div className="flex items-center gap-4 text-xs font-medium">
+                  <a
+                    href={`/PDFs/Rosa-Buffet-Pacote-${pkg.label}-Apresentacao.pdf`}
+                    download
+                    className="focus-gold text-cream/70 underline decoration-cream/30 underline-offset-2 hover:text-gold"
+                  >
+                    Baixar PDF
+                  </a>
+                  <a
+                    href={`/pacotes/${pkg.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="focus-gold text-cream/70 underline decoration-cream/30 underline-offset-2 hover:text-gold"
+                  >
+                    Ver página
+                  </a>
+                </div>
+              </div>
 
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {GUEST_BRACKETS.map((guests) => (

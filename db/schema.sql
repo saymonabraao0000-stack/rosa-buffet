@@ -136,3 +136,51 @@ create table if not exists login_attempts (
 );
 
 create index if not exists login_attempts_ip_created_at_idx on login_attempts (ip, created_at);
+
+-- ============================================================================
+-- Prints de avaliações (2026-09-24) — carrossel de depoimentos ganha prints
+-- enviados pelo CRM, além dos estáticos e dos escritos. Só aditivo.
+-- ============================================================================
+
+-- review_prints: capturas de tela de avaliações enviadas pela equipe pelo
+-- CRM (/crm/depoimentos), redimensionadas no navegador antes do upload. Os
+-- bytes ficam no próprio Postgres (bytea) — não há storage de arquivos no
+-- projeto e o volume é pequeno (imagens já comprimidas para no máx. 600 KB).
+create table if not exists review_prints (
+  id          uuid primary key default gen_random_uuid(),
+  data        bytea not null,
+  mime        text not null,
+  width       integer not null,
+  height      integer not null,
+  legenda     text,
+  visivel     boolean not null default true,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists review_prints_visivel_created_at_idx
+  on review_prints (visivel, created_at desc);
+
+-- ============================================================================
+-- Fotos das festas (2026-09-24) — portfólio de /celebracoes ganha fotos
+-- enviadas pela equipe pelo CRM (/crm/fotos), além das estáticas em
+-- public/images/portfolio. Só aditivo.
+-- ============================================================================
+
+-- party_photos: fotos de festas realizadas, enviadas pela equipe, com tema
+-- (mesmos slugs de portfolio-data.ts) e visibilidade no site. Os bytes ficam
+-- no próprio Postgres (bytea) — mesmo padrão de review_prints — redimensionadas
+-- no navegador antes do upload para no máx. 900 KB.
+create table if not exists party_photos (
+  id          uuid primary key default gen_random_uuid(),
+  tema        text not null,
+  data        bytea not null,
+  mime        text not null,
+  width       integer not null,
+  height      integer not null,
+  legenda     text,
+  visivel     boolean not null default true,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists party_photos_tema_visivel_created_at_idx
+  on party_photos (tema, visivel, created_at desc);

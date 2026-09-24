@@ -14,6 +14,7 @@ import {
   Kanban,
   MessageSquareQuote,
   Settings,
+  Images,
 } from "lucide-react";
 import { logoutAction } from "@/lib/crm/actions";
 
@@ -24,6 +25,7 @@ const navItems = [
   { href: "/crm/agenda", label: "Agenda", icon: Calendar },
   { href: "/crm/funil", label: "Funil", icon: Kanban },
   { href: "/crm/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
+  { href: "/crm/fotos", label: "Fotos das festas", icon: Images },
   { href: "/crm/configuracoes", label: "Configurações", icon: Settings },
 ];
 
@@ -38,6 +40,7 @@ const mobileTabItems = [
 const mobileMoreItems = [
   { href: "/crm/funil", label: "Funil", icon: Kanban },
   { href: "/crm/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
+  { href: "/crm/fotos", label: "Fotos das festas", icon: Images },
   { href: "/crm/configuracoes", label: "Configurações", icon: Settings },
 ];
 

@@ -7,7 +7,8 @@ import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { portfolioCategories } from "@/lib/portfolio-data";
 
-type FlatImage = { src: string; w: number; h: number; category: string };
+type FlatImage = { src: string; w: number; h: number; category: string; fromDb?: boolean };
+type DbPhoto = { id: string; tema: string; width: number; height: number };
 
 const ALL = "todas";
 // Quantidade inicial de fotos exibidas (~3 linhas em 4 colunas no desktop)
@@ -19,6 +20,22 @@ export default function PortfolioGallery() {
   const [active, setActive] = useState<string>(ALL);
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState<number>(INITIAL_COUNT);
+  const [dbPhotos, setDbPhotos] = useState<DbPhoto[]>([]);
+
+  // Fotos enviadas pelo CRM (/crm/fotos) — a página é estática, então essas
+  // entram por cima do conteúdo já renderizado, sem afetar o render inicial.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/fotos")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.fotos) setDbPhotos(data.fotos);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filters = useMemo(
     () => [
@@ -28,15 +45,35 @@ export default function PortfolioGallery() {
     [],
   );
 
+  const dbImagesByTema = useMemo(() => {
+    const map = new Map<string, FlatImage[]>();
+    for (const photo of dbPhotos) {
+      const category = portfolioCategories.find((c) => c.slug === photo.tema);
+      if (!category) continue;
+      const img: FlatImage = {
+        src: `/api/fotos/${photo.id}`,
+        w: photo.width,
+        h: photo.height,
+        category: category.label,
+        fromDb: true,
+      };
+      map.set(photo.tema, [...(map.get(photo.tema) ?? []), img]);
+    }
+    return map;
+  }, [dbPhotos]);
+
   const images: FlatImage[] = useMemo(() => {
     const source =
       active === ALL
         ? portfolioCategories
         : portfolioCategories.filter((c) => c.slug === active);
-    return source.flatMap((c) =>
-      c.images.map((img) => ({ ...img, category: c.label })),
-    );
-  }, [active]);
+    // Fotos do banco entram no topo de cada tema (mais novas primeiro, já
+    // ordenadas assim pela API), seguidas das estáticas já existentes.
+    return source.flatMap((c) => [
+      ...(dbImagesByTema.get(c.slug) ?? []),
+      ...c.images.map((img) => ({ ...img, category: c.label })),
+    ]);
+  }, [active, dbImagesByTema]);
 
   const visibleImages = images.slice(0, visibleCount);
   const hasMore = visibleCount < images.length;
@@ -111,15 +148,27 @@ export default function PortfolioGallery() {
               className="focus-gold group relative block w-full overflow-hidden rounded-xl break-inside-avoid"
               aria-label={`Ampliar foto de ${img.category}`}
             >
-              <Image
-                src={img.src}
-                alt={`Evento de ${img.category} realizado pela Rosa Buffet`}
-                width={img.w}
-                height={img.h}
-                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                loading="lazy"
-              />
+              {img.fromDb ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={img.src}
+                  alt={`Evento de ${img.category} realizado pela Rosa Buffet`}
+                  width={img.w}
+                  height={img.h}
+                  loading="lazy"
+                  className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              ) : (
+                <Image
+                  src={img.src}
+                  alt={`Evento de ${img.category} realizado pela Rosa Buffet`}
+                  width={img.w}
+                  height={img.h}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                  className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  loading="lazy"
+                />
+              )}
               <span className="pointer-events-none absolute inset-0 bg-ink/0 transition-colors duration-300 group-hover:bg-ink/25" />
               <span className="pointer-events-none absolute bottom-3 left-3 translate-y-2 rounded-full bg-ink/70 px-3 py-1 text-xs font-medium text-cream opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                 {img.category}
@@ -200,15 +249,26 @@ export default function PortfolioGallery() {
               className="relative flex max-h-full max-w-5xl flex-col items-center gap-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <Image
-                src={images[lightbox].src}
-                alt={`Evento de ${images[lightbox].category} realizado pela Rosa Buffet`}
-                width={images[lightbox].w}
-                height={images[lightbox].h}
-                sizes="90vw"
-                className="max-h-[78vh] w-auto rounded-lg object-contain"
-                priority
-              />
+              {images[lightbox].fromDb ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={images[lightbox].src}
+                  alt={`Evento de ${images[lightbox].category} realizado pela Rosa Buffet`}
+                  width={images[lightbox].w}
+                  height={images[lightbox].h}
+                  className="max-h-[78vh] w-auto rounded-lg object-contain"
+                />
+              ) : (
+                <Image
+                  src={images[lightbox].src}
+                  alt={`Evento de ${images[lightbox].category} realizado pela Rosa Buffet`}
+                  width={images[lightbox].w}
+                  height={images[lightbox].h}
+                  sizes="90vw"
+                  className="max-h-[78vh] w-auto rounded-lg object-contain"
+                  priority
+                />
+              )}
               <figcaption className="text-sm text-cream/70">
                 {images[lightbox].category} · {lightbox + 1} / {images.length}
               </figcaption>

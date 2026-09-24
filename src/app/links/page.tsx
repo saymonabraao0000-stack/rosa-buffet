@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { Calculator, ChevronRight, FileText, Globe, Images, MapPin, Star } from "lucide-react";
+import { Calculator, ChevronRight, Gift, Globe, Images, MapPin, Star } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
 
@@ -22,9 +22,9 @@ const whatsappUrl = buildWhatsappUrl(
 );
 
 const pacotes = [
-  { label: "Pacote Premium", href: "/PDFs/Rosa-Buffet-Pacote-Premium-Apresentacao.pdf" },
-  { label: "Pacote Gold", href: "/PDFs/Rosa-Buffet-Pacote-Gold-Apresentacao.pdf" },
-  { label: "Pacote Kids", href: "/PDFs/Rosa-Buffet-Pacote-Kids-Apresentacao.pdf" },
+  { label: "Pacote Premium", href: "/pacotes/premium?origem=instagram" },
+  { label: "Pacote Gold", href: "/pacotes/gold?origem=instagram" },
+  { label: "Pacote Kids", href: "/pacotes/kids?origem=instagram" },
 ];
 
 export default function LinksPage() {
@@ -87,9 +87,7 @@ export default function LinksPage() {
             <LinkButton
               key={pacote.href}
               href={pacote.href}
-              external
-              icon={<FileText className="h-5 w-5" aria-hidden="true" />}
-              hint="PDF"
+              icon={<Gift className="h-5 w-5" aria-hidden="true" />}
             >
               {pacote.label}
             </LinkButton>

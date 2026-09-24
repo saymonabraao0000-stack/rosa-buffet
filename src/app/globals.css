@@ -82,16 +82,22 @@ body {
   }
 }
 
+/* --marquee-duration é calculada em JS (Testimonials.tsx) proporcional ao
+   número de itens da faixa (2.5s por item, mínimo 60s), pra manter a mesma
+   velocidade visual mesmo quando prints do banco entram na faixa e mudam a
+   contagem. Sempre com fallback de 150s (contagem estática de hoje: 60
+   itens) para quando o JS ainda não rodou. */
 .animate-marquee {
-  animation: marquee 150s linear infinite;
+  animation: marquee var(--marquee-duration, 150s) linear infinite;
   will-change: transform;
 }
 
 /* A regra global de "Reduzir movimento" zera todas as animações; o
-   carrossel é exceção de propósito e continua rodando devagar. */
+   carrossel é exceção de propósito e continua rodando devagar. Usa a mesma
+   variável (em vez de fixar 150s) para não brigar com a duração calculada. */
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee {
-    animation-duration: 150s !important;
+    animation-duration: var(--marquee-duration, 150s) !important;
     animation-iteration-count: infinite !important;
   }
 }
