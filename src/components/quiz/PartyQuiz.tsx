@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
@@ -54,6 +54,12 @@ function letterFor(index: number) {
   return String.fromCharCode(65 + index);
 }
 
+/** Milissegundos desde `since` (0 se ainda não marcado) — usado só dentro do
+ * handler de envio, nunca durante o render. */
+function elapsedSince(since: number | null): number {
+  return since != null ? Date.now() - since : 0;
+}
+
 type Answers = {
   nome: string;
   telefone: string;
@@ -88,6 +94,10 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
+  // Anti-spam: campo isca (só robô preenche) e o instante em que a etapa de
+  // contato apareceu, pra medir quanto tempo levou até o envio.
+  const [empresa, setEmpresa] = useState("");
+  const contatoShownAtRef = useRef<number | null>(null);
   const step = STEPS[stepIndex];
 
   // Preço de um pacote numa faixa de convidados: usa o valor salvo em
@@ -136,7 +146,17 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
     }
   })();
 
-  const goNext = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1));
+  const goNext = () => {
+    setStepIndex((i) => {
+      const next = Math.min(i + 1, STEPS.length - 1);
+      // Marca (uma única vez, fora do render) o instante em que a etapa de
+      // contato passou a ser exibida — usado pro tempo mínimo anti-spam.
+      if (STEPS[next] === "contato" && contatoShownAtRef.current === null) {
+        contatoShownAtRef.current = Date.now();
+      }
+      return next;
+    });
+  };
   const goPrev = () => setStepIndex((i) => Math.max(i - 1, 0));
 
   // Salva a resposta no servidor sem travar a navegação: dispara a Server
@@ -160,6 +180,8 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
       nome: answers.nome.trim(),
       telefone: answers.telefone.trim(),
       origem,
+      empresa,
+      elapsedMs: elapsedSince(contatoShownAtRef.current),
     });
     setAnswers((a) => ({ ...a, leadId: id }));
     setIsSubmittingLead(false);
@@ -340,6 +362,23 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                     placeholder="(92) 99999-9999"
                     className="focus-gold mt-5 w-full border-b-2 border-ink/20 bg-transparent pb-3 text-xl text-ink placeholder:text-ink/30 focus:border-gold focus:outline-none"
                   />
+                  {/* Honeypot: invisível para humanos, robôs de preenchimento
+                      automático costumam preencher qualquer campo que encontrem. */}
+                  <div
+                    className="pointer-events-none absolute left-0 top-0 h-0 w-0 overflow-hidden opacity-0"
+                    aria-hidden="true"
+                  >
+                    <label htmlFor="empresa">Empresa</label>
+                    <input
+                      type="text"
+                      id="empresa"
+                      name="empresa"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={empresa}
+                      onChange={(e) => setEmpresa(e.target.value)}
+                    />
+                  </div>
                   <div className="mt-6 flex items-center gap-4">
                     <button
                       type="button"

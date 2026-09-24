@@ -66,6 +66,7 @@ function mapLeadRow(row: any): Lead {
     checklist: row.checklist ?? {},
     recompraAvisadaEm: asISOStringOrNull(row.recompra_avisada_em),
     googleEventId: row.google_event_id,
+    primeiroContatoEm: asISOStringOrNull(row.primeiro_contato_em),
   };
 }
 
@@ -172,9 +173,17 @@ export async function updateLeadStatus(
   status: LeadStatus,
   perdidoMotivo: string | null,
 ): Promise<void> {
+  // Item "tempo até o primeiro contato" (relatório): se o lead está saindo de
+  // 'novo' para qualquer outro status pela primeira vez, grava
+  // primeiro_contato_em agora — num único UPDATE, sem ler o lead antes.
   await sql`
     update leads
-    set status = ${status}, perdido_motivo = ${perdidoMotivo}, updated_at = now()
+    set status = ${status}, perdido_motivo = ${perdidoMotivo}, updated_at = now(),
+        primeiro_contato_em = case
+          when status = 'novo' and ${status} <> 'novo'
+            then coalesce(primeiro_contato_em, now())
+          else primeiro_contato_em
+        end
     where id = ${id}
   `;
 }

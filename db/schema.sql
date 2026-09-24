@@ -189,3 +189,10 @@ create index if not exists party_photos_tema_visivel_created_at_idx
 -- avisado de que o lead do simulador continua "novo" depois de 1 hora, para
 -- avisar uma vez só.
 alter table leads add column if not exists alerta_sem_resposta_em timestamptz;
+
+-- ============================================================================
+-- Relatório mensal (2026-09-24) — tempo até o primeiro contato, usado pelo
+-- relatório em /crm/relatorio. Só aditivo. Leads antigos ficam sem o dado; o
+-- relatório considera só quem tem.
+-- ============================================================================
+alter table leads add column if not exists primeiro_contato_em timestamptz;

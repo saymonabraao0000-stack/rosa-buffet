@@ -3,10 +3,11 @@
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
-import { portfolioAllImages } from "@/lib/portfolio-data";
+import PhotoCounter from "@/components/sections/PhotoCounter";
+import { portfolioCategories } from "@/lib/portfolio-data";
 
 export default function PortfolioHeader() {
-  const total = portfolioAllImages.length;
+  const staticTotal = portfolioCategories.flatMap((c) => c.images).length;
 
   return (
     <section className="relative overflow-hidden bg-ink pb-16 pt-36 sm:pt-40">
@@ -37,7 +38,7 @@ export default function PortfolioHeader() {
           transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
           className="reveal max-w-2xl text-base leading-relaxed text-cream/75 sm:text-lg"
         >
-          Reunimos {total} momentos reais de celebrações que ganharam vida em
+          Reunimos <PhotoCounter initialCount={staticTotal} /> momentos reais de celebrações que ganharam vida em
           nossos espaços — de 15 anos e casamentos a festas infantis e
           formaturas. Explore por tema e imagine a sua.
         </motion.p>

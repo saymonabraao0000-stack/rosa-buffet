@@ -64,6 +64,7 @@ export type Lead = {
   checklist: LeadChecklist;
   recompraAvisadaEm: string | null;
   googleEventId: string | null;
+  primeiroContatoEm: string | null;
 };
 
 export type LeadNote = {

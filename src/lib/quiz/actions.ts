@@ -12,9 +12,34 @@ export async function createLeadAction(input: {
   nome: string;
   telefone: string;
   origem?: string;
+  /** Campo isca: só robô de preenchimento automático deixa preenchido. */
+  empresa?: string;
+  /** Milissegundos entre a etapa de contato aparecer e o envio. */
+  elapsedMs?: number;
 }): Promise<{ id: string | null }> {
+  // Anti-spam silencioso: honeypot preenchido, envio rápido demais, ou
+  // nome/telefone fora do formato esperado — trata como robô sem revelar o
+  // bloqueio (retorna como se tivesse dado certo, pro quiz seguir normal).
+  const digitsOnly = input.telefone.replace(/\D/g, "").length;
+  const nomeLen = input.nome.trim().length;
+  if (
+    (input.empresa && input.empresa.trim().length > 0) ||
+    (input.elapsedMs ?? 0) < 2000 ||
+    nomeLen < 2 ||
+    nomeLen > 80 ||
+    digitsOnly < 10 ||
+    digitsOnly > 13
+  ) {
+    console.warn("createLeadAction: bloqueado por anti-spam");
+    return { id: null };
+  }
+
   try {
-    const { id } = await createLead(input);
+    const { id } = await createLead({
+      nome: input.nome,
+      telefone: input.telefone,
+      origem: input.origem,
+    });
     // Endereço de onde a pessoa acessou (domínio ou *.workers.dev), pro link
     // do aviso abrir a ficha no mesmo site.
     const host = (await headers()).get("host");
