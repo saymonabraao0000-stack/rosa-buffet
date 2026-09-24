@@ -1,6 +1,15 @@
 import "server-only";
 import { sql } from "@/lib/db/client";
 
+// Com NTFY_TOKEN (token de acesso de uma conta grátis do ntfy.sh), o limite
+// diário passa a ser da conta. Sem ele, o ntfy.sh limita por IP — e os IPs de
+// saída da Cloudflare são compartilhados: em 24/09/2026 a cota já vinha
+// esgotada (429 "daily message quota reached").
+function authHeader(): Record<string, string> {
+  const token = process.env.NTFY_TOKEN;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 // Guarda o resultado do último envio ao ntfy no setting `ntfy_status`
 // (diagnóstico: o Worker não tem log ligado por padrão). Nunca lança.
 async function registrarStatusNtfy(tipo: string, resultado: Record<string, unknown>) {
@@ -33,6 +42,7 @@ export async function notifyNewLead(lead: { id: string; nome: string }, siteOrig
       method: "POST",
       body: `${primeiroNome} começou a simulação no site. Toque para abrir a ficha no CRM.`,
       headers: {
+        ...authHeader(),
         Title: "Novo lead - Rosa Buffet",
         Tags: "tada",
         Priority: "high",
@@ -67,6 +77,7 @@ export async function notifyText(titulo: string, corpo: string, clickUrl?: strin
       method: "POST",
       body: corpo,
       headers: {
+        ...authHeader(),
         Title: titulo,
         Tags: "clipboard",
         Priority: "default",
