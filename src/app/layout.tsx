@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/site-config";
 import { partyPackages } from "@/lib/quiz-data";
 import WhatsAppFloatingButton from "@/components/layout/WhatsAppFloatingButton";
 import OrigemTracker from "@/components/layout/OrigemTracker";
+import CloudflareAnalytics from "@/components/layout/CloudflareAnalytics";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -127,6 +128,7 @@ export default function RootLayout({
         {children}
         <WhatsAppFloatingButton />
         <OrigemTracker />
+        <CloudflareAnalytics />
       </body>
     </html>
   );
