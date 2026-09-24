@@ -10,11 +10,26 @@ import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
 // WhatsAppFloatingButton). O simulador leva ?origem=instagram, então o lead
 // cai no CRM com origem "Instagram" em vez de "Site".
 
+const linksTitle = "Links";
+const linksOgTitle = `${linksTitle} | ${siteConfig.name}`;
+const linksDescription =
+  "Todos os links da Rosa Buffet em um só lugar: simule o orçamento da sua festa, agende uma visita, fale no WhatsApp e veja pacotes e celebrações em Manaus.";
+
 export const metadata: Metadata = {
-  title: "Links",
-  description:
-    "Simule o orçamento da sua festa, fale com a Rosa Buffet no WhatsApp, veja nossas celebrações e os pacotes.",
+  title: linksTitle,
+  description: linksDescription,
   alternates: { canonical: "/links" },
+  openGraph: {
+    title: linksOgTitle,
+    description: linksDescription,
+    images: [{ url: "/images/eventos/hero-salao.jpg", width: 1672, height: 941 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: linksOgTitle,
+    description: linksDescription,
+    images: ["/images/eventos/hero-salao.jpg"],
+  },
 };
 
 const whatsappUrl = buildWhatsappUrl(
@@ -43,6 +58,7 @@ export default function LinksPage() {
       </div>
 
       <div className="relative mx-auto flex max-w-md flex-col items-center px-5 pt-14 pb-12">
+        <h1 className="sr-only">{siteConfig.fullName} — Links</h1>
         <Image
           src="/images/logo-vertical.png"
           alt={siteConfig.fullName}

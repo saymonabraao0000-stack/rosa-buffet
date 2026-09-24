@@ -16,6 +16,14 @@ export const metadata: Metadata = {
     title: "Celebrações | Portfólio de Festas da Rosa Buffet",
     description:
       "Momentos reais de festas realizadas pela Rosa Buffet em Manaus. Explore por tema e inspire-se para o seu evento.",
+    images: [{ url: "/images/eventos/hero-salao.jpg", width: 1672, height: 941 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Celebrações | Portfólio de Festas da Rosa Buffet",
+    description:
+      "Momentos reais de festas realizadas pela Rosa Buffet em Manaus. Explore por tema e inspire-se para o seu evento.",
+    images: ["/images/eventos/hero-salao.jpg"],
   },
 };
 

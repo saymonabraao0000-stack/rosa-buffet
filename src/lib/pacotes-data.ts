@@ -13,6 +13,8 @@ export type PacoteGroup = {
 export type PacoteContent = {
   slug: "premium" | "gold" | "kids";
   heroImage: string;
+  heroImageWidth: number;
+  heroImageHeight: number;
   heroAlt: string;
   gallery: { src: string; alt: string }[];
   groups: PacoteGroup[];
@@ -23,6 +25,8 @@ export const pacotesContent: Record<string, PacoteContent> = {
   premium: {
     slug: "premium",
     heroImage: "/images/eventos/casamento-noivos.jpg",
+    heroImageWidth: 640,
+    heroImageHeight: 862,
     heroAlt: "Casal em festa elegante organizada pela Rosa Buffet, Pacote Premium",
     gallery: [
       { src: "/images/portfolio/casamentos/casamentos-01.jpg", alt: "Salão decorado do Pacote Premium" },
@@ -31,7 +35,7 @@ export const pacotesContent: Record<string, PacoteContent> = {
       { src: "/images/portfolio/casamentos/casamentos-03.jpg", alt: "Decoração da pista do Pacote Premium" },
     ],
     metaDescription:
-      "Pacote Premium da Rosa Buffet: cerimonial, fotografia, bolo de 3 andares, salão climatizado, decoração completa, buffet, DJ e cabine fotográfica. Valores a partir de R$ 9.999.",
+      "Pacote Premium da Rosa Buffet em Manaus: cerimonial, fotografia, bolo de 3 andares, decoração completa, buffet e DJ inclusos. A partir de R$ 9.999.",
     groups: [
       {
         title: "Cerimonial & Fotografia",
@@ -81,6 +85,8 @@ export const pacotesContent: Record<string, PacoteContent> = {
   gold: {
     slug: "gold",
     heroImage: "/images/eventos/salao-15-anos.jpg",
+    heroImageWidth: 640,
+    heroImageHeight: 427,
     heroAlt: "Salão preparado para festa do Pacote Gold da Rosa Buffet",
     gallery: [
       { src: "/images/portfolio/quinze-anos/quinze-anos-02.jpg", alt: "Decoração completa do Pacote Gold" },
@@ -140,6 +146,8 @@ export const pacotesContent: Record<string, PacoteContent> = {
   kids: {
     slug: "kids",
     heroImage: "/images/eventos/aniversario.jpg",
+    heroImageWidth: 640,
+    heroImageHeight: 681,
     heroAlt: "Decoração temática do Pacote Kids da Rosa Buffet",
     gallery: [
       { src: "/images/portfolio/infantil/infantil-01.jpg", alt: "Decoração temática do Pacote Kids" },
@@ -148,7 +156,7 @@ export const pacotesContent: Record<string, PacoteContent> = {
       { src: "/images/portfolio/infantil/infantil-04.jpg", alt: "Pista de dança em LED do Pacote Kids" },
     ],
     metaDescription:
-      "Pacote Kids da Rosa Buffet: decoração temática completa, playground, cerimonialista e palhaço, buffet infantil e adulto. Feito pra fazer criança sorrir, a partir de R$ 9.999.",
+      "Pacote Kids da Rosa Buffet em Manaus: decoração temática, playground, cerimonialista e palhaço, buffet infantil e adulto inclusos. A partir de R$ 9.999.",
     groups: [
       {
         title: "Decoração & Ambientação",

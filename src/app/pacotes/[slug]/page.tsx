@@ -41,15 +41,27 @@ export async function generateMetadata({
   const content = getPacoteContent(slug);
   if (!pkg || !content) return {};
 
-  const title = `Pacote ${pkg.label} | ${siteConfig.name}`;
+  const title = `Pacote ${pkg.label} em Manaus`;
+  const ogTitle = `${title} | ${siteConfig.name}`;
+  const image = {
+    url: content.heroImage,
+    width: content.heroImageWidth,
+    height: content.heroImageHeight,
+  };
   return {
     title,
     description: content.metaDescription,
     alternates: { canonical: `/pacotes/${slug}` },
     openGraph: {
-      title,
+      title: ogTitle,
       description: content.metaDescription,
-      images: [{ url: content.heroImage }],
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description: content.metaDescription,
+      images: [content.heroImage],
     },
   };
 }

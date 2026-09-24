@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/privacidade",
   },
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default function PrivacidadePage() {

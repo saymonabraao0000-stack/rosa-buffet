@@ -16,6 +16,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Agende uma visita ao salão | Rosa Buffet",
     description: "Escolha um dia e horário para conhecer o salão pessoalmente.",
+    images: [{ url: "/images/eventos/hero-salao.jpg", width: 1672, height: 941 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Agende uma visita ao salão | Rosa Buffet",
+    description: "Escolha um dia e horário para conhecer o salão pessoalmente.",
+    images: ["/images/eventos/hero-salao.jpg"],
   },
 };
 

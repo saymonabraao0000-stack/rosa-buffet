@@ -19,11 +19,26 @@ const currency = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 0,
 });
 
+const pacotesTitle = "Pacotes de Festa em Manaus";
+const pacotesOgTitle = `${pacotesTitle} | ${siteConfig.name}`;
+const pacotesDescription =
+  "Conheça os pacotes fechados da Rosa Buffet em Manaus: Premium, Gold e Kids. Buffet, decoração, cerimonial, fotografia e DJ inclusos, com valor por convidados.";
+
 export const metadata: Metadata = {
-  title: `Pacotes | ${siteConfig.name}`,
-  description:
-    "Conheça os pacotes fechados da Rosa Buffet: Premium, Gold e Kids. Buffet, decoração, cerimonial, fotografia e DJ inclusos, com valores por quantidade de convidados.",
+  title: pacotesTitle,
+  description: pacotesDescription,
   alternates: { canonical: "/pacotes" },
+  openGraph: {
+    title: pacotesOgTitle,
+    description: pacotesDescription,
+    images: [{ url: "/images/eventos/hero-salao.jpg", width: 1672, height: 941 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: pacotesOgTitle,
+    description: pacotesDescription,
+    images: ["/images/eventos/hero-salao.jpg"],
+  },
 };
 
 export default async function PacotesPage() {

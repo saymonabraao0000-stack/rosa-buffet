@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site-config";
+import { partyPackages } from "@/lib/quiz-data";
 import WhatsAppFloatingButton from "@/components/layout/WhatsAppFloatingButton";
 import "./globals.css";
 
@@ -33,6 +34,9 @@ export const metadata: Metadata = {
     "produção de eventos manaus",
   ],
   authors: [{ name: siteConfig.name }],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "pt_BR",
@@ -61,14 +65,27 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
+// Faixa de preço real dos pacotes fechados (ver quiz-data.ts), pro priceRange
+// do schema — nada inventado, é o mínimo e o máximo entre os valores por
+// convidados dos 3 pacotes.
+const allPrices = partyPackages.flatMap((pkg) => Object.values(pkg.pricesByGuests));
+const priceRange = allPrices.length
+  ? `R$ ${Math.min(...allPrices).toLocaleString("pt-BR")} – R$ ${Math.max(...allPrices).toLocaleString("pt-BR")}`
+  : undefined;
+
+// sameAs só entra com perfis reais confirmados no código — o Facebook em
+// siteConfig.social.facebook ainda é um placeholder ("TODO: substituir"),
+// por isso fica de fora até ter o link oficial.
+const sameAs = [siteConfig.social.instagram];
+
+const businessJsonLd = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": ["EventVenue", "FoodEstablishment"],
   name: siteConfig.name,
   image: `${siteConfig.url}/images/logo.jpg`,
   url: siteConfig.url,
   telephone: `+${siteConfig.whatsappNumber}`,
-  priceRange: "$$$",
+  ...(priceRange ? { priceRange } : {}),
   address: {
     "@type": "PostalAddress",
     streetAddress: siteConfig.address.street,
@@ -76,8 +93,20 @@ const jsonLd = {
     addressRegion: siteConfig.address.state,
     addressCountry: "BR",
   },
-  sameAs: [siteConfig.social.instagram],
+  areaServed: {
+    "@type": "City",
+    name: siteConfig.address.city,
+  },
+  sameAs,
   description: siteConfig.description,
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: siteConfig.name,
+  url: siteConfig.url,
+  inLanguage: "pt-BR",
 };
 
 export default function RootLayout({
@@ -90,7 +119,11 @@ export default function RootLayout({
       <body className="bg-cream text-ink antialiased">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         {children}
         <WhatsAppFloatingButton />

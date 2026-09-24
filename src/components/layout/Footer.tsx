@@ -3,6 +3,7 @@ import { MapPin, Phone } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { FacebookIcon, InstagramIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
+import { festas } from "@/lib/festas-data";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -10,7 +11,7 @@ export default function Footer() {
   return (
     <footer className="bg-ink pt-20 text-cream">
       <Container>
-        <div className="grid grid-cols-1 gap-12 pb-14 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-12 pb-14 sm:grid-cols-2 lg:grid-cols-5">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <Image
@@ -28,6 +29,21 @@ export default function Footer() {
               inesquecíveis.
             </p>
           </div>
+
+          <nav aria-label="Festas">
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+              Festas
+            </h3>
+            <ul className="flex flex-col gap-3 text-sm text-cream/75">
+              {festas.map((festa) => (
+                <li key={festa.slug}>
+                  <a href={`/festas/${festa.slug}`} className="focus-gold transition-colors hover:text-gold">
+                    {festa.h1}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
           <nav aria-label="Menu rápido do rodapé">
             <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-gold">

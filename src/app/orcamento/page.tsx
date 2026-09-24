@@ -17,6 +17,14 @@ export const metadata: Metadata = {
     title: "Simule o orçamento da sua festa | Rosa Buffet",
     description:
       "Monte o projeto da sua festa em poucos passos e receba uma estimativa de valor na hora.",
+    images: [{ url: "/images/logo.jpg", width: 1080, height: 1080 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Simule o orçamento da sua festa | Rosa Buffet",
+    description:
+      "Monte o projeto da sua festa em poucos passos e receba uma estimativa de valor na hora.",
+    images: ["/images/logo.jpg"],
   },
 };
 

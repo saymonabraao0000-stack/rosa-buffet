@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site-config";
 import { partyPackages } from "@/lib/quiz-data";
+import { festas } from "@/lib/festas-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -24,6 +25,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...partyPackages.map((pkg) => ({
       url: `${siteConfig.url}/pacotes/${pkg.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+    {
+      url: `${siteConfig.url}/festas`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    ...festas.map((festa) => ({
+      url: `${siteConfig.url}/festas/${festa.slug}`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.7,

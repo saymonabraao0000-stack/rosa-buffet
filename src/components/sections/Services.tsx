@@ -8,6 +8,20 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { buildWhatsappUrl } from "@/lib/site-config";
 import { services } from "@/lib/site-data";
 
+// Mapeia o slug do serviço para a página de festa correspondente em
+// /festas/[slug], quando existir. Serviços sem página dedicada (decoração,
+// buffet completo, produção de eventos, eventos personalizados) continuam
+// levando direto para o WhatsApp.
+const festaSlugByService: Record<string, string> = {
+  "festas-infantis": "buffet-infantil-manaus",
+  casamentos: "buffet-para-casamento-manaus",
+  "15-anos": "festa-de-15-anos-manaus",
+  aniversarios: "festa-de-aniversario-manaus",
+  "eventos-corporativos": "eventos-corporativos-manaus",
+  "cha-revelacao": "cha-revelacao-manaus",
+  formaturas: "festa-de-formatura-manaus",
+};
+
 export default function Services() {
   return (
     <section id="servicos" className="bg-cream py-24 sm:py-32">
@@ -43,17 +57,27 @@ export default function Services() {
                 <p className="flex-1 text-sm leading-relaxed text-gray-dark">
                   {service.description}
                 </p>
-                <a
-                  href={buildWhatsappUrl(
-                    `Olá! Gostaria de solicitar um orçamento para ${service.title}.`
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="focus-gold mt-2 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gold transition-colors hover:text-ink"
-                >
-                  Solicitar orçamento
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-                </a>
+                {festaSlugByService[service.slug] ? (
+                  <a
+                    href={`/festas/${festaSlugByService[service.slug]}`}
+                    className="focus-gold mt-2 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gold transition-colors hover:text-ink"
+                  >
+                    Saiba mais
+                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                  </a>
+                ) : (
+                  <a
+                    href={buildWhatsappUrl(
+                      `Olá! Gostaria de solicitar um orçamento para ${service.title}.`
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="focus-gold mt-2 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gold transition-colors hover:text-ink"
+                  >
+                    Solicitar orçamento
+                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                  </a>
+                )}
               </div>
             </motion.article>
           ))}
