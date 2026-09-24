@@ -36,8 +36,7 @@ export const siteConfig = {
 
   social: {
     instagram: "https://www.instagram.com/rosabuffetoficial_/",
-    // TODO: substituir pelo Facebook oficial quando disponível.
-    facebook: "https://www.facebook.com/",
+    facebook: "https://www.facebook.com/rosa.buffet.77",
   },
 
   nav: [

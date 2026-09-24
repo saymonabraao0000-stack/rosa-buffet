@@ -73,10 +73,8 @@ const priceRange = allPrices.length
   ? `R$ ${Math.min(...allPrices).toLocaleString("pt-BR")} – R$ ${Math.max(...allPrices).toLocaleString("pt-BR")}`
   : undefined;
 
-// sameAs só entra com perfis reais confirmados no código — o Facebook em
-// siteConfig.social.facebook ainda é um placeholder ("TODO: substituir"),
-// por isso fica de fora até ter o link oficial.
-const sameAs = [siteConfig.social.instagram];
+// sameAs só entra com perfis reais confirmados.
+const sameAs = [siteConfig.social.instagram, siteConfig.social.facebook];
 
 const businessJsonLd = {
   "@context": "https://schema.org",
