@@ -72,7 +72,6 @@ src/
     api/
       depoimentos/route.ts    # GET: lista de depoimentos aprovados (para a home)
       cron/diario/route.ts    # POST: resumo diário às 8h (Cron Trigger Cloudflare)
-- **Alerta de lead sem resposta** (2026-09-24): Cron Trigger `*/15 * * * *` → `POST /api/cron/sem-resposta` ([sem-resposta.ts](src/lib/crm/sem-resposta.ts)). Lead do simulador ainda "novo" 1h depois gera um aviso no ntfy, uma vez só (`leads.alerta_sem_resposta_em`), só entre 7h e 22h de Manaus e para leads de até 3 dias. O `custom-worker.ts` escolhe a rota pelo `event.cron`; o token dos crons fica em [cron-auth.ts](src/lib/cron-auth.ts).
     layout.tsx             # metadata, JSON-LD (schema.org LocalBusiness), fontes
     robots.ts, sitemap.ts
   components/
@@ -217,6 +216,7 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 19. **Lead duplicado** — quando quiz cria lead com telefone igual a outro dos últimos 90 dias, marca na ficha e lista "Possível duplicado de {nome}" com link. Sem mesclar automático.
 
 **Item 17 (login por pessoa)** ficou para depois por decisão do Saymon em 2026-09-23 — mantém a senha única.
+- **Alerta de lead sem resposta** (2026-09-24): Cron Trigger `*/15 * * * *` → `POST /api/cron/sem-resposta` ([sem-resposta.ts](src/lib/crm/sem-resposta.ts)). Lead do simulador ainda "novo" 1h depois gera um aviso no ntfy, uma vez só (`leads.alerta_sem_resposta_em`), só entre 7h e 22h de Manaus e para leads de até 3 dias. O `custom-worker.ts` escolhe a rota pelo `event.cron`; o token dos crons fica em [cron-auth.ts](src/lib/cron-auth.ts).
 
 ## Fluxo de publicação
 
