@@ -265,17 +265,24 @@ export async function deleteLead(id: string): Promise<void> {
   await sql`delete from leads where id = ${id}`;
 }
 
-/** Datas de eventos fechados — usado pelo calendário do quiz pra saber o que já está reservado. */
+/**
+ * Datas indisponíveis — usado pelo calendário do quiz pra saber o que já
+ * está reservado. Item 5: passa a ser festas fechadas ∪ datas bloqueadas
+ * manualmente (blocked_dates). O simulador não muda de código, só recebe a
+ * lista maior.
+ */
 export async function getBookedDates(): Promise<string[]> {
   const rows = await sql`
-    select data_evento from leads
+    select data_evento as data from leads
     where status = 'fechado' and data_evento is not null
+    union
+    select data from blocked_dates
   `;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (rows as any[]).map((r) => asDateString(r.data_evento)!).filter(Boolean);
+  return (rows as any[]).map((r) => asDateString(r.data)!).filter(Boolean);
 }
 
-/** Mesma consulta que getBookedDates, mas com os dados completos para a agenda do CRM. */
+/** Mesma consulta de festas fechadas que getBookedDates, mas com os dados completos para a agenda do CRM. */
 export async function getConfirmedEvents(): Promise<Lead[]> {
   const rows = await sql`
     select * from leads
@@ -284,6 +291,135 @@ export async function getConfirmedEvents(): Promise<Lead[]> {
   `;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (rows as any[]).map(mapLeadRow);
+}
+
+// ============================================================================
+// Item 5 (Agenda em calendário) e item 9 (lista de espera) — Fase 3a do plano
+// de melhorias (Planos/crm-melhorias-2026-09-24.md).
+// ============================================================================
+
+export type AgendaFestaDia = { data: string; id: string; nome: string };
+export type AgendaBloqueioDia = { data: string; motivo: string | null };
+export type AgendaEsperaDia = { data: string; id: string; nome: string; telefone: string };
+
+export type AgendaMonthData = {
+  festas: AgendaFestaDia[];
+  bloqueios: AgendaBloqueioDia[];
+  espera: AgendaEsperaDia[];
+};
+
+/**
+ * Tudo que o calendário mensal da Agenda precisa (festas fechadas, datas
+ * bloqueadas e lista de espera) num intervalo de um mês só — evita 1 consulta
+ * por dia. `mesISO` no formato "AAAA-MM".
+ */
+export async function getAgendaMonthData(mesISO: string): Promise<AgendaMonthData> {
+  const [ano, mes] = mesISO.split("-").map(Number);
+  const inicio = `${mesISO}-01`;
+  const ultimoDia = new Date(Date.UTC(ano, mes, 0)).getUTCDate();
+  const fim = `${mesISO}-${String(ultimoDia).padStart(2, "0")}`;
+
+  const [festasRows, bloqueiosRows, esperaRows] = await Promise.all([
+    sql`
+      select id, nome, data_evento from leads
+      where status = 'fechado' and data_evento between ${inicio} and ${fim}
+      order by data_evento asc
+    `,
+    sql`select data, motivo from blocked_dates where data between ${inicio} and ${fim}`,
+    sql`select id, nome, telefone, data from waitlist where data between ${inicio} and ${fim} order by created_at asc`,
+  ]);
+
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    festas: (festasRows as any[]).map((r) => ({
+      data: asDateString(r.data_evento)!,
+      id: r.id,
+      nome: r.nome,
+    })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    bloqueios: (bloqueiosRows as any[]).map((r) => ({
+      data: asDateString(r.data)!,
+      motivo: r.motivo,
+    })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    espera: (esperaRows as any[]).map((r) => ({
+      data: asDateString(r.data)!,
+      id: r.id,
+      nome: r.nome,
+      telefone: r.telefone,
+    })),
+  };
+}
+
+/** Uma data está ocupada se tem festa fechada nela (excluindo o próprio lead) ou está bloqueada. */
+export async function isDataOcupada(data: string, excludeLeadId?: string): Promise<boolean> {
+  const rows = await sql.query(
+    `
+    select 1 from leads
+      where status = 'fechado' and data_evento = $1
+        and ($2::uuid is null or id <> $2::uuid)
+    union
+    select 1 from blocked_dates where data = $1
+    limit 1
+    `,
+    [data, excludeLeadId ?? null],
+  );
+  return rows.length > 0;
+}
+
+export async function blockDate(data: string, motivo: string | null): Promise<void> {
+  await sql`
+    insert into blocked_dates (data, motivo)
+    values (${data}, ${motivo})
+    on conflict (data) do update set motivo = excluded.motivo
+  `;
+}
+
+export async function unblockDate(data: string): Promise<void> {
+  await sql`delete from blocked_dates where data = ${data}`;
+}
+
+/** Entrada de espera de um lead específico para uma data (para saber se já está na lista, na ficha). */
+export async function getWaitlistEntryForLead(
+  leadId: string,
+  data: string,
+): Promise<{ id: string } | null> {
+  const rows = await sql`
+    select id from waitlist where lead_id = ${leadId} and data = ${data} limit 1
+  `;
+  return rows[0] ? { id: rows[0].id } : null;
+}
+
+/** Põe um lead na lista de espera de uma data — não duplica o mesmo lead+data. */
+export async function addToWaitlist(input: {
+  leadId: string;
+  nome: string;
+  telefone: string;
+  data: string;
+}): Promise<{ id: string }> {
+  const existing = await getWaitlistEntryForLead(input.leadId, input.data);
+  if (existing) return existing;
+
+  const rows = await sql`
+    insert into waitlist (lead_id, nome, telefone, data)
+    values (${input.leadId}, ${input.nome}, ${input.telefone}, ${input.data})
+    returning id
+  `;
+  return { id: rows[0].id };
+}
+
+export async function removeFromWaitlist(id: string): Promise<void> {
+  await sql`delete from waitlist where id = ${id}`;
+}
+
+/** Marca que a pessoa já foi avisada de que a data liberou (dashboard, item 9). */
+export async function markWaitlistAvisado(id: string): Promise<void> {
+  await sql`update waitlist set avisado_em = now() where id = ${id}`;
+}
+
+/** Marca que já foi oferecida a "festa do ano que vem" a este lead (dashboard, item 8). */
+export async function markRecompraAvisada(id: string): Promise<void> {
+  await sql`update leads set recompra_avisada_em = now(), updated_at = now() where id = ${id}`;
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {

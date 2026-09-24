@@ -52,6 +52,18 @@ export default async function CrmLeadsPage({
   const duplicateMap = await findDuplicatesForLeadIds(leadsList.map((l) => l.id));
   const todayISO = manausTodayISO();
 
+  // Item 18 — o link de exportação leva os mesmos filtros aplicados na tela.
+  const exportParams = new URLSearchParams();
+  if (params.q) exportParams.set("q", params.q);
+  if (params.status) exportParams.set("status", params.status);
+  if (params.tema) exportParams.set("tema", params.tema);
+  if (params.from) exportParams.set("from", params.from);
+  if (params.to) exportParams.set("to", params.to);
+  if (params.incompleto) exportParams.set("incompleto", params.incompleto);
+  if (params.retorno) exportParams.set("retorno", params.retorno);
+  const exportQuery = exportParams.toString();
+  const exportHref = `/crm/leads/exportar.csv${exportQuery ? `?${exportQuery}` : ""}`;
+
   return (
     <div>
       <h1 className="font-display text-3xl text-cream">Leads</h1>
@@ -142,6 +154,12 @@ export default async function CrmLeadsPage({
             Limpar
           </Link>
         )}
+        <a
+          href={exportHref}
+          className="focus-gold rounded-full border border-cream/15 px-5 py-2 text-sm font-semibold text-cream transition-colors hover:border-gold hover:text-gold"
+        >
+          Exportar planilha
+        </a>
       </form>
 
       {/* Celular: cartões. Tabela a partir de md. */}

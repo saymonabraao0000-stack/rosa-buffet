@@ -5,9 +5,12 @@ import {
   saveCondicoesPagamentoAction,
   saveLinkAvaliacaoAction,
   saveModelosWhatsappAction,
+  savePrecosAction,
+  restorePrecosAction,
   type SaveSettingState,
 } from "@/lib/crm/settings-actions";
-import type { ModelosWhatsapp } from "@/lib/crm/settings";
+import type { ModelosWhatsapp, PrecosSetting } from "@/lib/crm/settings";
+import { partyPackages, guestOptions } from "@/lib/quiz-data";
 
 function SaveButton({ isPending, ok }: { isPending: boolean; ok?: boolean }) {
   return (
@@ -114,5 +117,96 @@ export function ModelosWhatsappForm({ value }: { value: ModelosWhatsapp }) {
 
       <SaveButton isPending={isPending} ok={state?.ok} />
     </form>
+  );
+}
+
+const GUEST_BRACKETS = guestOptions
+  .map((g) => g.guests)
+  .filter((g): g is number => g != null);
+
+export function PrecosForm({ value }: { value: PrecosSetting }) {
+  const [state, formAction, isPending] = useActionState<SaveSettingState, FormData>(
+    savePrecosAction,
+    undefined,
+  );
+  const [restoreState, restoreAction, isRestoring] = useActionState<SaveSettingState, FormData>(
+    restorePrecosAction,
+    undefined,
+  );
+
+  return (
+    <div className="flex flex-col gap-6">
+      <form action={formAction} className="flex flex-col gap-5">
+        {partyPackages.map((pkg) => {
+          const pkgValue = value[pkg.slug];
+          return (
+            <div
+              key={pkg.slug}
+              className="rounded-lg border border-cream/10 bg-ink p-4"
+            >
+              <h3 className="font-display text-lg text-cream">{pkg.label}</h3>
+              <p className="text-xs text-cream/50">{pkg.tagline}</p>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {GUEST_BRACKETS.map((guests) => (
+                  <div key={guests} className="flex flex-col gap-1.5">
+                    <label
+                      htmlFor={`preco_${pkg.slug}_${guests}`}
+                      className="text-xs font-medium text-cream/70"
+                    >
+                      {guests} convidados
+                    </label>
+                    <input
+                      id={`preco_${pkg.slug}_${guests}`}
+                      name={`preco_${pkg.slug}_${guests}`}
+                      type="number"
+                      min={0}
+                      step={1}
+                      inputMode="numeric"
+                      defaultValue={pkgValue?.pricesByGuests[guests] ?? ""}
+                      placeholder="Sob consulta"
+                      className="focus-gold w-full rounded-lg border border-cream/15 bg-ink-soft px-3 py-2 text-sm text-cream placeholder:text-cream/30 outline-none focus:border-gold"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor={`nota_${pkg.slug}`}
+                  className="mb-1.5 block text-xs font-medium text-cream/70"
+                >
+                  Nota do pacote
+                </label>
+                <textarea
+                  id={`nota_${pkg.slug}`}
+                  name={`nota_${pkg.slug}`}
+                  defaultValue={pkgValue?.note ?? ""}
+                  rows={2}
+                  className="focus-gold w-full rounded-lg border border-cream/15 bg-ink-soft px-3 py-2 text-sm text-cream outline-none focus:border-gold"
+                />
+              </div>
+            </div>
+          );
+        })}
+
+        <p className="text-xs text-cream/50">
+          Deixe o campo vazio para o pacote aparecer como &quot;sob consulta&quot; naquela faixa.
+        </p>
+
+        <SaveButton isPending={isPending} ok={state?.ok} />
+      </form>
+
+      <form action={restoreAction}>
+        <button
+          type="submit"
+          disabled={isRestoring}
+          className="focus-gold self-start rounded-full border border-cream/20 px-5 py-2.5 text-sm font-semibold text-cream/80 transition-colors hover:border-gold hover:text-gold disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isRestoring ? "Restaurando..." : "Restaurar preços padrão"}
+        </button>
+        {restoreState?.ok && <span className="ml-3 text-sm text-gold">Restaurado.</span>}
+      </form>
+    </div>
   );
 }

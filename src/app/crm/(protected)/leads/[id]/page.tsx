@@ -12,9 +12,12 @@ import FinanceiroForm from "@/components/crm/FinanceiroForm";
 import ChecklistForm from "@/components/crm/ChecklistForm";
 import WhatsappTemplatesMenu from "@/components/crm/WhatsappTemplatesMenu";
 import PedirDepoimentoButton from "@/components/crm/PedirDepoimentoButton";
+import WaitlistButton from "@/components/crm/WaitlistButton";
+import OrcamentoPdfButton from "@/components/crm/OrcamentoPdfButton";
 import { buildLeadWhatsappUrl } from "@/lib/crm/whatsapp";
 import { quizStepLabel } from "@/lib/crm/quiz-progress";
 import { manausTodayISO } from "@/lib/crm/manaus-date";
+import { getWaitlistEntryForLead, isDataOcupada } from "@/lib/crm/leads";
 import {
   DEFAULT_LINK_AVALIACAO_GOOGLE,
   DEFAULT_MODELOS_WHATSAPP,
@@ -70,6 +73,16 @@ export default async function CrmLeadDetailPage({
   const duplicate = duplicateMap.get(lead.id);
   const isFechado = lead.status === "fechado";
   const todayISO = manausTodayISO();
+
+  // Item 9 — lista de espera: só faz sentido para quem ainda não fechou e já
+  // tem uma data desejada (não "ainda não decidida").
+  const temDataDesejada = !isFechado && !!lead.dataEvento && !lead.dataSkipped;
+  const [dataOcupada, waitlistEntry] = temDataDesejada
+    ? await Promise.all([
+        isDataOcupada(lead.dataEvento!, lead.id),
+        getWaitlistEntryForLead(lead.id, lead.dataEvento!),
+      ])
+    : [false, null];
   // Leads antigos podem ter opcionais avulsos (addonSlugs) de antes do
   // simulador virar pacotes fechados — não existe mais lista de labels
   // pra eles, então mostramos o slug cru mesmo.
@@ -84,6 +97,23 @@ export default async function CrmLeadDetailPage({
             {duplicate.nome}
           </Link>
           .
+        </div>
+      )}
+
+      {temDataDesejada && dataOcupada && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          <span>
+            Essa data (
+            {dateTimeFormatter.format(new Date(`${lead.dataEvento}T00:00:00`))}) já está ocupada.
+          </span>
+          <WaitlistButton
+            leadId={lead.id}
+            nome={lead.nome}
+            telefone={lead.telefone}
+            data={lead.dataEvento!}
+            emEspera={!!waitlistEntry}
+            waitlistId={waitlistEntry?.id ?? null}
+          />
         </div>
       )}
 
@@ -102,6 +132,7 @@ export default async function CrmLeadDetailPage({
           >
             Editar
           </Link>
+          <OrcamentoPdfButton leadId={lead.id} />
           <WhatsappTemplatesMenu lead={lead} modelos={modelosWhatsapp} linkAvaliacaoGoogle={linkAvaliacaoGoogle} />
           <a
             href={buildLeadWhatsappUrl(lead)}

@@ -1,7 +1,9 @@
 import { requireSession } from "@/lib/crm/require-session";
 import Link from "next/link";
-import { getConfirmedEvents } from "@/lib/crm/leads";
+import { getAgendaMonthData, getConfirmedEvents } from "@/lib/crm/leads";
+import { manausTodayISO } from "@/lib/crm/manaus-date";
 import { quizThemes } from "@/lib/quiz-data";
+import AgendaCalendar from "@/components/crm/AgendaCalendar";
 
 export const dynamic = "force-dynamic";
 
@@ -12,19 +14,37 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   year: "numeric",
 });
 
-export default async function CrmAgendaPage() {
+function isMesValido(mes: string | undefined): mes is string {
+  return !!mes && /^\d{4}-\d{2}$/.test(mes);
+}
+
+export default async function CrmAgendaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mes?: string }>;
+}) {
   await requireSession();
-  const eventos = await getConfirmedEvents();
+  const { mes } = await searchParams;
+  const todayISO = manausTodayISO();
+  const mesISO = isMesValido(mes) ? mes : todayISO.slice(0, 7);
+
+  const [agenda, eventos] = await Promise.all([
+    getAgendaMonthData(mesISO),
+    getConfirmedEvents(),
+  ]);
 
   return (
     <div>
       <h1 className="font-display text-3xl text-cream">Agenda</h1>
       <p className="mt-2 text-sm text-cream/60">
-        Datas de eventos com status &quot;Fechado&quot; — são elas que aparecem como indisponíveis
-        no calendário do simulador (/orcamento).
+        Festas fechadas (dourado), datas bloqueadas (cinza) e lista de espera de cada dia. As
+        datas dourada e cinza aparecem como indisponíveis no calendário do simulador (/orcamento).
       </p>
 
-      <ul className="mt-6 flex flex-col gap-3">
+      <AgendaCalendar key={mesISO} mesISO={mesISO} todayISO={todayISO} agenda={agenda} />
+
+      <h2 className="mt-10 mb-4 font-display text-xl text-cream">Próximas festas</h2>
+      <ul className="flex flex-col gap-3">
         {eventos.map((lead) => {
           const tema = quizThemes.find((t) => t.slug === lead.temaSlug);
           return (

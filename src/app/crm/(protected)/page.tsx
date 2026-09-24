@@ -1,8 +1,13 @@
 import { requireSession } from "@/lib/crm/require-session";
 import Link from "next/link";
 import { getDashboardStats } from "@/lib/crm/leads";
+import { getDatasLiberadasComEspera, getRecompras } from "@/lib/crm/daily";
+import { getThemeLabel } from "@/lib/quiz-data";
+import { toWhatsappNumber } from "@/lib/crm/whatsapp";
 import { LEAD_ORIGENS } from "@/lib/crm/types";
 import { CHECKLIST_TOTAL_ITENS } from "@/lib/crm/checklist";
+import RecompraOfertaButton from "@/components/crm/RecompraOfertaButton";
+import AvisarEsperaButton from "@/components/crm/AvisarEsperaButton";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +38,11 @@ function parseISODate(iso: string) {
 
 export default async function CrmDashboardPage() {
   await requireSession();
-  const stats = await getDashboardStats();
+  const [stats, recompras, datasLiberadas] = await Promise.all([
+    getDashboardStats(),
+    getRecompras(),
+    getDatasLiberadasComEspera(),
+  ]);
   const totalLeads = Object.values(stats.porStatus).reduce((a, b) => a + b, 0);
   const porOrigemOrdenado = [...stats.porOrigem].sort((a, b) => b.total - a.total);
   const maxOrigemTotal = Math.max(1, ...porOrigemOrdenado.map((o) => o.total));
@@ -55,6 +64,92 @@ export default async function CrmDashboardPage() {
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {recompras.length > 0 && (
+          <section className="lg:col-span-2">
+            <h2 className="mb-4 font-display text-xl text-cream">Oferecer a festa do ano que vem</h2>
+            <ul className="flex flex-col gap-3">
+              {recompras.map((r) => {
+                const primeiroNome = r.nome.trim().split(/\s+/)[0];
+                const temaLabel = getThemeLabel(r.temaSlug) ?? "festa";
+                const texto =
+                  `Olá, ${primeiroNome}! Aqui é da Rosa Buffet 🌹 Já está chegando de novo a data da sua festa ` +
+                  `de ${temaLabel}! Vamos organizar a comemoração desse ano com a gente?`;
+                const url = `https://wa.me/${toWhatsappNumber(r.telefone)}?text=${encodeURIComponent(texto)}`;
+                return (
+                  <li
+                    key={r.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4"
+                  >
+                    <div>
+                      <Link
+                        href={`/crm/leads/${r.id}`}
+                        className="focus-gold font-semibold text-cream transition-colors hover:text-gold"
+                      >
+                        {r.nome}
+                      </Link>
+                      <p className="text-sm text-cream/60">
+                        {temaLabel} · festa anterior em {dateFormatter.format(parseISODate(r.dataEventoAnterior))} ·
+                        aniversário em {dateFormatter.format(parseISODate(r.proximoAniversario))}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="focus-gold rounded-full bg-gold px-4 py-2 text-xs font-semibold text-ink transition-colors hover:bg-gold-soft"
+                      >
+                        WhatsApp
+                      </a>
+                      <RecompraOfertaButton id={r.id} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        {datasLiberadas.length > 0 && (
+          <section className="lg:col-span-2">
+            <h2 className="mb-4 font-display text-xl text-cream">Data liberada — pessoas esperando</h2>
+            <ul className="flex flex-col gap-3">
+              {datasLiberadas.map((d) => (
+                <li key={d.data} className="rounded-xl border border-cream/10 bg-cream/5 p-4">
+                  <p className="mb-2 text-sm font-semibold text-cream">
+                    {dateFormatter.format(parseISODate(d.data))} ficou livre
+                  </p>
+                  <ul className="flex flex-col gap-2">
+                    {d.pessoas.map((p) => {
+                      const primeiroNome = p.nome.trim().split(/\s+/)[0];
+                      const texto =
+                        `Olá, ${primeiroNome}! Aqui é da Rosa Buffet 🌹 Boa notícia: a data que você estava ` +
+                        "aguardando ficou disponível! Quer fechar com a gente?";
+                      const url = `https://wa.me/${toWhatsappNumber(p.telefone)}?text=${encodeURIComponent(texto)}`;
+                      return (
+                        <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                          <span className="text-cream">{p.nome}</span>
+                          <div className="flex shrink-0 items-center gap-2">
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="focus-gold rounded-full bg-gold px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-gold-soft"
+                            >
+                              WhatsApp
+                            </a>
+                            <AvisarEsperaButton id={p.id} />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <section>
           <h2 className="mb-4 font-display text-xl text-cream">Retornos de hoje</h2>
           {stats.retornosHoje.length === 0 ? (

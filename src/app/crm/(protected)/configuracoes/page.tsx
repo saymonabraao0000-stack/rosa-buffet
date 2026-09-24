@@ -1,16 +1,21 @@
+import { Suspense } from "react";
 import { requireSession } from "@/lib/crm/require-session";
 import {
   DEFAULT_CONDICOES_PAGAMENTO,
   DEFAULT_LINK_AVALIACAO_GOOGLE,
   DEFAULT_MODELOS_WHATSAPP,
+  getDefaultPrecos,
   getSetting,
 } from "@/lib/crm/settings";
-import type { ModelosWhatsapp } from "@/lib/crm/settings";
+import type { ModelosWhatsapp, PrecosSetting } from "@/lib/crm/settings";
 import {
   CondicoesPagamentoForm,
   LinkAvaliacaoForm,
   ModelosWhatsappForm,
+  PrecosForm,
 } from "@/components/crm/SettingsForms";
+import { GoogleAgendaSection } from "@/components/crm/GoogleAgendaSection";
+import { isGoogleConfigured, isGoogleConnected, getGoogleCalendarSetting } from "@/lib/google-calendar";
 
 export const dynamic = "force-dynamic";
 
@@ -35,11 +40,16 @@ function Section({
 export default async function CrmConfiguracoesPage() {
   await requireSession();
 
-  const [condicoesPagamento, linkAvaliacao, modelosWhatsapp] = await Promise.all([
-    getSetting("condicoes_pagamento", DEFAULT_CONDICOES_PAGAMENTO),
-    getSetting("link_avaliacao_google", DEFAULT_LINK_AVALIACAO_GOOGLE),
-    getSetting<ModelosWhatsapp>("modelos_whatsapp", DEFAULT_MODELOS_WHATSAPP),
-  ]);
+  const [condicoesPagamento, linkAvaliacao, modelosWhatsapp, precos, googleConfigured, googleConnected, googleSetting] =
+    await Promise.all([
+      getSetting("condicoes_pagamento", DEFAULT_CONDICOES_PAGAMENTO),
+      getSetting("link_avaliacao_google", DEFAULT_LINK_AVALIACAO_GOOGLE),
+      getSetting<ModelosWhatsapp>("modelos_whatsapp", DEFAULT_MODELOS_WHATSAPP),
+      getSetting<PrecosSetting>("precos", getDefaultPrecos()),
+      Promise.resolve(isGoogleConfigured()),
+      isGoogleConnected(),
+      getGoogleCalendarSetting(),
+    ]);
 
   return (
     <div className="max-w-3xl">
@@ -70,12 +80,25 @@ export default async function CrmConfiguracoesPage() {
           <ModelosWhatsappForm value={modelosWhatsapp} />
         </Section>
 
-        <Section title="Pacotes e preços">
-          <p className="text-sm text-cream/50">Em breve.</p>
+        <Section
+          title="Pacotes e preços"
+          description="Preço de cada pacote por faixa de convidados, usado no simulador (/orcamento) e no orçamento em PDF."
+        >
+          <PrecosForm value={precos} />
         </Section>
 
-        <Section title="Google Agenda">
-          <p className="text-sm text-cream/50">Em breve.</p>
+        <Section
+          title="Google Agenda"
+          description="Cria e atualiza automaticamente um evento para cada festa fechada."
+        >
+          <Suspense fallback={null}>
+            <GoogleAgendaSection
+              configured={googleConfigured}
+              connected={googleConnected}
+              connectedEmail={googleSetting.connectedEmail}
+              connectedAt={googleSetting.connectedAt}
+            />
+          </Suspense>
         </Section>
       </div>
     </div>

@@ -1,8 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { deleteGoogleEventById, syncLeadToGoogle } from "@/lib/google-calendar";
+import { sql } from "@/lib/db/client";
 import { requireSession } from "./require-session";
 import {
   SESSION_COOKIE_NAME,
@@ -10,6 +13,7 @@ import {
   checkPassword,
   createSessionCookieValue,
 } from "./session";
+import { clearAttemptsForIp, isIpBlocked, registerFailedAttempt } from "./login-attempts";
 import * as leads from "./leads";
 import * as notes from "./notes";
 import { LEAD_ORIGENS } from "./types";
@@ -24,11 +28,31 @@ import type {
 
 export type LoginState = { error?: string } | undefined;
 
+// Item 6 — trava de login: IP vem do cabeçalho da Cloudflare, com fallback
+// pro primeiro valor de x-forwarded-for (proxies genéricos) e "desconhecido"
+// como último recurso (nunca deixa a trava quebrar por falta de IP).
+function getClientIp(headerList: Awaited<ReturnType<typeof headers>>): string {
+  const cfIp = headerList.get("cf-connecting-ip");
+  if (cfIp) return cfIp;
+  const forwardedFor = headerList.get("x-forwarded-for");
+  if (forwardedFor) return forwardedFor.split(",")[0].trim();
+  return "desconhecido";
+}
+
 export async function loginAction(_prevState: LoginState, formData: FormData): Promise<LoginState> {
+  const ip = getClientIp(await headers());
+
+  if (await isIpBlocked(ip)) {
+    return { error: "Muitas tentativas. Aguarde 15 minutos e tente de novo." };
+  }
+
   const password = String(formData.get("password") ?? "");
   if (!password || !checkPassword(password)) {
+    await registerFailedAttempt(ip);
     return { error: "Senha incorreta." };
   }
+
+  await clearAttemptsForIp(ip);
 
   (await cookies()).set(SESSION_COOKIE_NAME, createSessionCookieValue(), {
     httpOnly: true,
@@ -53,6 +77,9 @@ export async function updateLeadStatusAction(
 ): Promise<void> {
   await requireSession();
   await leads.updateLeadStatus(id, status, status === "perdido" ? (perdidoMotivo ?? null) : null);
+  // Google Agenda: entrar/sair de "fechado" cria/apaga o evento. Depois da
+  // resposta e sem nunca lançar — o CRM não depende do Google para salvar.
+  after(() => syncLeadToGoogle(id));
   revalidateLeadPages(id);
 }
 
@@ -107,13 +134,19 @@ function revalidateLeadPages(id: string) {
 export async function updateLeadAction(id: string, formData: FormData): Promise<void> {
   await requireSession();
   await leads.updateLeadDetails(id, readLeadDetails(formData));
+  // Mudou a data/nome/tema de uma festa fechada → atualiza o evento no Google.
+  after(() => syncLeadToGoogle(id));
   revalidateLeadPages(id);
   redirect(`/crm/leads/${id}`);
 }
 
 export async function deleteLeadAction(id: string): Promise<void> {
   await requireSession();
+  // O id do evento some junto com o lead — lê antes para apagar no Google.
+  const [row] = await sql`select google_event_id from leads where id = ${id}`;
+  const googleEventId = (row?.google_event_id as string | null) ?? null;
   await leads.deleteLead(id);
+  if (googleEventId) after(() => deleteGoogleEventById(googleEventId));
   revalidateLeadPages(id);
   redirect("/crm/leads");
 }

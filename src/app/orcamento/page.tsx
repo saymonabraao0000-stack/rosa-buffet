@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import PartyQuiz from "@/components/quiz/PartyQuiz";
 import { getBookedDates } from "@/lib/crm/leads";
+import { getDefaultPrecos, getSetting } from "@/lib/crm/settings";
+import type { PrecosSetting } from "@/lib/crm/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +21,9 @@ export const metadata: Metadata = {
 };
 
 export default async function OrcamentoPage() {
-  const bookedDates = await getBookedDates();
-  return <PartyQuiz bookedDates={bookedDates} />;
+  const [bookedDates, precos] = await Promise.all([
+    getBookedDates(),
+    getSetting<PrecosSetting>("precos", getDefaultPrecos()),
+  ]);
+  return <PartyQuiz bookedDates={bookedDates} precos={precos} />;
 }

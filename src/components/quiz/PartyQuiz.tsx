@@ -16,6 +16,7 @@ import QuizCalendar from "@/components/quiz/QuizCalendar";
 import { reservationDeposit, formatISODate } from "@/lib/availability-data";
 import { createLeadAction, updateLeadAction } from "@/lib/quiz/actions";
 import type { LeadProgressPatch } from "@/lib/crm/types";
+import type { PrecosSetting } from "@/lib/crm/settings";
 import {
   getPackagePrice,
   guestOptions,
@@ -77,13 +78,31 @@ const initialAnswers: Answers = {
 
 type PartyQuizProps = {
   bookedDates: string[];
+  /** Preços vindos do setting `precos` (Configurações → Pacotes e preços). */
+  precos: PrecosSetting;
 };
 
-export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
+export default function PartyQuiz({ bookedDates, precos }: PartyQuizProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const step = STEPS[stepIndex];
+
+  // Preço de um pacote numa faixa de convidados: usa o valor salvo em
+  // Configurações (setting `precos`) e cai para o valor de quiz-data.ts só
+  // se a faixa não estiver configurada (setting incompleta ou nunca salva).
+  const priceFor = (pkgSlug: string, guests: number | null): number | null => {
+    if (guests == null) return null;
+    const configured = precos[pkgSlug]?.pricesByGuests[guests];
+    if (configured != null) return configured;
+    return getPackagePrice(pkgSlug, guests);
+  };
+
+  const noteFor = (pkgSlug: string): string | undefined => {
+    const configured = precos[pkgSlug]?.note;
+    if (configured) return configured;
+    return partyPackages.find((p) => p.slug === pkgSlug)?.note;
+  };
 
   const tema = quizThemes.find((t) => t.slug === answers.temaSlug) ?? null;
   const guestOption = guestOptions.find((g) => g.slug === answers.guestSlug) ?? null;
@@ -91,8 +110,9 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
 
   const price = useMemo(() => {
     if (!pacote || !guestOption) return null;
-    return getPackagePrice(pacote.slug, guestOption.guests);
-  }, [pacote, guestOption]);
+    return priceFor(pacote.slug, guestOption.guests);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pacote, guestOption, precos]);
 
   const canAdvance = (() => {
     switch (step) {
@@ -159,7 +179,7 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
   };
 
   const selectPackageAndAdvance = (pacoteSlug: string) => {
-    const pkgPrice = guestOption ? getPackagePrice(pacoteSlug, guestOption.guests) : null;
+    const pkgPrice = guestOption ? priceFor(pacoteSlug, guestOption.guests) : null;
     selectAndAdvance(
       { pacoteSlug },
       {
@@ -479,7 +499,8 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
                     {partyPackages
                       .filter((p) => !p.themes || p.themes.includes(answers.temaSlug ?? ""))
                       .map((p, i) => {
-                      const pkgPrice = guestOption ? getPackagePrice(p.slug, guestOption.guests) : null;
+                      const pkgPrice = guestOption ? priceFor(p.slug, guestOption.guests) : null;
+                      const pkgNote = noteFor(p.slug);
                       return (
                         <button
                           key={p.slug}
@@ -508,8 +529,8 @@ export default function PartyQuiz({ bookedDates }: PartyQuizProps) {
                                 ? `${currency.format(pkgPrice)} para ${guestOption?.label.toLowerCase()}`
                                 : "Sob consulta"}
                             </span>
-                            {p.note && (
-                              <span className="mt-1 block text-xs text-gray-dark">{p.note}</span>
+                            {pkgNote && (
+                              <span className="mt-1 block text-xs text-gray-dark">{pkgNote}</span>
                             )}
                           </span>
                         </button>
