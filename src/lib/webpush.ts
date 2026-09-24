@@ -266,6 +266,14 @@ async function registrarStatusPush(resumo: Record<string, unknown>) {
  * registrados em `ultimo_erro` (a inscrição continua tentando nas próximas).
  */
 export async function sendPushToAll(payload: PushPayload): Promise<{ enviados: number; falhas: number }> {
+  // DISABLE_PUSH=1: usado em testes locais (ex.: agendamento de visita via
+  // Playwright) para não tocar de verdade no celular do dono. Mantém a
+  // checagem no código para futuros testes — nunca ligado em produção.
+  if (process.env.DISABLE_PUSH === "1") {
+    console.warn("sendPushToAll: DISABLE_PUSH=1, envio pulado");
+    return { enviados: 0, falhas: 0 };
+  }
+
   const rows = (await sql`
     select id, endpoint, p256dh, auth from push_subscriptions
   `) as { id: string; endpoint: string; p256dh: string; auth: string }[];

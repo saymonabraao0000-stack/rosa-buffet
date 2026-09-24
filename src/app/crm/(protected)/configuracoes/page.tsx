@@ -4,15 +4,17 @@ import {
   DEFAULT_CONDICOES_PAGAMENTO,
   DEFAULT_LINK_AVALIACAO_GOOGLE,
   DEFAULT_MODELOS_WHATSAPP,
+  DEFAULT_VISITAS_CONFIG,
   getDefaultPrecos,
   getSetting,
 } from "@/lib/crm/settings";
-import type { ModelosWhatsapp, PrecosSetting } from "@/lib/crm/settings";
+import type { ModelosWhatsapp, PrecosSetting, VisitasConfig } from "@/lib/crm/settings";
 import {
   CondicoesPagamentoForm,
   LinkAvaliacaoForm,
   ModelosWhatsappForm,
   PrecosForm,
+  VisitasConfigForm,
 } from "@/components/crm/SettingsForms";
 import { GoogleAgendaSection } from "@/components/crm/GoogleAgendaSection";
 import { isGoogleConfigured, isGoogleConnected, getGoogleCalendarSetting } from "@/lib/google-calendar";
@@ -41,16 +43,25 @@ function Section({
 export default async function CrmConfiguracoesPage() {
   await requireSession();
 
-  const [condicoesPagamento, linkAvaliacao, modelosWhatsapp, precos, googleConfigured, googleConnected, googleSetting] =
-    await Promise.all([
-      getSetting("condicoes_pagamento", DEFAULT_CONDICOES_PAGAMENTO),
-      getSetting("link_avaliacao_google", DEFAULT_LINK_AVALIACAO_GOOGLE),
-      getSetting<ModelosWhatsapp>("modelos_whatsapp", DEFAULT_MODELOS_WHATSAPP),
-      getSetting<PrecosSetting>("precos", getDefaultPrecos()),
-      Promise.resolve(isGoogleConfigured()),
-      isGoogleConnected(),
-      getGoogleCalendarSetting(),
-    ]);
+  const [
+    condicoesPagamento,
+    linkAvaliacao,
+    modelosWhatsapp,
+    precos,
+    visitasConfig,
+    googleConfigured,
+    googleConnected,
+    googleSetting,
+  ] = await Promise.all([
+    getSetting("condicoes_pagamento", DEFAULT_CONDICOES_PAGAMENTO),
+    getSetting("link_avaliacao_google", DEFAULT_LINK_AVALIACAO_GOOGLE),
+    getSetting<ModelosWhatsapp>("modelos_whatsapp", DEFAULT_MODELOS_WHATSAPP),
+    getSetting<PrecosSetting>("precos", getDefaultPrecos()),
+    getSetting<VisitasConfig>("visitas_config", DEFAULT_VISITAS_CONFIG),
+    Promise.resolve(isGoogleConfigured()),
+    isGoogleConnected(),
+    getGoogleCalendarSetting(),
+  ]);
 
   return (
     <div className="max-w-3xl">
@@ -93,6 +104,13 @@ export default async function CrmConfiguracoesPage() {
           description="Preço de cada pacote por faixa de convidados, usado no simulador (/orcamento) e no orçamento em PDF."
         >
           <PrecosForm value={precos} />
+        </Section>
+
+        <Section
+          title="Visitas"
+          description="Dias, horários e antecedência para o agendamento de visitas ao salão (/visita)."
+        >
+          <VisitasConfigForm value={visitasConfig} />
         </Section>
 
         <Section

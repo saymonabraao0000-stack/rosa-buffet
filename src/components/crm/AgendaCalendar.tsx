@@ -11,6 +11,8 @@ import {
 import { toWhatsappNumber } from "@/lib/crm/whatsapp";
 import { maskPhone } from "@/lib/crm/phone-mask";
 import type { AgendaMonthData } from "@/lib/crm/leads";
+import type { Visita } from "@/lib/visitas";
+import VisitaActions, { VisitaStatusBadge } from "@/components/crm/VisitaActions";
 
 // Item 5 — calendário mensal da Agenda: navegação por mês (links, mantém a
 // página server-driven), seleção de dia (estado local) e painel do dia
@@ -45,10 +47,12 @@ export default function AgendaCalendar({
   mesISO,
   todayISO,
   agenda,
+  visitas = [],
 }: {
   mesISO: string;
   todayISO: string;
   agenda: AgendaMonthData;
+  visitas?: Visita[];
 }) {
   const [selected, setSelected] = useState<string | null>(
     todayISO.slice(0, 7) === mesISO ? todayISO : null,
@@ -67,6 +71,12 @@ export default function AgendaCalendar({
   for (const e of agenda.espera) {
     if (!esperaByDate.has(e.data)) esperaByDate.set(e.data, []);
     esperaByDate.get(e.data)!.push({ id: e.id, nome: e.nome, telefone: e.telefone });
+  }
+  const visitasByDate = new Map<string, Visita[]>();
+  for (const v of visitas) {
+    if (v.status === "cancelada") continue;
+    if (!visitasByDate.has(v.data)) visitasByDate.set(v.data, []);
+    visitasByDate.get(v.data)!.push(v);
   }
 
   const [ano, mes] = mesISO.split("-").map(Number);
@@ -88,6 +98,7 @@ export default function AgendaCalendar({
         bloqueado: bloqueioByDate.has(selected),
         bloqueioMotivo: bloqueioByDate.get(selected) ?? "",
         espera: esperaByDate.get(selected) ?? [],
+        visitas: visitasByDate.get(selected) ?? [],
       }
     : null;
 
@@ -157,6 +168,7 @@ export default function AgendaCalendar({
             const festas = festasByDate.get(iso) ?? [];
             const bloqueado = bloqueioByDate.has(iso);
             const espera = esperaByDate.get(iso) ?? [];
+            const visitasDoDia = visitasByDate.get(iso) ?? [];
             const isToday = iso === todayISO;
             const isSelected = iso === selected;
             const dia = Number(iso.slice(-2));
@@ -164,6 +176,7 @@ export default function AgendaCalendar({
             let cellClasses = "border-cream/10 text-cream/70 hover:bg-cream/10";
             if (festas.length > 0) cellClasses = "border-gold/50 bg-gold/15 text-gold";
             else if (bloqueado) cellClasses = "border-cream/20 bg-cream/10 text-cream/40";
+            else if (visitasDoDia.length > 0) cellClasses = "border-sky-400/50 bg-sky-400/10 text-sky-300";
 
             return (
               <button
@@ -185,6 +198,7 @@ export default function AgendaCalendar({
                 <span className="flex gap-0.5 sm:hidden">
                   {festas.length > 0 && <span className="h-1 w-1 rounded-full bg-gold" aria-hidden="true" />}
                   {bloqueado && <span className="h-1 w-1 rounded-full bg-cream/50" aria-hidden="true" />}
+                  {visitasDoDia.length > 0 && <span className="h-1 w-1 rounded-full bg-sky-400" aria-hidden="true" />}
                 </span>
                 {espera.length > 0 && (
                   <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cream px-1 text-[9px] font-bold text-ink">
@@ -208,6 +222,10 @@ export default function AgendaCalendar({
           <span className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-cream" aria-hidden="true" />
             Lista de espera
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-sky-400" aria-hidden="true" />
+            Visita ao salão
           </span>
         </div>
       </div>
@@ -237,6 +255,49 @@ export default function AgendaCalendar({
                       >
                         {f.nome}
                       </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="mt-5 border-t border-cream/10 pt-4">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-cream/60">
+                Visitas ao salão
+              </h4>
+              {diaSelecionado.visitas.length === 0 ? (
+                <p className="mt-1 text-sm text-cream/50">Nenhuma visita agendada.</p>
+              ) : (
+                <ul className="mt-2 flex flex-col gap-3">
+                  {diaSelecionado.visitas.map((v) => (
+                    <li key={v.id} className="rounded-lg border border-cream/10 p-2.5 text-sm">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          {v.leadId ? (
+                            <Link
+                              href={`/crm/leads/${v.leadId}`}
+                              className="focus-gold font-medium text-cream hover:text-gold"
+                            >
+                              {v.nome}
+                            </Link>
+                          ) : (
+                            <span className="font-medium text-cream">{v.nome}</span>
+                          )}
+                          <span className="ml-2 text-xs text-cream/60">{v.hora}</span>
+                        </div>
+                        <VisitaStatusBadge status={v.status} />
+                      </div>
+                      <div className="mt-2">
+                        <VisitaActions
+                          visitaId={v.id}
+                          status={v.status}
+                          leadId={v.leadId}
+                          nome={v.nome}
+                          telefone={v.telefone}
+                          data={v.data}
+                          hora={v.hora}
+                        />
+                      </div>
                     </li>
                   ))}
                 </ul>

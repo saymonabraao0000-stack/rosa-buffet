@@ -4,6 +4,7 @@ import { getAgendaMonthData, getConfirmedEvents } from "@/lib/crm/leads";
 import { manausTodayISO } from "@/lib/crm/manaus-date";
 import { quizThemes } from "@/lib/quiz-data";
 import AgendaCalendar from "@/components/crm/AgendaCalendar";
+import { listVisitasForMonth } from "@/lib/visitas";
 
 export const dynamic = "force-dynamic";
 
@@ -28,20 +29,22 @@ export default async function CrmAgendaPage({
   const todayISO = manausTodayISO();
   const mesISO = isMesValido(mes) ? mes : todayISO.slice(0, 7);
 
-  const [agenda, eventos] = await Promise.all([
+  const [agenda, eventos, visitas] = await Promise.all([
     getAgendaMonthData(mesISO),
     getConfirmedEvents(),
+    listVisitasForMonth(mesISO),
   ]);
 
   return (
     <div>
       <h1 className="font-display text-3xl text-cream">Agenda</h1>
       <p className="mt-2 text-sm text-cream/60">
-        Festas fechadas (dourado), datas bloqueadas (cinza) e lista de espera de cada dia. As
-        datas dourada e cinza aparecem como indisponíveis no calendário do simulador (/orcamento).
+        Festas fechadas (dourado), datas bloqueadas (cinza), visitas ao salão (azul) e lista de
+        espera de cada dia. As datas dourada e cinza aparecem como indisponíveis no calendário do
+        simulador (/orcamento).
       </p>
 
-      <AgendaCalendar key={mesISO} mesISO={mesISO} todayISO={todayISO} agenda={agenda} />
+      <AgendaCalendar key={mesISO} mesISO={mesISO} todayISO={todayISO} agenda={agenda} visitas={visitas} />
 
       <h2 className="mt-10 mb-4 font-display text-xl text-cream">Próximas festas</h2>
       <ul className="flex flex-col gap-3">

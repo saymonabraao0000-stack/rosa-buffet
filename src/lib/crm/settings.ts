@@ -52,7 +52,8 @@ export const DEFAULT_MODELOS_WHATSAPP: ModelosWhatsapp = {
     "Qualquer dúvida sobre o pagamento, é só falar com a gente.",
   posFesta:
     "Oi, {nome}! Foi uma alegria fazer parte da sua festa de {tema} 🌹 Esperamos que tenha sido um dia inesquecível! " +
-    "Se puder, ficaríamos muito felizes com uma avaliação: {link_avaliacao} E se quiser deixar um depoimento pra gente, é só aqui: {link_depoimento}",
+    "Se puder, ficaríamos muito felizes com uma avaliação: {link_avaliacao}. " +
+    "E se quiser deixar um depoimento pra gente, é só aqui: {link_depoimento}",
 };
 
 /** Deriva os preços padrão a partir de `partyPackages` (src/lib/quiz-data.ts). */
@@ -66,6 +67,29 @@ export function getDefaultPrecos(): PrecosSetting {
   }
   return precos;
 }
+
+/** Configurações de agendamento de visitas ao salão (setting `visitas_config`). */
+export type VisitasConfig = {
+  /** Dias da semana com visita (0=domingo .. 6=sábado). Padrão: terça a sábado. */
+  diasSemana: number[];
+  horaInicio: string; // "HH:MM"
+  horaFim: string; // "HH:MM"
+  duracaoMinutos: number;
+  antecedenciaMinimaHoras: number;
+  diasFrente: number;
+  /** Se true (padrão), exclui dias com festa fechada ou bloqueados. */
+  excluirDiasOcupados: boolean;
+};
+
+export const DEFAULT_VISITAS_CONFIG: VisitasConfig = {
+  diasSemana: [2, 3, 4, 5, 6],
+  horaInicio: "09:00",
+  horaFim: "17:00",
+  duracaoMinutos: 60,
+  antecedenciaMinimaHoras: 12,
+  diasFrente: 30,
+  excluirDiasOcupados: true,
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isRecord(value: any): value is Record<string, unknown> {

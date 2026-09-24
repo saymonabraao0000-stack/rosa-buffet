@@ -7,9 +7,10 @@ import {
   saveModelosWhatsappAction,
   savePrecosAction,
   restorePrecosAction,
+  saveVisitasConfigAction,
   type SaveSettingState,
 } from "@/lib/crm/settings-actions";
-import type { ModelosWhatsapp, PrecosSetting } from "@/lib/crm/settings";
+import type { ModelosWhatsapp, PrecosSetting, VisitasConfig } from "@/lib/crm/settings";
 import { partyPackages, guestOptions } from "@/lib/quiz-data";
 
 function SaveButton({ isPending, ok }: { isPending: boolean; ok?: boolean }) {
@@ -229,5 +230,119 @@ export function PrecosForm({ value }: { value: PrecosSetting }) {
         {restoreState?.ok && <span className="ml-3 text-sm text-gold">Restaurado.</span>}
       </form>
     </div>
+  );
+}
+
+const DIAS_SEMANA_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+export function VisitasConfigForm({ value }: { value: VisitasConfig }) {
+  const [state, formAction, isPending] = useActionState<SaveSettingState, FormData>(
+    saveVisitasConfigAction,
+    undefined,
+  );
+
+  return (
+    <form action={formAction} className="flex flex-col gap-5">
+      <div>
+        <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-cream/60">
+          Dias com visita
+        </span>
+        <div className="flex flex-wrap gap-3">
+          {DIAS_SEMANA_LABELS.map((label, i) => (
+            <label key={i} className="flex items-center gap-1.5 text-sm text-cream">
+              <input
+                type="checkbox"
+                name={`dia_${i}`}
+                defaultChecked={value.diasSemana.includes(i)}
+                className="h-4 w-4 accent-gold"
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="horaInicio" className="text-xs font-medium text-cream/70">
+            Início
+          </label>
+          <input
+            id="horaInicio"
+            type="time"
+            name="horaInicio"
+            defaultValue={value.horaInicio}
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="horaFim" className="text-xs font-medium text-cream/70">
+            Fim
+          </label>
+          <input
+            id="horaFim"
+            type="time"
+            name="horaFim"
+            defaultValue={value.horaFim}
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="duracaoMinutos" className="text-xs font-medium text-cream/70">
+            Duração (min)
+          </label>
+          <input
+            id="duracaoMinutos"
+            type="number"
+            min={15}
+            step={5}
+            name="duracaoMinutos"
+            defaultValue={value.duracaoMinutos}
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="diasFrente" className="text-xs font-medium text-cream/70">
+            Dias à frente
+          </label>
+          <input
+            id="diasFrente"
+            type="number"
+            min={1}
+            max={90}
+            name="diasFrente"
+            defaultValue={value.diasFrente}
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="antecedenciaMinimaHoras" className="text-xs font-medium text-cream/70">
+          Antecedência mínima (horas)
+        </label>
+        <input
+          id="antecedenciaMinimaHoras"
+          type="number"
+          min={0}
+          max={168}
+          name="antecedenciaMinimaHoras"
+          defaultValue={value.antecedenciaMinimaHoras}
+          className="focus-gold w-32 rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
+        />
+      </div>
+
+      <label className="flex items-center gap-2 text-sm text-cream">
+        <input
+          type="checkbox"
+          name="excluirDiasOcupados"
+          defaultChecked={value.excluirDiasOcupados}
+          className="h-4 w-4 accent-gold"
+        />
+        Excluir dias com festa fechada ou bloqueados
+      </label>
+
+      <SaveButton isPending={isPending} ok={state?.ok} />
+    </form>
   );
 }

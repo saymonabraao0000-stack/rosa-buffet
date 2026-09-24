@@ -16,6 +16,7 @@ import {
   Settings,
   Images,
   BarChart3,
+  CalendarCheck,
 } from "lucide-react";
 import { logoutAction } from "@/lib/crm/actions";
 
@@ -24,6 +25,7 @@ const navItems = [
   { href: "/crm", label: "Dashboard", icon: LayoutDashboard },
   { href: "/crm/leads", label: "Leads", icon: Users },
   { href: "/crm/agenda", label: "Agenda", icon: Calendar },
+  { href: "/crm/visitas", label: "Visitas", icon: CalendarCheck },
   { href: "/crm/funil", label: "Funil", icon: Kanban },
   { href: "/crm/relatorio", label: "Relatório", icon: BarChart3 },
   { href: "/crm/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
@@ -40,6 +42,7 @@ const mobileTabItems = [
 ];
 
 const mobileMoreItems = [
+  { href: "/crm/visitas", label: "Visitas", icon: CalendarCheck },
   { href: "/crm/funil", label: "Funil", icon: Kanban },
   { href: "/crm/relatorio", label: "Relatório", icon: BarChart3 },
   { href: "/crm/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },

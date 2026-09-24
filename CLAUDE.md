@@ -217,6 +217,8 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 
 **Item 17 (login por pessoa)** ficou para depois por decisão do Saymon em 2026-09-23 — mantém a senha única.
 - **Alerta de lead sem resposta** (2026-09-24): Cron Trigger `*/15 * * * *` → `POST /api/cron/sem-resposta` ([sem-resposta.ts](src/lib/crm/sem-resposta.ts)). Lead do simulador ainda "novo" 1h depois gera um aviso no ntfy, uma vez só (`leads.alerta_sem_resposta_em`), só entre 7h e 22h de Manaus e para leads de até 3 dias. O `custom-worker.ts` escolhe a rota pelo `event.cron`; o token dos crons fica em [cron-auth.ts](src/lib/cron-auth.ts).
+- **Agendamento de visitas** (2026-09-24): página pública `/visita` (dia → horário livre → nome/WhatsApp; anti-spam igual ao simulador; `.ics` em `/visita/[id]/ics`), tabela `visitas` com índice único parcial em (data, hora) para status ativos (dois clientes nunca pegam o mesmo horário). Horários em Configurações → Visitas (setting `visitas_config`, padrão ter–sáb 9h–17h, 1 h, antecedência 12 h, exclui dias com festa/bloqueio). No CRM: `/crm/visitas`, cor própria na Agenda, bloco na ficha do lead. Aviso push "Visita agendada". Botão de entrada no fim do simulador, nas páginas de pacote e em /links. Em teste local, `DISABLE_PUSH=1` (no `.dev.vars`) desliga o envio de push.
+- **Pedir avaliação** (2026-09-24): festas fechadas de 2 a 10 dias atrás aparecem no dashboard com o WhatsApp pós-festa (link do Google + link de depoimento reaproveitado) e "Já pedi" (`leads.avaliacao_pedida_em`); também entram no resumo das 8h ([pos-festa.ts](src/lib/crm/pos-festa.ts)).
 
 ## Fluxo de publicação
 

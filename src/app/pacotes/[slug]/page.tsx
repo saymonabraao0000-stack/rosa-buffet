@@ -243,6 +243,12 @@ export default async function PacotePage({
                 label="Falar no WhatsApp"
                 message={`Olá! Tenho interesse no Pacote ${pkg.label}.`}
               />
+              <Link
+                href={`/visita${origem ? `?origem=${encodeURIComponent(origem)}` : ""}`}
+                className="focus-gold inline-flex items-center justify-center gap-2 rounded-full border border-cream/40 px-8 py-4 text-base font-semibold text-cream transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:text-gold"
+              >
+                Agendar visita ao salão
+              </Link>
             </div>
 
             <div className="mx-auto mt-10 flex max-w-md flex-wrap items-center justify-center gap-3 text-sm">

@@ -216,3 +216,38 @@ create table if not exists push_subscriptions (
   ultimo_ok_em   timestamptz,
   ultimo_erro    text
 );
+
+-- ============================================================================
+-- Agendamento de visitas ao salão (2026-09-24) — /visita no site público,
+-- integrado ao CRM (agenda, ficha do lead, /crm/visitas). Só aditivo.
+-- ============================================================================
+
+-- visitas: um horário agendado por alguém interessado em conhecer o salão.
+create table if not exists visitas (
+  id            uuid primary key default gen_random_uuid(),
+  lead_id       uuid references leads (id) on delete set null,
+  nome          text not null,
+  telefone      text not null,
+  data          date not null,
+  hora          text not null, -- "HH:MM"
+  status        text not null default 'agendada'
+                check (status in ('agendada', 'confirmada', 'realizada', 'cancelada', 'nao_compareceu')),
+  observacao    text,
+  origem        text,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+
+-- Impede dois agendamentos ativos no mesmo horário (a criação confia nesse
+-- índice único para recusar corrida entre duas pessoas escolhendo o mesmo slot).
+create unique index if not exists visitas_data_hora_ativa_idx
+  on visitas (data, hora) where status in ('agendada', 'confirmada');
+
+create index if not exists visitas_data_idx on visitas (data);
+
+-- ============================================================================
+-- Pedido de avaliação pós-festa (2026-09-24) — lembrete no dashboard para
+-- pedir avaliação/depoimento entre 2 e 10 dias depois da festa fechada. Só
+-- aditivo.
+-- ============================================================================
+alter table leads add column if not exists avaliacao_pedida_em timestamptz;

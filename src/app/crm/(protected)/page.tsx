@@ -1,14 +1,19 @@
 import { requireSession } from "@/lib/crm/require-session";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { getDashboardStats } from "@/lib/crm/leads";
 import { getDatasLiberadasComEspera, getRecompras } from "@/lib/crm/daily";
+import { getPedidosDeAvaliacao } from "@/lib/crm/pos-festa";
 import { getThemeLabel } from "@/lib/quiz-data";
-import { toWhatsappNumber } from "@/lib/crm/whatsapp";
+import { toWhatsappNumber, fillWhatsappTemplate } from "@/lib/crm/whatsapp";
 import { LEAD_ORIGENS } from "@/lib/crm/types";
 import { CHECKLIST_TOTAL_ITENS } from "@/lib/crm/checklist";
 import RecompraOfertaButton from "@/components/crm/RecompraOfertaButton";
 import AvisarEsperaButton from "@/components/crm/AvisarEsperaButton";
+import PedirAvaliacaoBotoes from "@/components/crm/PedirAvaliacaoBotoes";
 import { hasAnyPushSubscription } from "@/lib/webpush";
+import { getSetting, DEFAULT_MODELOS_WHATSAPP, DEFAULT_LINK_AVALIACAO_GOOGLE } from "@/lib/crm/settings";
+import { getOrCreateTestimonialToken } from "@/lib/crm/testimonials";
 
 export const dynamic = "force-dynamic";
 
@@ -39,15 +44,39 @@ function parseISODate(iso: string) {
 
 export default async function CrmDashboardPage() {
   await requireSession();
-  const [stats, recompras, datasLiberadas, temAvisoAtivo] = await Promise.all([
-    getDashboardStats(),
-    getRecompras(),
-    getDatasLiberadasComEspera(),
-    hasAnyPushSubscription(),
-  ]);
+  const [stats, recompras, datasLiberadas, temAvisoAtivo, pedidosAvaliacao, modelosWhatsapp, linkAvaliacaoGoogle] =
+    await Promise.all([
+      getDashboardStats(),
+      getRecompras(),
+      getDatasLiberadasComEspera(),
+      hasAnyPushSubscription(),
+      getPedidosDeAvaliacao(),
+      getSetting("modelos_whatsapp", DEFAULT_MODELOS_WHATSAPP),
+      getSetting("link_avaliacao_google", DEFAULT_LINK_AVALIACAO_GOOGLE),
+    ]);
   const totalLeads = Object.values(stats.porStatus).reduce((a, b) => a + b, 0);
   const porOrigemOrdenado = [...stats.porOrigem].sort((a, b) => b.total - a.total);
   const maxOrigemTotal = Math.max(1, ...porOrigemOrdenado.map((o) => o.total));
+
+  const host = (await headers()).get("host") ?? "";
+  const origin = host ? `${host.startsWith("localhost") ? "http" : "https"}://${host}` : "";
+
+  // Gera (ou reaproveita) o link de depoimento de cada pedido pendente e
+  // monta a URL do WhatsApp já com o modelo pós-festa preenchido.
+  const pedidosAvaliacaoComLink = await Promise.all(
+    pedidosAvaliacao.map(async (p) => {
+      const token = await getOrCreateTestimonialToken(p.id, p.nome);
+      const primeiroNome = p.nome.trim().split(/\s+/)[0];
+      const texto = fillWhatsappTemplate(modelosWhatsapp.posFesta, {
+        nome: primeiroNome,
+        tema: getThemeLabel(p.temaSlug) ?? undefined,
+        link_avaliacao: linkAvaliacaoGoogle || undefined,
+        link_depoimento: origin ? `${origin}/depoimento/${token}` : undefined,
+      });
+      const whatsappUrl = `https://wa.me/${toWhatsappNumber(p.telefone)}?text=${encodeURIComponent(texto)}`;
+      return { ...p, whatsappUrl };
+    }),
+  );
 
   return (
     <div>
@@ -117,6 +146,34 @@ export default async function CrmDashboardPage() {
                   </li>
                 );
               })}
+            </ul>
+          </section>
+        )}
+
+        {pedidosAvaliacaoComLink.length > 0 && (
+          <section className="lg:col-span-2">
+            <h2 className="mb-4 font-display text-xl text-cream">Pedir avaliação</h2>
+            <ul className="flex flex-col gap-3">
+              {pedidosAvaliacaoComLink.map((p) => (
+                <li
+                  key={p.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4"
+                >
+                  <div>
+                    <Link
+                      href={`/crm/leads/${p.id}`}
+                      className="focus-gold font-semibold text-cream transition-colors hover:text-gold"
+                    >
+                      {p.nome}
+                    </Link>
+                    <p className="text-sm text-cream/60">
+                      {getThemeLabel(p.temaSlug) ?? "festa"} · festa em{" "}
+                      {dateFormatter.format(parseISODate(p.dataEvento))}
+                    </p>
+                  </div>
+                  <PedirAvaliacaoBotoes id={p.id} whatsappUrl={p.whatsappUrl} />
+                </li>
+              ))}
             </ul>
           </section>
         )}

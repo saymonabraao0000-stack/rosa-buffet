@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { Calculator, ChevronRight, Gift, Globe, Images, MapPin, Star } from "lucide-react";
+import { Calculator, CalendarCheck, ChevronRight, Gift, Globe, Images, MapPin, Star } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
 
@@ -69,6 +69,13 @@ export default function LinksPage() {
             </span>
             <ChevronRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </a>
+
+          <LinkButton
+            href="/visita?origem=instagram"
+            icon={<CalendarCheck className="h-5 w-5" aria-hidden="true" />}
+          >
+            Agendar visita ao salão
+          </LinkButton>
 
           <LinkButton href={whatsappUrl} external icon={<WhatsAppIcon className="h-5 w-5" aria-hidden="true" />}>
             Falar no WhatsApp

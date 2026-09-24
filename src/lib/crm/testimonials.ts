@@ -77,6 +77,25 @@ export async function createTestimonialRequest(input: {
   return { id: rows[0].id, token: rows[0].token };
 }
 
+/**
+ * Devolve o token de um pedido de depoimento pendente (ainda não respondido)
+ * para o lead, reaproveitando se já existir um; só cria um pedido novo se
+ * não houver nenhum. Usado pelo lembrete "Pedir avaliação" do dashboard, que
+ * monta o link toda vez que a lista é renderizada sem duplicar pedidos.
+ */
+export async function getOrCreateTestimonialToken(leadId: string, nome: string): Promise<string> {
+  const existing = await sql`
+    select token from testimonials
+    where lead_id = ${leadId} and respondido_em is null
+    order by created_at desc
+    limit 1
+  `;
+  if (existing[0]) return existing[0].token;
+
+  const { token } = await createTestimonialRequest({ leadId, nome });
+  return token;
+}
+
 export async function getTestimonialByToken(token: string): Promise<Testimonial | null> {
   const rows = await sql`select * from testimonials where token = ${token}`;
   return rows[0] ? mapRow(rows[0]) : null;

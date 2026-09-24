@@ -14,6 +14,8 @@ import WhatsappTemplatesMenu from "@/components/crm/WhatsappTemplatesMenu";
 import PedirDepoimentoButton from "@/components/crm/PedirDepoimentoButton";
 import WaitlistButton from "@/components/crm/WaitlistButton";
 import OrcamentoPdfButton from "@/components/crm/OrcamentoPdfButton";
+import LeadVisitasSection from "@/components/crm/LeadVisitasSection";
+import { listVisitasByLead } from "@/lib/visitas";
 import { buildLeadWhatsappUrl } from "@/lib/crm/whatsapp";
 import { quizStepLabel } from "@/lib/crm/quiz-progress";
 import { manausTodayISO } from "@/lib/crm/manaus-date";
@@ -56,12 +58,13 @@ export default async function CrmLeadDetailPage({
 }) {
   await requireSession();
   const { id } = await params;
-  const [lead, notes, duplicateMap, modelosWhatsapp, linkAvaliacaoGoogle] = await Promise.all([
+  const [lead, notes, duplicateMap, modelosWhatsapp, linkAvaliacaoGoogle, visitas] = await Promise.all([
     getLeadById(id),
     listNotesForLead(id),
     findDuplicatesForLeadIds([id]),
     getSetting<ModelosWhatsapp>("modelos_whatsapp", DEFAULT_MODELOS_WHATSAPP),
     getSetting("link_avaliacao_google", DEFAULT_LINK_AVALIACAO_GOOGLE),
+    listVisitasByLead(id),
   ]);
 
   if (!lead) notFound();
@@ -201,6 +204,8 @@ export default async function CrmLeadDetailPage({
               <ChecklistForm lead={lead} />
             </section>
           )}
+
+          <LeadVisitasSection leadId={lead.id} nome={lead.nome} telefone={lead.telefone} visitasIniciais={visitas} />
 
           <section className="mt-6 rounded-xl border border-cream/10 bg-cream/5 p-5">
             <h2 className="mb-4 font-display text-lg text-cream">Anotações</h2>

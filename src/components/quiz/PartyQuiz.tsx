@@ -634,12 +634,20 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                     </p>
                   </div>
 
-                  <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                  <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:flex-wrap">
                     <WhatsAppButton
                       size="lg"
                       label="Receber orçamento exato pelo WhatsApp"
                       message={whatsappMessage}
                     />
+                    <Link
+                      href={`/visita?nome=${encodeURIComponent(answers.nome)}&tel=${encodeURIComponent(answers.telefone)}${
+                        origem ? `&origem=${encodeURIComponent(origem)}` : ""
+                      }`}
+                      className="focus-gold inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-gold hover:text-gold"
+                    >
+                      Agendar visita ao salão
+                    </Link>
                     <button
                       type="button"
                       onClick={() => {

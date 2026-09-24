@@ -2,6 +2,7 @@ import "server-only";
 import { sql } from "@/lib/db/client";
 import { QUIZ_DONE_STEPS } from "./quiz-progress";
 import { manausTodayISO, addDaysISO } from "./manaus-date";
+import { getPedidosDeAvaliacao } from "./pos-festa";
 
 // Resumo diário do CRM (item 13 do plano, Planos/crm-melhorias-2026-09-24.md)
 // e base da "festa do ano que vem" (item 8). Consultas próprias, separadas de
@@ -245,14 +246,21 @@ export type DailySummary = { titulo: string; texto: string };
  * a rota do cron não manda notificação nesse caso.
  */
 export async function buildDailySummary(): Promise<DailySummary | null> {
-  const [{ hoje: retornosHoje, atrasados: retornosAtrasados }, festas, leadsNovas, recompras, datasLiberadas] =
-    await Promise.all([
-      getRetornos(),
-      getFestasProximos7Dias(),
-      getLeadsNovas24h(),
-      getRecompras(),
-      getDatasLiberadasComEspera(),
-    ]);
+  const [
+    { hoje: retornosHoje, atrasados: retornosAtrasados },
+    festas,
+    leadsNovas,
+    recompras,
+    datasLiberadas,
+    pedidosAvaliacao,
+  ] = await Promise.all([
+    getRetornos(),
+    getFestasProximos7Dias(),
+    getLeadsNovas24h(),
+    getRecompras(),
+    getDatasLiberadasComEspera(),
+    getPedidosDeAvaliacao(),
+  ]);
 
   const linhas: string[] = [];
 
@@ -283,6 +291,11 @@ export async function buildDailySummary(): Promise<DailySummary | null> {
     linhas.push(
       `Datas liberadas com espera: ${datasLiberadas.length} data(s), ${totalEsperando} pessoa(s) esperando.`,
     );
+  }
+
+  if (pedidosAvaliacao.length) {
+    const nomes = pedidosAvaliacao.map((p) => p.nome.trim().split(/\s+/)[0]);
+    linhas.push(`Pedir avaliação: ${nomes.join(", ")}.`);
   }
 
   if (!linhas.length) return null;
