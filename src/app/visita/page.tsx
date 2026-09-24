@@ -29,7 +29,7 @@ export default async function VisitaPage({
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-cream pt-28 pb-20">
+      <main className="min-h-screen bg-ink pt-28 pb-20 text-cream">
         <VisitaForm
           dias={dias}
           nomeInicial={params.nome ?? ""}

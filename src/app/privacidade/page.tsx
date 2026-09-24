@@ -17,20 +17,20 @@ export default function PrivacidadePage() {
   return (
     <>
       <Navbar />
-      <main className="bg-cream py-20 sm:py-28">
+      {/* Faixa escura no topo: o Navbar é transparente com texto claro e
+          sumia sobre o fundo creme. */}
+      <header className="bg-ink pb-12 pt-32 text-cream sm:pb-16 sm:pt-36">
         <Container>
           <div className="mx-auto max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-              Transparência
-            </p>
-            <h1 className="mt-3 font-display text-3xl text-ink sm:text-4xl">
-              Política de Privacidade
-            </h1>
-            <p className="mt-3 text-sm text-gray-dark">
-              Última atualização: setembro de 2026.
-            </p>
-
-            <div className="mt-10 flex flex-col gap-8 text-base leading-relaxed text-gray-dark">
+            <h1 className="font-display text-3xl sm:text-4xl">Política de Privacidade</h1>
+            <p className="mt-3 text-sm text-cream/65">Última atualização: setembro de 2026.</p>
+          </div>
+        </Container>
+      </header>
+      <main className="bg-cream py-14 sm:py-20">
+        <Container>
+          <div className="mx-auto max-w-3xl">
+            <div className="flex flex-col gap-8 text-base leading-relaxed text-gray-dark">
               <p>
                 Esta página explica, de forma simples e direta, o que a{" "}
                 <strong className="text-ink">{siteConfig.fullName}</strong>{" "}

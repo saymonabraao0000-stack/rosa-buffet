@@ -94,17 +94,17 @@ export default function VisitaForm({
     );
     return (
       <Container className="max-w-lg">
-        <div className="rounded-2xl border border-ink/10 bg-white p-8 text-center shadow-sm">
+        <div className="rounded-2xl border border-cream/10 bg-cream/5 p-8 text-center shadow-sm">
           <Check className="mx-auto h-10 w-10 text-gold" aria-hidden="true" />
-          <h1 className="mt-4 font-display text-2xl text-ink sm:text-3xl">Visita agendada!</h1>
-          <p className="mt-2 text-sm text-gray-dark">
+          <h1 className="mt-4 font-display text-2xl text-cream sm:text-3xl">Visita agendada!</h1>
+          <p className="mt-2 text-sm text-cream/65">
             {dateFormatterCompleto.format(new Date(`${dataEscolhida}T12:00:00`))} às {horaEscolhida}
           </p>
 
-          <div className="mt-6 flex items-start gap-3 rounded-xl border border-ink/10 bg-cream/60 p-4 text-left text-sm text-gray-dark">
+          <div className="mt-6 flex items-start gap-3 rounded-xl border border-cream/10 bg-ink/60 p-4 text-left text-sm text-cream/65">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" aria-hidden="true" />
             <div>
-              <p className="font-medium text-ink">{siteConfig.address.full}</p>
+              <p className="font-medium text-cream">{siteConfig.address.full}</p>
               <a
                 href={siteConfig.googleMapsUrl}
                 target="_blank"
@@ -120,7 +120,7 @@ export default function VisitaForm({
             {visitaId && (
               <a
                 href={`/visita/${visitaId}/ics`}
-                className="focus-gold inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-ink/15 px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-gold hover:text-gold"
+                className="focus-gold inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-sm font-semibold text-cream transition-colors hover:border-gold hover:text-gold"
               >
                 <Download className="h-4 w-4" aria-hidden="true" />
                 Adicionar ao calendário
@@ -136,7 +136,7 @@ export default function VisitaForm({
             </a>
           </div>
 
-          <Link href="/" className="focus-gold mt-6 inline-block text-sm text-gray-dark underline underline-offset-2 hover:text-ink">
+          <Link href="/" className="focus-gold mt-6 inline-block text-sm text-cream/65 underline underline-offset-2 hover:text-cream">
             Voltar ao site
           </Link>
         </div>
@@ -147,22 +147,22 @@ export default function VisitaForm({
   return (
     <Container className="max-w-lg">
       <div className="mb-8 text-center">
-        <h1 className="font-display text-3xl text-ink sm:text-4xl">Agende uma visita ao salão</h1>
-        <p className="mt-2 text-sm text-gray-dark">
+        <h1 className="font-display text-3xl text-cream sm:text-4xl">Agende uma visita ao salão</h1>
+        <p className="mt-2 text-sm text-cream/65">
           Conheça o espaço pessoalmente com a nossa equipe.
         </p>
       </div>
 
-      <div className="rounded-2xl border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
+      <div className="rounded-2xl border border-cream/10 bg-cream/5 p-6 shadow-sm sm:p-8">
         <AnimatePresence mode="wait">
           {step === "dia" && (
             <motion.div key="dia" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
-              <h2 className="flex items-center gap-2 font-display text-xl text-ink">
+              <h2 className="flex items-center gap-2 font-display text-xl text-cream">
                 <Calendar className="h-5 w-5 text-gold" aria-hidden="true" />
                 Escolha um dia
               </h2>
               {dias.length === 0 ? (
-                <p className="mt-4 text-sm text-gray-dark">
+                <p className="mt-4 text-sm text-cream/65">
                   Não há horários livres no momento. Fale com a gente pelo WhatsApp.
                 </p>
               ) : (
@@ -182,12 +182,12 @@ export default function VisitaForm({
                           setStep("hora");
                         }}
                         className={`focus-gold flex shrink-0 flex-col items-center gap-0.5 rounded-xl border px-4 py-3 text-center transition-colors ${
-                          dataEscolhida === d.data ? "border-gold bg-gold-soft/15" : "border-ink/10 hover:border-gold/60"
+                          dataEscolhida === d.data ? "border-gold bg-gold/15" : "border-cream/10 hover:border-gold/60"
                         }`}
                       >
-                        <span className="text-[11px] uppercase text-gray-dark">{semana}</span>
-                        <span className="font-display text-lg text-ink">{dia}</span>
-                        <span className="text-[11px] text-gray-dark">{mes}</span>
+                        <span className="text-[11px] uppercase text-cream/65">{semana}</span>
+                        <span className="font-display text-lg text-cream">{dia}</span>
+                        <span className="text-[11px] text-cream/65">{mes}</span>
                       </button>
                     );
                   })}
@@ -198,11 +198,11 @@ export default function VisitaForm({
 
           {step === "hora" && dataEscolhida && (
             <motion.div key="hora" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
-              <h2 className="flex items-center gap-2 font-display text-xl text-ink">
+              <h2 className="flex items-center gap-2 font-display text-xl text-cream">
                 <Clock className="h-5 w-5 text-gold" aria-hidden="true" />
                 Horários em {dateFormatterCompleto.format(new Date(`${dataEscolhida}T12:00:00`))}
               </h2>
-              {erro && <p className="mt-3 text-sm text-red-600">{erro}</p>}
+              {erro && <p className="mt-3 text-sm text-red-300">{erro}</p>}
               <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {horariosDoDia.map((h) => (
                   <button
@@ -213,7 +213,7 @@ export default function VisitaForm({
                       goToDados();
                     }}
                     className={`focus-gold rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
-                      horaEscolhida === h ? "border-gold bg-gold-soft/15 text-ink" : "border-ink/10 text-ink hover:border-gold/60"
+                      horaEscolhida === h ? "border-gold bg-gold/15 text-cream" : "border-cream/10 text-cream hover:border-gold/60"
                     }`}
                   >
                     {h}
@@ -223,7 +223,7 @@ export default function VisitaForm({
               <button
                 type="button"
                 onClick={() => setStep("dia")}
-                className="focus-gold mt-5 text-sm font-medium text-gray-dark underline-offset-2 hover:text-ink hover:underline"
+                className="focus-gold mt-5 text-sm font-medium text-cream/65 underline-offset-2 hover:text-cream hover:underline"
               >
                 Escolher outro dia
               </button>
@@ -232,12 +232,12 @@ export default function VisitaForm({
 
           {step === "dados" && dataEscolhida && horaEscolhida && (
             <motion.div key="dados" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
-              <h2 className="font-display text-xl text-ink">Seus dados</h2>
-              <p className="mt-1 text-sm text-gray-dark">
+              <h2 className="font-display text-xl text-cream">Seus dados</h2>
+              <p className="mt-1 text-sm text-cream/65">
                 {dateFormatterCompleto.format(new Date(`${dataEscolhida}T12:00:00`))} às {horaEscolhida}
               </p>
 
-              {erro && <p className="mt-3 text-sm text-red-600">{erro}</p>}
+              {erro && <p className="mt-3 text-sm text-red-300">{erro}</p>}
 
               <form
                 onSubmit={(e) => {
@@ -259,7 +259,7 @@ export default function VisitaForm({
                 />
 
                 <div>
-                  <label htmlFor="visita-nome" className="mb-1.5 block text-sm font-medium text-ink">
+                  <label htmlFor="visita-nome" className="mb-1.5 block text-sm font-medium text-cream">
                     Nome
                   </label>
                   <input
@@ -268,11 +268,11 @@ export default function VisitaForm({
                     required
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
-                    className="focus-gold w-full rounded-lg border border-ink/15 px-4 py-3 text-sm text-ink outline-none focus:border-gold"
+                    className="focus-gold w-full rounded-lg border border-cream/20 bg-ink px-4 py-3 text-sm text-cream placeholder:text-cream/35 outline-none [color-scheme:dark] focus:border-gold"
                   />
                 </div>
                 <div>
-                  <label htmlFor="visita-telefone" className="mb-1.5 block text-sm font-medium text-ink">
+                  <label htmlFor="visita-telefone" className="mb-1.5 block text-sm font-medium text-cream">
                     WhatsApp
                   </label>
                   <input
@@ -282,7 +282,7 @@ export default function VisitaForm({
                     value={telefone}
                     onChange={(e) => setTelefone(e.target.value)}
                     placeholder="(92) 99999-9999"
-                    className="focus-gold w-full rounded-lg border border-ink/15 px-4 py-3 text-sm text-ink outline-none focus:border-gold"
+                    className="focus-gold w-full rounded-lg border border-cream/20 bg-ink px-4 py-3 text-sm text-cream placeholder:text-cream/35 outline-none [color-scheme:dark] focus:border-gold"
                   />
                 </div>
 
@@ -297,7 +297,7 @@ export default function VisitaForm({
                   <button
                     type="button"
                     onClick={() => setStep("hora")}
-                    className="focus-gold text-sm font-medium text-gray-dark underline-offset-2 hover:text-ink hover:underline"
+                    className="focus-gold text-sm font-medium text-cream/65 underline-offset-2 hover:text-cream hover:underline"
                   >
                     Voltar
                   </button>
