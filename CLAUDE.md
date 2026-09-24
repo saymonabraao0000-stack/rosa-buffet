@@ -219,7 +219,7 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 - **Alerta de lead sem resposta** (2026-09-24): Cron Trigger `*/15 * * * *` → `POST /api/cron/sem-resposta` ([sem-resposta.ts](src/lib/crm/sem-resposta.ts)). Lead do simulador ainda "novo" 1h depois gera um aviso no ntfy, uma vez só (`leads.alerta_sem_resposta_em`), só entre 7h e 22h de Manaus e para leads de até 3 dias. O `custom-worker.ts` escolhe a rota pelo `event.cron`; o token dos crons fica em [cron-auth.ts](src/lib/cron-auth.ts).
 - **Agendamento de visitas** (2026-09-24): página pública `/visita` (dia → horário livre → nome/WhatsApp; anti-spam igual ao simulador; `.ics` em `/visita/[id]/ics`), tabela `visitas` com índice único parcial em (data, hora) para status ativos (dois clientes nunca pegam o mesmo horário). Horários em Configurações → Visitas (setting `visitas_config`, padrão ter–sáb 9h–17h, 1 h, antecedência 12 h, exclui dias com festa/bloqueio). No CRM: `/crm/visitas`, cor própria na Agenda, bloco na ficha do lead. Aviso push "Visita agendada". Botão de entrada no fim do simulador, nas páginas de pacote e em /links. Em teste local, `DISABLE_PUSH=1` (no `.dev.vars`) desliga o envio de push.
 - **Pedir avaliação** (2026-09-24): festas fechadas de 2 a 10 dias atrás aparecem no dashboard com o WhatsApp pós-festa (link do Google + link de depoimento reaproveitado) e "Já pedi" (`leads.avaliacao_pedida_em`); também entram no resumo das 8h ([pos-festa.ts](src/lib/crm/pos-festa.ts)).
-- **SEO local** (2026-09-24): 7 páginas `/festas/<slug>` (buffet-infantil, festa-de-15-anos, buffet-para-casamento, festa-de-formatura, festa-de-aniversario, eventos-corporativos, cha-revelacao — todas terminando em `-manaus`) + índice `/festas`, conteúdo em [festas-data.ts](src/lib/festas-data.ts) só com fatos do código, JSON-LD FAQPage/BreadcrumbList, links no rodapé e nos cartões de serviço. `layout.tsx` com JSON-LD EventVenue/FoodEstablishment (priceRange derivado dos pacotes) + WebSite; robots bloqueia /crm, /api/, /depoimento/ e /visita/*/ics; `public/llms.txt` para IAs. Pendente do dono: Google Meu Negócio, Facebook real (`siteConfig.social.facebook` ainda é placeholder), CEP/coordenadas.
+- **SEO local** (2026-09-24): 7 páginas `/festas/<slug>` (buffet-infantil, festa-de-15-anos, buffet-para-casamento, festa-de-formatura, festa-de-aniversario, eventos-corporativos, cha-revelacao — todas terminando em `-manaus`) + índice `/festas`, conteúdo em [festas-data.ts](src/lib/festas-data.ts) só com fatos do código, JSON-LD FAQPage/BreadcrumbList, links no rodapé e nos cartões de serviço. `layout.tsx` com JSON-LD EventVenue/FoodEstablishment (priceRange derivado dos pacotes) + WebSite; robots bloqueia /crm, /api/, /depoimento/ e /visita/*/ics; `public/llms.txt` para IAs. Pendente: Facebook real, CEP/coordenadas (ver "Google e SEO").
 
 ## Fluxo de publicação
 
@@ -229,25 +229,24 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 - Desenvolvimento: `npm run dev` (localhost:3000).
 - Build/teste local: `npx opennextjs-cloudflare build` + `npx wrangler dev` (simula Workers localmente).
 - Deploy: `npx opennextjs-cloudflare deploy` (ou apenas push em `cloudflare`).
-- Pendente: fazer merge da `cloudflare` na `main` e trocar a branch padrão do repo pra `cloudflare`.
 
 ## Pendências / TODOs em aberto
 
-- **Cadastrar env vars na Cloudflare** (Workers & Pages → rosa-buffet → Settings → Variables and Secrets):
-  - `NTFY_TOPIC` — tópico do ntfy.sh para avisos de lead novo e resumo diário. Sem ela, avisos não são enviados mas o site segue funcionando.
-  - `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` — para ativar a integração do Google Agenda (guia: [Planos/google-agenda-ativacao.md](Planos/google-agenda-ativacao.md)).
-- **Ativar Google Agenda** — após cadastrar as credenciais acima: Saymon criar projeto + OAuth no Google Cloud Console, depois Rosilene conecta em `/crm/configuracoes` e clica "Sincronizar agora" pra criar eventos das festas fechadas existentes. Guia completo: [Planos/google-agenda-ativacao.md](Planos/google-agenda-ativacao.md).
+- **Google Agenda** — adiado por decisão do Saymon em 2026-09-24 (não cadastrar agora). Quando for ativar: `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` nos secrets do Worker, depois Rosilene conecta em `/crm/configuracoes`. Guia: [Planos/google-agenda-ativacao.md](Planos/google-agenda-ativacao.md).
 - **Preencher configurações em `/crm/configuracoes`**:
-  - Link de avaliação do Google (para incluir na mensagem pós-festa).
-  - Revisar/ajustar preços dos pacotes (entrada inicial em [quiz-data.ts](src/lib/quiz-data.ts), agora editável no banco).
+  - Link de avaliação do Google (mensagem pós-festa) — sai do Perfil da Empresa (ver "Google e SEO" abaixo), depende de acesso de administrador.
+  - Revisar/ajustar preços dos pacotes (setting `precos`; fallback ilustrativo em [quiz-data.ts](src/lib/quiz-data.ts)).
   - Revisar/ajustar condições de pagamento (padrão: "Sinal de R$ 500 na reserva da data; restante até 7 dias antes da festa.").
-- **Domínio definitivo: `rosabuffeteventos.com.br`** — **Registrado em 2026-09-23, vence em 2027-09-23** (renovação anual, paga por Pix pela dona). Titular: **CPF da Rosilene Moreira de Paula** (CNPJ não era o caminho). Conta Registro.br: ID `ROMPA342`. Contato técnico ainda `ROMPA342` — pendente trocar para ID do Saymon. DNS nos servidores do Registro.br (a/b.auto.dns.br). **Não usar `rosabuffet.com.br`**: é de outro buffet (Roselina Soares). `siteConfig.url` em [site-config.ts:13](src/lib/site-config.ts#L13) ainda aponta `rosabuffet.com.br` — trocar para `https://rosabuffeteventos.com.br` quando o domínio estiver apontado. Hospedagem: Cloudflare Workers + OpenNext, branch `cloudflare`, Worker `rosa-buffet` (no ar em https://rosa-buffet.saymonabraao0000.workers.dev desde 2026-09-23). Pendente: apontar domínio + merge `cloudflare` → `main` + trocar branch padrão.
-- **Merge das branches** — `cloudflare` tem a produção funcionando; falta fazer merge na `main` (a Vercel ainda está lá mas sem receber push).
-- **Links placeholder em `site-config.ts`**:
-  - `social.facebook` ([site-config.ts:41](src/lib/site-config.ts#L41)): aponta para home genérica do Facebook, não a página real.
-  - `googleMapsUrl`/`googleMapsEmbedUrl` ([site-config.ts:33-36](src/lib/site-config.ts#L33-L36)): URL de busca por endereço em texto, não um perfil real do Google Business.
-- **Cards de serviço com fotos placeholder** — alguns em [site-data.ts](src/lib/site-data.ts) (infantil, corporativo, chá revelação) usam Unsplash; trocar por fotos reais quando disponíveis.
-- **Preços no simulador** — `quiz-data.ts` ainda tem fallback com valores ilustrativos, agora também editável em `/crm/configuracoes` (setting `precos`).
-- **Sem aviso de privacidade/LGPD** — quiz coleta nome/telefone e grava no banco. Não existe política de privacidade nem aviso de consentimento na etapa de contato. Lacuna real não resolvida.
-- **Sem proteção contra spam** — `createLeadAction`/`updateLeadAction` do quiz podem ser chamadas diretamente via POST. Sem CAPTCHA/rate limit; honeypot seria a mitigação mais barata se leads falsos virarem problema.
+- **Domínio `rosabuffeteventos.com.br`** — registrado em 2026-09-23, vence em 2027-09-23 (renovação anual, Pix pela dona). Titular: CPF da Rosilene Moreira de Paula. Conta Registro.br ID `ROMPA342` (Saymon tem acesso; trocar o contato técnico não é necessário por ora — decisão de 2026-09-24). **Não usar `rosabuffet.com.br`**: é de outro buffet (Roselina Soares).
+- **Links placeholder em [site-config.ts](src/lib/site-config.ts)**:
+  - `social.facebook`: home genérica do Facebook — Saymon está procurando a página real (2026-09-24).
+  - `googleMapsUrl`/`googleMapsEmbedUrl`: busca por endereço em texto — trocar pelo link do Perfil da Empresa quando houver acesso.
+- **Fotos pedidas à família (2026-09-24)** — evento corporativo, chá revelação, aniversário adulto (só há 2), salão, comida/buffet servido, equipe. Hoje `/festas/eventos-corporativos-manaus` e `/festas/cha-revelacao-manaus` e os cards de serviço correspondentes em [site-data.ts](src/lib/site-data.ts) usam fotos de outros temas.
+- **Vercel** — a partir de 2026-10-01, apagar o projeto antigo junto com o banco antigo da integração Neon.
+
+## Google e SEO (fora do site)
+
+- **Search Console** — ligado em 2026-09-24, propriedade do tipo Domínio na conta do Saymon, com a Rosilene como proprietária também. Verificação por TXT `google-site-verification=...` no DNS da Cloudflare (**não apagar**). Sitemap enviado com o endereço completo (propriedade Domínio não aceita só `sitemap.xml`); indexação solicitada para a home, os 3 `/festas` principais (infantil, 15 anos, casamento) e `/orcamento`.
+- **Perfil da Empresa no Google** — já existe: "Rosa Buffet Eventos", 4,6 com 266 avaliações, mesmo endereço do site. Administrado pelo Wellington (filho da Rosilene, também organiza festas no salão). Categoria atual **"Restaurante"** (errada) — pendente o Wellington trocar para "Buffet" + "Salão de festas" e adicionar Saymon e Rosilene como administradores. **Não reivindicar o perfil** pelo "É proprietário desta empresa?" (abriria disputa com o Wellington).
+- **Telefones diferentes de propósito** (decisão da família, 2026-09-24): o perfil do Google fica com o número do Wellington, (92) 99459-8954; o site, o CRM e os PDFs ficam com o da Rosilene, (92) 99207-3047. Não "corrigir" um pelo outro.
 - **`updated_at` é manual** — toda escrita em `leads` deve incluir `updated_at = now()` (sem trigger). Se adicionar função nova em [leads.ts](src/lib/crm/leads.ts), lembrar disso.
