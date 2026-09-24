@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { guestOptions, partyPackages, quizThemes } from "@/lib/quiz-data";
+import { LEAD_ORIGENS } from "@/lib/crm/types";
 import type { Lead } from "@/lib/crm/types";
 
 // Campos do lead usados em /crm/leads/novo e /crm/leads/[id]/editar.
@@ -57,6 +58,15 @@ export default function LeadFields({ lead }: { lead?: Lead }) {
         type="date"
         defaultValue={lead?.dataEvento ?? undefined}
       />
+
+      <SelectField label="Origem (opcional)" name="origem" defaultValue={lead?.origem ?? ""}>
+        <option value="">—</option>
+        {Object.entries(LEAD_ORIGENS).map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </SelectField>
     </>
   );
 }

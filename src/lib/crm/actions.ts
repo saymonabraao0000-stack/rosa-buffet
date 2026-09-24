@@ -12,7 +12,15 @@ import {
 } from "./session";
 import * as leads from "./leads";
 import * as notes from "./notes";
-import type { LeadDetailsInput, LeadStatus, ManualLeadInput } from "./types";
+import { LEAD_ORIGENS } from "./types";
+import type {
+  LeadChecklist,
+  LeadDetailsInput,
+  LeadFinanceiroInput,
+  LeadOrigem,
+  LeadStatus,
+  ManualLeadInput,
+} from "./types";
 
 export type LoginState = { error?: string } | undefined;
 
@@ -69,6 +77,8 @@ function readLeadDetails(formData: FormData): LeadDetailsInput {
   if (!nome || !telefone) {
     throw new Error("Nome e telefone são obrigatórios.");
   }
+  const origemRaw = (formData.get("origem") as string) || "";
+  const origem = (origemRaw in LEAD_ORIGENS ? origemRaw : null) as LeadOrigem | null;
   return {
     nome,
     telefone,
@@ -76,7 +86,15 @@ function readLeadDetails(formData: FormData): LeadDetailsInput {
     guestRangeSlug: (formData.get("guestRangeSlug") as string) || null,
     dataEvento: (formData.get("dataEvento") as string) || null,
     buffetTierSlug: (formData.get("buffetTierSlug") as string) || null,
+    origem,
   };
+}
+
+function parseIntOrNull(value: FormDataEntryValue | null): number | null {
+  const str = String(value ?? "").trim();
+  if (!str) return null;
+  const n = Number.parseInt(str, 10);
+  return Number.isFinite(n) ? n : null;
 }
 
 function revalidateLeadPages(id: string) {
@@ -111,4 +129,41 @@ export async function createManualLeadAction(formData: FormData): Promise<void> 
   const { id } = await leads.createManualLead(input);
   revalidatePath("/crm/leads");
   redirect(`/crm/leads/${id}`);
+}
+
+// Item 1 — lembrete de retorno. `retornarEm` nulo limpa o campo.
+export async function updateLeadRetornarEmAction(id: string, retornarEm: string | null): Promise<void> {
+  await requireSession();
+  await leads.updateLeadRetornarEm(id, retornarEm);
+  revalidateLeadPages(id);
+}
+
+// Item 4 — financeiro da festa.
+export async function updateLeadFinanceiroAction(id: string, formData: FormData): Promise<void> {
+  await requireSession();
+  const input: LeadFinanceiroInput = {
+    valorFechado: parseIntOrNull(formData.get("valorFechado")),
+    valorSinal: parseIntOrNull(formData.get("valorSinal")),
+    valorPago: parseIntOrNull(formData.get("valorPago")) ?? 0,
+    pagamentoFinalEm: (formData.get("pagamentoFinalEm") as string) || null,
+  };
+  await leads.updateLeadFinanceiro(id, input);
+  revalidateLeadPages(id);
+}
+
+// Item 15 — checklist da festa.
+export async function updateLeadChecklistAction(id: string, formData: FormData): Promise<void> {
+  await requireSession();
+  const numeroFinalConvidados = parseIntOrNull(formData.get("numeroFinalConvidados"));
+  const checklist: LeadChecklist = {
+    cardapioDefinido: formData.get("cardapioDefinido") === "on",
+    bolo: formData.get("bolo") === "on",
+    decoracao: formData.get("decoracao") === "on",
+    numeroFinalConvidados: numeroFinalConvidados ?? undefined,
+    horario: (formData.get("horario") as string) || undefined,
+    degustacaoEm: (formData.get("degustacaoEm") as string) || undefined,
+    fornecedores: (formData.get("fornecedores") as string) || undefined,
+  };
+  await leads.updateLeadChecklist(id, checklist);
+  revalidateLeadPages(id);
 }

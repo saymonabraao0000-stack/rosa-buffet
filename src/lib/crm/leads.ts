@@ -1,11 +1,15 @@
 import "server-only";
 import { sql } from "@/lib/db/client";
 import { QUIZ_DONE_STEPS } from "./quiz-progress";
+import { addDaysISO, manausTodayISO } from "./manaus-date";
+import { checklistProntos } from "./checklist";
 import type {
   DashboardStats,
   Lead,
+  LeadChecklist,
   LeadDetailsInput,
   LeadFilters,
+  LeadFinanceiroInput,
   LeadProgressPatch,
   LeadStatus,
   ManualLeadInput,
@@ -138,6 +142,14 @@ export async function listLeads(filters: LeadFilters): Promise<Lead[]> {
     conditions.push(`source = 'quiz' and coalesce(current_step, 'contato') <> all($${params.length})`);
   }
 
+  if (filters.retorno === "hoje") {
+    params.push(manausTodayISO());
+    conditions.push(`retornar_em = $${params.length}`);
+  } else if (filters.retorno === "atrasados") {
+    params.push(manausTodayISO());
+    conditions.push(`retornar_em is not null and retornar_em < $${params.length}`);
+  }
+
   const where = conditions.length ? `where ${conditions.join(" and ")}` : "";
   const rows = await sql.query(
     `select * from leads ${where} order by created_at desc limit 200`,
@@ -165,10 +177,10 @@ export async function markSinalPago(id: string, paid: boolean): Promise<void> {
 
 export async function createManualLead(input: ManualLeadInput): Promise<{ id: string }> {
   const rows = await sql`
-    insert into leads (nome, telefone, source, status, tema_slug, guest_range_slug, data_evento, buffet_tier_slug)
+    insert into leads (nome, telefone, source, status, tema_slug, guest_range_slug, data_evento, buffet_tier_slug, origem)
     values (
       ${input.nome}, ${input.telefone}, 'manual', ${input.status},
-      ${input.temaSlug}, ${input.guestRangeSlug}, ${input.dataEvento}, ${input.buffetTierSlug}
+      ${input.temaSlug}, ${input.guestRangeSlug}, ${input.dataEvento}, ${input.buffetTierSlug}, ${input.origem}
     )
     returning id
   `;
@@ -180,9 +192,72 @@ export async function updateLeadDetails(id: string, input: LeadDetailsInput): Pr
     update leads
     set nome = ${input.nome}, telefone = ${input.telefone}, tema_slug = ${input.temaSlug},
         guest_range_slug = ${input.guestRangeSlug}, data_evento = ${input.dataEvento},
-        buffet_tier_slug = ${input.buffetTierSlug}, updated_at = now()
+        buffet_tier_slug = ${input.buffetTierSlug}, origem = ${input.origem}, updated_at = now()
     where id = ${id}
   `;
+}
+
+/** Item 1 — lembrete de retorno. `retornarEm` nulo limpa o lembrete. */
+export async function updateLeadRetornarEm(id: string, retornarEm: string | null): Promise<void> {
+  await sql`update leads set retornar_em = ${retornarEm}, updated_at = now() where id = ${id}`;
+}
+
+/** Item 4 — financeiro da festa. */
+export async function updateLeadFinanceiro(id: string, input: LeadFinanceiroInput): Promise<void> {
+  await sql`
+    update leads
+    set valor_fechado = ${input.valorFechado}, valor_sinal = ${input.valorSinal},
+        valor_pago = ${input.valorPago}, pagamento_final_em = ${input.pagamentoFinalEm},
+        updated_at = now()
+    where id = ${id}
+  `;
+}
+
+/** Item 15 — checklist da festa (jsonb). */
+export async function updateLeadChecklist(id: string, checklist: LeadChecklist): Promise<void> {
+  await sql`
+    update leads
+    set checklist = ${JSON.stringify(checklist)}::jsonb, updated_at = now()
+    where id = ${id}
+  `;
+}
+
+/**
+ * Item 19 — lead duplicado: para cada id em `ids`, procura outro lead com os
+ * mesmos últimos 11 dígitos do telefone, criado até 90 dias antes ou depois.
+ * Uma consulta só (join lateral) em vez de N+1 — usada tanto na ficha (um id)
+ * quanto na lista (todos os ids da página).
+ */
+export async function findDuplicatesForLeadIds(
+  ids: string[],
+): Promise<Map<string, { id: string; nome: string }>> {
+  if (ids.length === 0) return new Map();
+
+  const rows = await sql.query(
+    `
+    select l.id as lead_id, dup.id as dup_id, dup.nome as dup_nome
+    from leads l
+    join lateral (
+      select l2.id, l2.nome
+      from leads l2
+      where l2.id <> l.id
+        and right(regexp_replace(l2.telefone, '\\D', '', 'g'), 11)
+          = right(regexp_replace(l.telefone, '\\D', '', 'g'), 11)
+        and abs(extract(epoch from (l.created_at - l2.created_at))) <= 90 * 24 * 3600
+      order by l2.created_at desc
+      limit 1
+    ) dup on true
+    where l.id = any($1::uuid[])
+    `,
+    [ids],
+  );
+
+  const map = new Map<string, { id: string; nome: string }>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  for (const row of rows as any[]) {
+    map.set(row.lead_id, { id: row.dup_id, nome: row.dup_nome });
+  }
+  return map;
 }
 
 /** Apaga o lead; as anotações vão junto (on delete cascade em lead_notes). */
@@ -212,7 +287,21 @@ export async function getConfirmedEvents(): Promise<Lead[]> {
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const [totaisRows, mesRows, proximosRows] = await Promise.all([
+  const todayISO = manausTodayISO();
+  const mesAtual = todayISO.slice(0, 7); // "AAAA-MM"
+  const em30Dias = addDaysISO(todayISO, 30);
+
+  const [
+    totaisRows,
+    mesRows,
+    proximosRows,
+    retornosHojeRows,
+    retornosAtrasadosRows,
+    origemRows,
+    faturamentoRows,
+    aReceberRows,
+    proximasFestasRows,
+  ] = await Promise.all([
     sql`select status, count(*)::int as total from leads group by status`,
     sql`
       select count(*)::int as total from leads
@@ -223,6 +312,38 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       where status = 'fechado' and data_evento is not null and data_evento >= current_date
       order by data_evento asc
       limit 10
+    `,
+    sql`
+      select id, nome, retornar_em from leads
+      where retornar_em = ${todayISO}
+      order by nome asc
+    `,
+    sql`
+      select id, nome, retornar_em from leads
+      where retornar_em is not null and retornar_em < ${todayISO}
+      order by retornar_em asc
+    `,
+    sql`
+      select origem, count(*)::int as total,
+        count(*) filter (where status = 'fechado')::int as fechados
+      from leads
+      group by origem
+    `,
+    sql`
+      select coalesce(sum(valor_fechado), 0)::int as total from leads
+      where status = 'fechado' and data_evento is not null
+        and to_char(data_evento, 'YYYY-MM') = ${mesAtual}
+    `,
+    sql`
+      select coalesce(sum(valor_fechado - coalesce(valor_pago, 0)), 0)::int as total from leads
+      where status = 'fechado' and valor_fechado is not null
+        and data_evento is not null and data_evento >= ${todayISO}
+    `,
+    sql`
+      select id, nome, data_evento, checklist from leads
+      where status = 'fechado' and data_evento is not null
+        and data_evento >= ${todayISO} and data_evento <= ${em30Dias}
+      order by data_evento asc
     `,
   ]);
 
@@ -249,6 +370,33 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       id: r.id,
       nome: r.nome,
       dataEvento: asDateString(r.data_evento)!,
+    })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    retornosHoje: (retornosHojeRows as any[]).map((r) => ({
+      id: r.id,
+      nome: r.nome,
+      retornarEm: asDateString(r.retornar_em)!,
+    })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    retornosAtrasados: (retornosAtrasadosRows as any[]).map((r) => ({
+      id: r.id,
+      nome: r.nome,
+      retornarEm: asDateString(r.retornar_em)!,
+    })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    porOrigem: (origemRows as any[]).map((r) => ({
+      origem: r.origem,
+      total: r.total,
+      fechados: r.fechados,
+    })),
+    faturamentoMes: faturamentoRows[0]?.total ?? 0,
+    aReceber: aReceberRows[0]?.total ?? 0,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    proximasFestas: (proximasFestasRows as any[]).map((r) => ({
+      id: r.id,
+      nome: r.nome,
+      dataEvento: asDateString(r.data_evento)!,
+      checklistProntos: checklistProntos(r.checklist ?? {}),
     })),
   };
 }

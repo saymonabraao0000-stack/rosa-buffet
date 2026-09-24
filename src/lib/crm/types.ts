@@ -95,6 +95,8 @@ export type LeadFilters = Partial<{
   q: string;
   /** Só leads do simulador que pararam antes do orçamento. */
   incompleto: boolean;
+  /** Item 1: filtro de retorno na lista de leads. */
+  retorno: "hoje" | "atrasados";
 }>;
 
 /** Dados do lead editáveis no CRM (cadastro manual e tela de edição). */
@@ -105,10 +107,19 @@ export type LeadDetailsInput = {
   guestRangeSlug: string | null;
   dataEvento: string | null;
   buffetTierSlug: string | null;
+  origem: LeadOrigem | null;
 };
 
 export type ManualLeadInput = LeadDetailsInput & {
   status: LeadStatus;
+};
+
+/** Financeiro da festa (item 4) — só relevante para leads fechados. */
+export type LeadFinanceiroInput = {
+  valorFechado: number | null;
+  valorSinal: number | null;
+  valorPago: number;
+  pagamentoFinalEm: string | null;
 };
 
 export type DashboardStats = {
@@ -116,4 +127,16 @@ export type DashboardStats = {
   porStatus: Record<LeadStatus, number>;
   taxaConversao: number; // fechados / total, 0-1
   proximosEventos: { id: string; nome: string; dataEvento: string }[];
+  // Fase 2 (2026-09-24)
+  retornosHoje: { id: string; nome: string; retornarEm: string }[];
+  retornosAtrasados: { id: string; nome: string; retornarEm: string }[];
+  porOrigem: { origem: LeadOrigem | null; total: number; fechados: number }[];
+  faturamentoMes: number;
+  aReceber: number;
+  proximasFestas: {
+    id: string;
+    nome: string;
+    dataEvento: string;
+    checklistProntos: number;
+  }[];
 };

@@ -1,9 +1,10 @@
 import { requireSession } from "@/lib/crm/require-session";
 import Link from "next/link";
-import { listLeads } from "@/lib/crm/leads";
+import { findDuplicatesForLeadIds, listLeads } from "@/lib/crm/leads";
 import type { LeadFilters, LeadStatus } from "@/lib/crm/types";
 import { quizThemes } from "@/lib/quiz-data";
 import { isQuizIncomplete, quizStepLabel } from "@/lib/crm/quiz-progress";
+import { manausTodayISO } from "@/lib/crm/manaus-date";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ type SearchParams = {
   to?: string;
   q?: string;
   incompleto?: string;
+  retorno?: string;
 };
 
 export default async function CrmLeadsPage({
@@ -44,8 +46,11 @@ export default async function CrmLeadsPage({
     dateTo: params.to || undefined,
     q: params.q || undefined,
     incompleto: params.incompleto === "1" || undefined,
+    retorno: (params.retorno as "hoje" | "atrasados") || undefined,
   };
   const leadsList = await listLeads(filters);
+  const duplicateMap = await findDuplicatesForLeadIds(leadsList.map((l) => l.id));
+  const todayISO = manausTodayISO();
 
   return (
     <div>
@@ -115,13 +120,24 @@ export default async function CrmLeadsPage({
             className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold [color-scheme:dark]"
           />
         </Field>
+        <Field label="Retorno">
+          <select
+            name="retorno"
+            defaultValue={params.retorno ?? ""}
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold"
+          >
+            <option value="">Todos</option>
+            <option value="hoje">Hoje</option>
+            <option value="atrasados">Atrasados</option>
+          </select>
+        </Field>
         <button
           type="submit"
           className="focus-gold rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft"
         >
           Filtrar
         </button>
-        {(params.q || params.status || params.tema || params.from || params.to || params.incompleto) && (
+        {(params.q || params.status || params.tema || params.from || params.to || params.incompleto || params.retorno) && (
           <Link href="/crm/leads" className="focus-gold text-sm font-medium text-cream/60 hover:text-cream">
             Limpar
           </Link>
@@ -145,6 +161,10 @@ export default async function CrmLeadsPage({
                 {isQuizIncomplete(lead) && (
                   <span className="mt-1 block text-xs text-amber-300/80">{quizStepLabel(lead)}</span>
                 )}
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  <RetornoBadge retornarEm={lead.retornarEm} todayISO={todayISO} />
+                  {duplicateMap.has(lead.id) && <DuplicadoBadge />}
+                </div>
                 <p className="mt-2 text-sm text-cream/60">{lead.telefone}</p>
                 <p className="mt-1 text-xs text-cream/50">
                   {[
@@ -195,6 +215,10 @@ export default async function CrmLeadsPage({
                     {isQuizIncomplete(lead) && (
                       <span className="mt-1 block text-xs text-amber-300/80">{quizStepLabel(lead)}</span>
                     )}
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                      <RetornoBadge retornarEm={lead.retornarEm} todayISO={todayISO} />
+                      {duplicateMap.has(lead.id) && <DuplicadoBadge />}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-cream/60">{lead.telefone}</td>
                   <td className="px-4 py-3 text-cream/60">{tema?.label ?? "—"}</td>
@@ -249,6 +273,39 @@ function StatusBadge({ status }: { status: LeadStatus }) {
   return (
     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_STYLES[status]}`}>
       {STATUS_LABELS[status]}
+    </span>
+  );
+}
+
+// Item 1 — indicação de retorno hoje/atrasado no cartão e na linha da lista.
+function RetornoBadge({ retornarEm, todayISO }: { retornarEm: string | null; todayISO: string }) {
+  if (!retornarEm) return null;
+  if (retornarEm < todayISO) {
+    return (
+      <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
+        Retorno atrasado
+      </span>
+    );
+  }
+  if (retornarEm === todayISO) {
+    return (
+      <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-[11px] font-semibold text-blue-300">
+        Retorna hoje
+      </span>
+    );
+  }
+  return (
+    <span className="rounded-full bg-cream/10 px-2 py-0.5 text-[11px] font-semibold text-cream/60">
+      Retorna {dateTimeFormatter.format(new Date(`${retornarEm}T00:00:00`))}
+    </span>
+  );
+}
+
+// Item 19 — etiqueta discreta de possível duplicado (o link com o nome fica na ficha).
+function DuplicadoBadge() {
+  return (
+    <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-[11px] font-semibold text-purple-300">
+      Possível duplicado
     </span>
   );
 }

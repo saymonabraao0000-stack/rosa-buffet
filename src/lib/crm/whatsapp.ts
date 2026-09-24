@@ -35,3 +35,57 @@ function formatDate(iso: string): string {
   const [y, m, d] = iso.split("-");
   return `${d}/${m}/${y}`;
 }
+
+const currencyBR = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  maximumFractionDigits: 0,
+});
+
+type TemplateVarKey = "nome" | "tema" | "data" | "valor" | "saldo" | "link_avaliacao" | "link_depoimento";
+type TemplateVars = Partial<Record<TemplateVarKey, string>>;
+
+/**
+ * Preenche um modelo de WhatsApp (item 2) com as variáveis {nome} {tema}
+ * {data} {valor} {saldo} {link_avaliacao} {link_depoimento}. Quando uma
+ * variável não tem valor (ex.: link_depoimento ainda não existe, ou a festa
+ * não tem data), a frase inteira que a contém é removida — não deixa
+ * placeholder solto nem frase capenga no meio da mensagem.
+ */
+export function fillWhatsappTemplate(template: string, vars: TemplateVars): string {
+  const emptyKeys = (Object.keys(vars) as TemplateVarKey[]).filter((key) => !vars[key]);
+
+  let text = template;
+  if (emptyKeys.length > 0) {
+    text = text
+      .split(/(?<=[.!?])\s+/)
+      .filter((sentence) => !emptyKeys.some((key) => sentence.includes(`{${key}}`)))
+      .join(" ")
+      .trim();
+  }
+
+  return text.replace(/\{(\w+)\}/g, (_match, key: string) => vars[key as TemplateVarKey] ?? "");
+}
+
+/** Monta o link `wa.me` de um dos modelos configuráveis (Configurações → Mensagens de WhatsApp). */
+export function buildTemplateWhatsappUrl(
+  lead: Lead,
+  template: string,
+  opts: { linkAvaliacaoGoogle?: string; linkDepoimento?: string } = {},
+): string {
+  const primeiroNome = lead.nome.trim().split(/\s+/)[0];
+  const faltaReceber = lead.valorFechado != null ? lead.valorFechado - lead.valorPago : null;
+
+  const text = fillWhatsappTemplate(template, {
+    nome: primeiroNome,
+    tema: getThemeLabel(lead.temaSlug),
+    data: lead.dataEvento ? formatDate(lead.dataEvento) : undefined,
+    // {valor} nos modelos padrão se refere ao sinal (ex.: "reserva confirmada").
+    valor: currencyBR.format(lead.valorSinal ?? 500),
+    saldo: faltaReceber != null ? currencyBR.format(faltaReceber) : undefined,
+    link_avaliacao: opts.linkAvaliacaoGoogle || undefined,
+    link_depoimento: opts.linkDepoimento || undefined,
+  });
+
+  return `https://wa.me/${toWhatsappNumber(lead.telefone)}?text=${encodeURIComponent(text)}`;
+}

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { testimonialScreenshots } from "@/lib/testimonials-data";
+import WrittenTestimonials from "./WrittenTestimonials";
 
 // Depoimentos reais (capturas de conversas de clientes) em carrossel
 // infinito, sempre rodando. A faixa é duplicada uma vez — a animação
@@ -44,6 +45,8 @@ export default function Testimonials() {
           ))}
         </div>
       </div>
+
+      <WrittenTestimonials />
     </section>
   );
 }

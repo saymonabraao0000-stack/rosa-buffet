@@ -1,14 +1,27 @@
 import { requireSession } from "@/lib/crm/require-session";
 import { notFound } from "next/navigation";
-import { getLeadById } from "@/lib/crm/leads";
+import { findDuplicatesForLeadIds, getLeadById } from "@/lib/crm/leads";
 import { listNotesForLead } from "@/lib/crm/notes";
 import { getGuestLabel, getPartyPackageLabel, getThemeLabel } from "@/lib/quiz-data";
 import StatusForm from "@/components/crm/StatusForm";
 import SinalToggle from "@/components/crm/SinalToggle";
 import NoteForm from "@/components/crm/NoteForm";
 import DeleteLeadButton from "@/components/crm/DeleteLeadButton";
+import RetornarEmForm from "@/components/crm/RetornarEmForm";
+import FinanceiroForm from "@/components/crm/FinanceiroForm";
+import ChecklistForm from "@/components/crm/ChecklistForm";
+import WhatsappTemplatesMenu from "@/components/crm/WhatsappTemplatesMenu";
+import PedirDepoimentoButton from "@/components/crm/PedirDepoimentoButton";
 import { buildLeadWhatsappUrl } from "@/lib/crm/whatsapp";
 import { quizStepLabel } from "@/lib/crm/quiz-progress";
+import { manausTodayISO } from "@/lib/crm/manaus-date";
+import {
+  DEFAULT_LINK_AVALIACAO_GOOGLE,
+  DEFAULT_MODELOS_WHATSAPP,
+  getSetting,
+} from "@/lib/crm/settings";
+import type { ModelosWhatsapp } from "@/lib/crm/settings";
+import { LEAD_ORIGENS } from "@/lib/crm/types";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -40,13 +53,23 @@ export default async function CrmLeadDetailPage({
 }) {
   await requireSession();
   const { id } = await params;
-  const [lead, notes] = await Promise.all([getLeadById(id), listNotesForLead(id)]);
+  const [lead, notes, duplicateMap, modelosWhatsapp, linkAvaliacaoGoogle] = await Promise.all([
+    getLeadById(id),
+    listNotesForLead(id),
+    findDuplicatesForLeadIds([id]),
+    getSetting<ModelosWhatsapp>("modelos_whatsapp", DEFAULT_MODELOS_WHATSAPP),
+    getSetting("link_avaliacao_google", DEFAULT_LINK_AVALIACAO_GOOGLE),
+  ]);
 
   if (!lead) notFound();
 
   const temaLabel = getThemeLabel(lead.temaSlug);
   const guestLabel = getGuestLabel(lead.guestRangeSlug);
   const pacoteLabel = getPartyPackageLabel(lead.buffetTierSlug);
+  const origemLabel = lead.origem ? LEAD_ORIGENS[lead.origem] : undefined;
+  const duplicate = duplicateMap.get(lead.id);
+  const isFechado = lead.status === "fechado";
+  const todayISO = manausTodayISO();
   // Leads antigos podem ter opcionais avulsos (addonSlugs) de antes do
   // simulador virar pacotes fechados — não existe mais lista de labels
   // pra eles, então mostramos o slug cru mesmo.
@@ -54,6 +77,16 @@ export default async function CrmLeadDetailPage({
 
   return (
     <div>
+      {duplicate && (
+        <div className="mb-6 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          Possível duplicado de{" "}
+          <Link href={`/crm/leads/${duplicate.id}`} className="focus-gold font-semibold underline underline-offset-2">
+            {duplicate.nome}
+          </Link>
+          .
+        </div>
+      )}
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl text-cream">{lead.nome}</h1>
@@ -62,13 +95,14 @@ export default async function CrmLeadDetailPage({
             criado em {dateTimeFullFormatter.format(new Date(lead.createdAt))}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href={`/crm/leads/${lead.id}/editar`}
             className="focus-gold rounded-full border border-cream/20 px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:border-gold hover:text-gold"
           >
             Editar
           </Link>
+          <WhatsappTemplatesMenu lead={lead} modelos={modelosWhatsapp} linkAvaliacaoGoogle={linkAvaliacaoGoogle} />
           <a
             href={buildLeadWhatsappUrl(lead)}
             target="_blank"
@@ -98,6 +132,7 @@ export default async function CrmLeadDetailPage({
                 }
               />
               <Field label="Pacote" value={pacoteLabel} />
+              <Field label="Origem" value={origemLabel} />
               {addonSlugsAntigos.length > 0 && (
                 <div className="col-span-full">
                   <dt className="text-xs font-semibold uppercase tracking-wide text-cream/60">
@@ -117,6 +152,24 @@ export default async function CrmLeadDetailPage({
               <Field label="Andamento no simulador" value={quizStepLabel(lead)} />
             </dl>
           </section>
+
+          <section className="mt-6 rounded-xl border border-cream/10 bg-cream/5 p-5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="font-display text-lg text-cream">Financeiro</h2>
+              {isFechado && <PedirDepoimentoButton leadId={lead.id} nome={lead.nome} telefone={lead.telefone} />}
+            </div>
+            {isFechado ? (
+              <FinanceiroForm lead={lead} />
+            ) : (
+              <p className="text-sm text-cream/50">Disponível quando a festa for marcada como fechada.</p>
+            )}
+          </section>
+
+          {isFechado && (
+            <section className="mt-6 rounded-xl border border-cream/10 bg-cream/5 p-5">
+              <ChecklistForm lead={lead} />
+            </section>
+          )}
 
           <section className="mt-6 rounded-xl border border-cream/10 bg-cream/5 p-5">
             <h2 className="mb-4 font-display text-lg text-cream">Anotações</h2>
@@ -140,6 +193,9 @@ export default async function CrmLeadDetailPage({
         <aside className="flex flex-col gap-6">
           <section className="rounded-xl border border-cream/10 bg-cream/5 p-5">
             <StatusForm leadId={lead.id} currentStatus={lead.status} currentMotivo={lead.perdidoMotivo} />
+          </section>
+          <section className="rounded-xl border border-cream/10 bg-cream/5 p-5">
+            <RetornarEmForm leadId={lead.id} retornarEm={lead.retornarEm} todayISO={todayISO} />
           </section>
           <section className="rounded-xl border border-cream/10 bg-cream/5 p-5">
             <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-cream/60">
