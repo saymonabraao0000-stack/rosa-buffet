@@ -25,6 +25,11 @@ function asISOString(value: unknown): string {
   return String(value);
 }
 
+function asISOStringOrNull(value: unknown): string | null {
+  if (value == null) return null;
+  return asISOString(value);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapLeadRow(row: any): Lead {
   return {
@@ -47,13 +52,24 @@ function mapLeadRow(row: any): Lead {
     sinalPago: row.sinal_pago,
     createdAt: asISOString(row.created_at),
     updatedAt: asISOString(row.updated_at),
+    retornarEm: asDateString(row.retornar_em),
+    origem: row.origem,
+    valorFechado: row.valor_fechado,
+    valorSinal: row.valor_sinal,
+    valorPago: row.valor_pago ?? 0,
+    pagamentoFinalEm: asDateString(row.pagamento_final_em),
+    checklist: row.checklist ?? {},
+    recompraAvisadaEm: asISOStringOrNull(row.recompra_avisada_em),
+    googleEventId: row.google_event_id,
   };
 }
 
+// Leads criados pelo quiz do site (/orcamento) sempre nascem com origem
+// "site" — quem preenche a ficha manual/edita escolhe a origem real.
 export async function createLead(input: { nome: string; telefone: string }): Promise<{ id: string }> {
   const rows = await sql`
-    insert into leads (nome, telefone, source, current_step)
-    values (${input.nome}, ${input.telefone}, 'quiz', 'contato')
+    insert into leads (nome, telefone, source, current_step, origem)
+    values (${input.nome}, ${input.telefone}, 'quiz', 'contato', 'site')
     returning id
   `;
   return { id: rows[0].id };

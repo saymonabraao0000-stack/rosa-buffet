@@ -1,22 +1,53 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Calendar, Plus, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  Plus,
+  LogOut,
+  MoreHorizontal,
+  Kanban,
+  MessageSquareQuote,
+  Settings,
+} from "lucide-react";
 import { logoutAction } from "@/lib/crm/actions";
 
+// Todas as seções — usado no menu lateral do computador.
 const navItems = [
   { href: "/crm", label: "Dashboard", icon: LayoutDashboard },
   { href: "/crm/leads", label: "Leads", icon: Users },
   { href: "/crm/agenda", label: "Agenda", icon: Calendar },
+  { href: "/crm/funil", label: "Funil", icon: Kanban },
+  { href: "/crm/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
+  { href: "/crm/configuracoes", label: "Configurações", icon: Settings },
+];
+
+// No celular a barra de abas só tem espaço para 3 colunas + "Mais": as 3 mais
+// usadas ficam fixas, o resto entra no menu "Mais".
+const mobileTabItems = [
+  { href: "/crm", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/crm/leads", label: "Leads", icon: Users },
+  { href: "/crm/agenda", label: "Agenda", icon: Calendar },
+];
+
+const mobileMoreItems = [
+  { href: "/crm/funil", label: "Funil", icon: Kanban },
+  { href: "/crm/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
+  { href: "/crm/configuracoes", label: "Configurações", icon: Settings },
 ];
 
 // No computador (lg+): menu lateral. No celular: barra no topo (logo, novo
 // lead, sair) + abas fixas embaixo, ao alcance do polegar.
 export default function CrmSidebar() {
   const pathname = usePathname();
+  const [moreOpen, setMoreOpen] = useState(false);
   const isActive = (href: string) => (href === "/crm" ? pathname === "/crm" : pathname.startsWith(href));
+  const isMoreActive = mobileMoreItems.some((item) => isActive(item.href));
 
   return (
     <>
@@ -44,25 +75,69 @@ export default function CrmSidebar() {
         </div>
       </header>
 
+      {moreOpen && (
+        <button
+          type="button"
+          aria-label="Fechar menu"
+          onClick={() => setMoreOpen(false)}
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+        />
+      )}
+
       <nav
         aria-label="Navegação do CRM"
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-cream/10 bg-ink/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-cream/10 bg-ink/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
       >
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`focus-gold flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${
-                isActive(item.href) ? "text-gold" : "text-cream/60"
-              }`}
-            >
-              <Icon className="h-5 w-5" aria-hidden="true" />
-              {item.label}
-            </Link>
-          );
-        })}
+        {moreOpen && (
+          <div className="border-b border-cream/10 px-2 py-2">
+            {mobileMoreItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMoreOpen(false)}
+                  className={`focus-gold flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${
+                    isActive(item.href) ? "text-gold" : "text-cream/70"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="grid grid-cols-4">
+          {mobileTabItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMoreOpen(false)}
+                className={`focus-gold flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${
+                  isActive(item.href) ? "text-gold" : "text-cream/60"
+                }`}
+              >
+                <Icon className="h-5 w-5" aria-hidden="true" />
+                {item.label}
+              </Link>
+            );
+          })}
+          <button
+            type="button"
+            aria-expanded={moreOpen}
+            onClick={() => setMoreOpen((v) => !v)}
+            className={`focus-gold flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${
+              isMoreActive || moreOpen ? "text-gold" : "text-cream/60"
+            }`}
+          >
+            <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
+            Mais
+          </button>
+        </div>
       </nav>
 
       <aside className="hidden w-64 shrink-0 flex-col border-r border-cream/10 bg-ink px-4 py-6 lg:flex">

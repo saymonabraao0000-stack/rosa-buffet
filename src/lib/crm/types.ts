@@ -1,6 +1,39 @@
 export type LeadStatus = "novo" | "contatado" | "orcamento_enviado" | "fechado" | "perdido";
 export type LeadSource = "quiz" | "manual";
 
+/** De onde o lead veio — não confundir com `LeadSource` (quiz/manual, que é técnico). */
+export type LeadOrigem =
+  | "site"
+  | "instagram"
+  | "indicacao"
+  | "google"
+  | "whatsapp"
+  | "passou_na_frente"
+  | "outro";
+
+/** Rótulos em português de `LeadOrigem`, para selects e exibição na ficha/dashboard. */
+export const LEAD_ORIGENS: Record<LeadOrigem, string> = {
+  site: "Site (simulador)",
+  instagram: "Instagram",
+  indicacao: "Indicação",
+  google: "Google",
+  whatsapp: "WhatsApp",
+  passou_na_frente: "Passou na frente",
+  outro: "Outro",
+};
+
+/** Checklist da festa (item 15 do plano) — chaves fixas, todas opcionais. */
+export type LeadChecklist = Partial<{
+  cardapioDefinido: boolean;
+  bolo: boolean;
+  decoracao: boolean;
+  numeroFinalConvidados: number;
+  horario: string;
+  degustacaoEm: string; // "AAAA-MM-DD"
+  fornecedores: string;
+  observacoes: string;
+}>;
+
 export type Lead = {
   id: string;
   nome: string;
@@ -21,6 +54,16 @@ export type Lead = {
   sinalPago: boolean;
   createdAt: string;
   updatedAt: string;
+  // Fase 1 (2026-09-24)
+  retornarEm: string | null; // "AAAA-MM-DD"
+  origem: LeadOrigem | null;
+  valorFechado: number | null;
+  valorSinal: number | null;
+  valorPago: number;
+  pagamentoFinalEm: string | null; // "AAAA-MM-DD"
+  checklist: LeadChecklist;
+  recompraAvisadaEm: string | null;
+  googleEventId: string | null;
 };
 
 export type LeadNote = {

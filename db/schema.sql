@@ -59,3 +59,80 @@ create table if not exists lead_notes (
 );
 
 create index if not exists lead_notes_lead_id_idx on lead_notes (lead_id);
+
+-- ============================================================================
+-- Fase 1 do plano de melhorias do CRM (2026-09-24) — só aditivo, ver
+-- Planos/crm-melhorias-2026-09-24.md. Nunca dropar/alterar coluna ou
+-- constraint existente acima desta linha.
+-- ============================================================================
+
+-- leads: colunas novas, todas opcionais.
+alter table leads add column if not exists retornar_em date;
+alter table leads add column if not exists origem text;
+alter table leads add column if not exists valor_fechado integer;
+alter table leads add column if not exists valor_sinal integer;
+alter table leads add column if not exists valor_pago integer default 0;
+alter table leads add column if not exists pagamento_final_em date;
+alter table leads add column if not exists checklist jsonb not null default '{}';
+alter table leads add column if not exists recompra_avisada_em timestamptz;
+alter table leads add column if not exists google_event_id text;
+
+create index if not exists leads_retornar_em_idx on leads (retornar_em)
+  where retornar_em is not null;
+create index if not exists leads_origem_idx on leads (origem)
+  where origem is not null;
+
+-- settings: configurações editáveis do CRM (preços, condições de pagamento,
+-- link de avaliação, modelos de WhatsApp, tokens do Google Agenda). Leitura
+-- sempre com fallback para os padrões definidos no código (settings.ts).
+create table if not exists settings (
+  key         text primary key,
+  value       jsonb not null,
+  updated_at  timestamptz not null default now()
+);
+
+-- blocked_dates: datas bloqueadas manualmente pela equipe (fora de evento
+-- fechado) — entram junto com getBookedDates() para o simulador.
+create table if not exists blocked_dates (
+  data        date primary key,
+  motivo      text,
+  created_at  timestamptz not null default now()
+);
+
+-- waitlist: lista de espera para datas já ocupadas.
+create table if not exists waitlist (
+  id          uuid primary key default gen_random_uuid(),
+  lead_id     uuid references leads (id) on delete set null,
+  nome        text not null,
+  telefone    text not null,
+  data        date not null,
+  created_at  timestamptz not null default now(),
+  avisado_em  timestamptz
+);
+
+create index if not exists waitlist_data_idx on waitlist (data);
+
+-- testimonials: depoimentos pedidos a clientes de festas fechadas, com
+-- aprovação manual antes de aparecer no site.
+create table if not exists testimonials (
+  id            uuid primary key default gen_random_uuid(),
+  lead_id       uuid references leads (id) on delete set null,
+  token         text not null unique,
+  nome          text,
+  texto         text,
+  nota          integer,
+  status        text not null default 'pendente'
+                check (status in ('pendente', 'aprovado', 'recusado')),
+  created_at    timestamptz not null default now(),
+  respondido_em timestamptz
+);
+
+create index if not exists testimonials_status_idx on testimonials (status);
+
+-- login_attempts: trava de login por IP (5 erros em 15 min → bloqueia 15 min).
+create table if not exists login_attempts (
+  ip          text not null,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists login_attempts_ip_created_at_idx on login_attempts (ip, created_at);
