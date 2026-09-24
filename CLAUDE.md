@@ -48,6 +48,7 @@ src/
   app/
     page.tsx              # home (única rota com seções via âncora: #inicio, #sobre, #servicos, #galeria, #depoimentos, #contato)
     celebracoes/page.tsx   # portfólio de fotos (rota Next)
+    sobre/, servicos/, depoimentos/, onde-estamos/  # páginas institucionais (2026-09-24): PageHeader escuro + as mesmas seções da home; linkadas no rodapé (coluna "Rosa Buffet") e no sitemap
     orcamento/page.tsx      # simulador de orçamento em quiz (ver seção dedicada) — Server Component async, busca datas reservadas no banco
     crm/                    # CRM interno, não linkado na nav pública (ver seção "Backend")
       login/page.tsx

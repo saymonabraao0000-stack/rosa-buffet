@@ -10,12 +10,12 @@ import { festas } from "@/lib/festas-data";
 const festaLabel = (h1: string) => h1.replace(/ em Manaus$/, "");
 
 const institucional = [
-  { label: "Sobre nós", href: "/#sobre" },
-  { label: "Serviços", href: "/#servicos" },
+  { label: "Sobre nós", href: "/sobre" },
+  { label: "Serviços", href: "/servicos" },
   { label: "Pacotes", href: "/pacotes" },
   { label: "Fotos das festas", href: "/celebracoes" },
-  { label: "Depoimentos", href: "/#depoimentos" },
-  { label: "Onde estamos", href: "/#contato" },
+  { label: "Depoimentos", href: "/depoimentos" },
+  { label: "Onde estamos", href: "/onde-estamos" },
 ];
 
 const headingClass = "mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-gold";

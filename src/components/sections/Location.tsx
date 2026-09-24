@@ -7,15 +7,20 @@ import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { siteConfig } from "@/lib/site-config";
 
-export default function Location() {
-  const [showMap, setShowMap] = useState(false);
+/**
+ * Na home o mapa só carrega no toque (ver comentário abaixo). Na página
+ * /onde-estamos o mapa é o assunto da página, então abre direto e o título
+ * da seção sai (o h1 da página já diz o mesmo).
+ */
+export default function Location({ standalone = false }: { standalone?: boolean }) {
+  const [showMap, setShowMap] = useState(standalone);
 
   return (
     <section id="contato" className="bg-gray-light py-24 sm:py-32">
       <Container>
-        <SectionHeading title="Venha nos conhecer em Manaus." />
+        {!standalone && <SectionHeading title="Venha nos conhecer em Manaus." />}
 
-        <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div className={`${standalone ? "" : "mt-16 "}grid grid-cols-1 gap-8 lg:grid-cols-2`}>
           <motion.div
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
