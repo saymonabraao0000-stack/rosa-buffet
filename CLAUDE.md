@@ -8,7 +8,7 @@ Site institucional da **Rosa Buffet**, buffet e produção de eventos em Manaus-
 
 **NO AR em https://rosabuffeteventos.com.br desde 2026-09-23** (com e sem www), na **Cloudflare**: Worker `rosa-buffet` (conta saymonabraao0000, Workers Builds ligado ao GitHub, build `npx opennextjs-cloudflare build`, deploy `npx opennextjs-cloudflare deploy`). Por enquanto a branch de produção na Cloudflare é **`cloudflare`** — todo push nela publica. Nameservers: `armfazh.ns.cloudflare.com` / `veda.ns.cloudflare.com`. Endereço de teste: https://rosa-buffet.saymonabraao0000.workers.dev. Secrets do Worker: `DATABASE_URL`, `CRM_PASSWORD`, `SESSION_SECRET`, `NTFY_TOPIC`.
 
-A publicação antiga na **Vercel** (projeto `rosa-buffet`, org `saymonabraao0000-stacks-projects`, deploy a cada push em `main`) ainda existe: o plano Hobby não permite uso comercial, por isso a saída. Desde 2026-09-24 a branch padrão do GitHub é `cloudflare` (a `main` ficou com a versão antiga da Vercel). Pendente: desligar o projeto da Vercel.
+A publicação antiga na **Vercel** (projeto `rosa-buffet`, org `saymonabraao0000-stacks-projects`, deploy a cada push em `main`) ainda existe: o plano Hobby não permite uso comercial, por isso a saída. Desde 2026-09-24 a branch padrão do GitHub é `cloudflare` (a `main` ficou com a versão antiga da Vercel). Em 2026-09-24 o repositório foi **desconectado** do projeto da Vercel (Settings → Git → Disconnect): a Vercel não publica mais nada. Pendente (a partir de 2026-10-01): apagar o projeto da Vercel junto com o banco antigo da integração Neon — não antes, porque o banco antigo é a segurança até lá.
 
 Repositório GitHub: `saymonabraao0000-stack/rosa-buffet`.
 
