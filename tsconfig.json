@@ -30,5 +30,11 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    // Custom Worker do OpenNext (item 13, cron diário): usa globais de
+    // Workers (Request/ExecutionContext/etc.) incompatíveis com a lib "dom"
+    // do resto do projeto Next. Ver comentário no topo de custom-worker.ts.
+    "custom-worker.ts"
+  ]
 }

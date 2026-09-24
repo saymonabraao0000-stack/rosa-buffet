@@ -1,6 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+  // Custom Worker (ver custom-worker.ts): reexporta o fetch de
+  // .open-next/worker.js e acrescenta o scheduled() do cron diário (item 13).
+  "main": "custom-worker.ts",
   "name": "rosa-buffet",
   "compatibility_date": "2026-09-20",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -16,5 +18,10 @@
   ],
   "images": {
     "binding": "IMAGES"
+  },
+  // Resumo diário às 8h de Manaus (America/Manaus, UTC-4 fixo, sem horário
+  // de verão) => 12h UTC.
+  "triggers": {
+    "crons": ["0 12 * * *"]
   }
 }

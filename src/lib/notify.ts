@@ -27,3 +27,33 @@ export async function notifyNewLead(lead: { id: string; nome: string }, siteOrig
     console.error("notifyNewLead falhou:", err);
   }
 }
+
+// Aviso genérico via ntfy (usado pelo resumo diário, item 13 do plano de
+// melhorias — Planos/crm-melhorias-2026-09-24.md). Mesmo comportamento de
+// notifyNewLead (silencioso sem NTFY_TOPIC), mas com título/corpo livres.
+// `titulo` vira o header `Title` do ntfy — evite acentos/caracteres fora do
+// ASCII nele (headers HTTP), o `corpo` (body da requisição) pode ter acentos
+// normalmente. Devolve `true` se o ntfy confirmou o envio.
+export async function notifyText(titulo: string, corpo: string, clickUrl?: string): Promise<boolean> {
+  const topic = process.env.NTFY_TOPIC;
+  if (!topic) return false;
+
+  try {
+    const res = await fetch(`https://ntfy.sh/${encodeURIComponent(topic)}`, {
+      method: "POST",
+      body: corpo,
+      headers: {
+        Title: titulo,
+        Tags: "clipboard",
+        Priority: "default",
+        ...(clickUrl ? { Click: clickUrl } : {}),
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) console.error("notifyText: ntfy respondeu", res.status);
+    return res.ok;
+  } catch (err) {
+    console.error("notifyText falhou:", err);
+    return false;
+  }
+}
