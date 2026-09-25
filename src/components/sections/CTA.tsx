@@ -8,7 +8,7 @@ import { reservationDeposit } from "@/lib/availability-data";
 
 export default function CTA() {
   return (
-    <section className="relative overflow-hidden bg-ink py-24 sm:py-32">
+    <section className="relative overflow-hidden bg-ink py-16 sm:py-20">
       <div
         className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-gold/10 blur-3xl"
         aria-hidden="true"
@@ -31,8 +31,8 @@ export default function CTA() {
           className="reveal max-w-xl text-base leading-relaxed text-cream/75 sm:text-lg"
         >
           Nossa equipe está pronta para transformar sua ideia em uma
-          celebração única. Garanta sua data com um sinal de apenas R${" "}
-          {reservationDeposit}.
+          celebração única. Garanta sua data com um sinal de apenas{" "}
+          <span className="whitespace-nowrap">R$ {reservationDeposit}.</span>
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 24 }}

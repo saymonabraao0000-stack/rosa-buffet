@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { MapPin } from "lucide-react";
 import Container from "@/components/ui/Container";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import GoogleRating from "@/components/ui/GoogleRating";
@@ -39,12 +38,7 @@ export default function Hero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="reveal max-w-[520px] lg:max-w-[560px]"
         >
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-            <MapPin className="h-4 w-4" aria-hidden="true" />
-            Manaus · AM
-          </div>
-
-          <h1 className="mt-4 font-display text-4xl leading-[1.1] text-cream sm:text-5xl lg:text-5xl">
+          <h1 className="font-display text-4xl leading-[1.1] text-cream sm:text-5xl lg:text-5xl">
             Festas inesquecíveis,
             <br />
             com tudo incluso.

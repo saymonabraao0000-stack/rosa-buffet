@@ -31,7 +31,7 @@ export default function WrittenTestimonials() {
   if (!depoimentos || depoimentos.length === 0) return null;
 
   return (
-    <div className="mt-16">
+    <div className="mt-10">
       <div className="mx-auto w-[min(1120px,calc(100%-48px))]">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {depoimentos.map((d, index) => (

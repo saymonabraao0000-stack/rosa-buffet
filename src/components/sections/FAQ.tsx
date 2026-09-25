@@ -11,11 +11,11 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="bg-cream py-24 sm:py-32">
+    <section className="bg-cream py-14 sm:py-20">
       <Container className="max-w-3xl">
         <SectionHeading title="Perguntas frequentes." />
 
-        <div className="mt-14 flex flex-col divide-y divide-ink/10 border-y border-ink/10">
+        <div className="mt-8 sm:mt-10 flex flex-col divide-y divide-ink/10 border-y border-ink/10">
           {faqItems.map((item, index) => {
             const isOpen = openIndex === index;
             return (

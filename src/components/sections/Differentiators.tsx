@@ -1,41 +1,47 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { differentiators } from "@/lib/site-data";
+import { pacoteItems } from "@/lib/site-data";
 
 export default function Differentiators() {
   return (
-    <section className="bg-gray-light py-24 sm:py-32">
+    <section className="bg-gray-light py-14 sm:py-20">
       <Container>
-        <SectionHeading
-          title="Excelência em cada detalhe do seu evento."
-          description="Uma estrutura completa pensada para que você viva o seu evento sem preocupações."
-        />
+        <SectionHeading title="Tudo o que a sua festa precisa, num pacote só." />
 
-        <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {differentiators.map((item, index) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: (index % 4) * 0.08, ease: "easeOut" }}
-                className="reveal group flex flex-col gap-4 rounded-2xl border border-ink/5 bg-cream p-8 shadow-sm transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg"
-              >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-gold transition-colors duration-300 group-hover:bg-gold group-hover:text-ink">
-                  <Icon className="h-6 w-6" aria-hidden="true" />
-                </span>
-                <h3 className="font-display text-xl text-ink">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-gray-dark">
-                  {item.description}
-                </p>
-              </motion.div>
-            );
-          })}
+        {/* Celular: carrossel horizontal com scroll-snap (sangra até a borda
+            da tela, o próximo item aparece pela metade); tablet: 2 colunas;
+            desktop: 5 colunas com divisória. */}
+        <div className="-mx-6 mt-8 flex snap-x snap-mandatory scroll-px-6 gap-5 overflow-x-auto px-6 [scrollbar-width:none] sm:mx-0 sm:mt-12 sm:grid sm:grid-cols-2 sm:gap-x-0 sm:gap-y-8 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-y-0 lg:divide-x lg:divide-ink/10 [&::-webkit-scrollbar]:hidden">
+          {pacoteItems.map((item, index) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, delay: index * 0.06, ease: "easeOut" }}
+              className="reveal flex w-[78%] shrink-0 snap-start flex-col gap-2 border-l border-gold/40 pl-5 sm:w-auto sm:border-l-0 sm:px-6 lg:first:pl-0"
+            >
+              <span className="font-display text-2xl text-ink">
+                0{index + 1}. {item.title}
+              </span>
+              <p className="text-sm leading-relaxed text-gray-dark">
+                {item.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link
+            href="/orcamento"
+            className="text-sm font-medium text-ink underline decoration-gold/60 underline-offset-4 transition-colors hover:text-gold"
+          >
+            Ver pacotes e simular valor
+          </Link>
         </div>
       </Container>
     </section>

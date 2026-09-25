@@ -1,15 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-import {
-  CalendarCheck,
-  ChefHat,
-  Gem,
-  Heart,
-  Home,
-  Sparkles,
-  UsersRound,
-  Wand2,
-} from "lucide-react";
-
 /**
  * Todas as imagens abaixo são fotos REAIS de eventos realizados pela
  * Rosa Buffet, vindas de /public/images/eventos/ e /public/images/portfolio/.
@@ -21,60 +9,41 @@ export const heroImage = "/images/eventos/hero-salao.jpg";
 // Foto real: casamento realizado pela Rosa Buffet.
 export const aboutImage = "/images/eventos/casamento-noivos.jpg";
 
-export type Differentiator = {
+/**
+ * Bloco "O que vem no pacote" — 5 itens que sustentam a promessa do hero
+ * ("Buffet, decoração, cerimonial, fotografia e DJ em um só pacote").
+ * Fatos vindos de src/lib/pacotes-data.ts (Pacote Premium) e festas-data.ts.
+ */
+export type PacoteItem = {
   title: string;
   description: string;
-  icon: LucideIcon;
 };
 
-export const differentiators: Differentiator[] = [
+export const pacoteItems: PacoteItem[] = [
   {
-    title: "Estrutura própria",
+    title: "Buffet",
     description:
-      "Espaço amplo e totalmente equipado para eventos de todos os portes, sem depender de terceiros.",
-    icon: Home,
+      "Pratos quentes e acompanhamentos, refrigerantes e sucos, sobremesa e salgados fritos na hora, com louça completa, garçons e copeiro.",
   },
   {
-    title: "Equipe especializada",
+    title: "Decoração",
     description:
-      "Profissionais experientes em gastronomia, decoração e cerimonial dedicados a cada detalhe.",
-    icon: UsersRound,
+      "Salão climatizado com mesa imperial dourada, mesa dos doces, cadeira Tiffany, lustres e passarela, camarim e segurança para os carros.",
   },
   {
-    title: "Atendimento personalizado",
+    title: "Cerimonial",
     description:
-      "Cada cliente recebe um planejamento sob medida, alinhado ao estilo e à identidade do evento.",
-    icon: Heart,
+      "Reunião presencial e organização completa do evento, do planejamento ao último convidado deixar o salão.",
   },
   {
-    title: "Decoração exclusiva",
+    title: "Fotografia",
     description:
-      "Ambientações autorais que traduzem sofisticação e elevam a experiência dos convidados.",
-    icon: Sparkles,
+      "Cobertura fotográfica de todo o evento, com cabine fotográfica 360 e túnel fotográfico inclusos.",
   },
   {
-    title: "Buffet completo",
+    title: "DJ",
     description:
-      "Cardápios elaborados com ingredientes selecionados, do coquetel de boas-vindas à sobremesa.",
-    icon: ChefHat,
-  },
-  {
-    title: "Planejamento do início ao fim",
-    description:
-      "Acompanhamento completo, da primeira reunião ao último convidado deixar o salão.",
-    icon: CalendarCheck,
-  },
-  {
-    title: "Experiência consolidada",
-    description:
-      "Anos de tradição em Manaus, com centenas de celebrações realizadas com excelência.",
-    icon: Gem,
-  },
-  {
-    title: "Eventos personalizados",
-    description:
-      "Soluções flexíveis para casamentos, festas corporativas, aniversários e muito mais.",
-    icon: Wand2,
+      "Estrutura completa de som e iluminação, com caixa de som, microfone sem fio e iluminação moving.",
   },
 ];
 
@@ -99,14 +68,16 @@ export const services: Service[] = [
     title: "Casamentos",
     description:
       "Cerimônias e recepções inesquecíveis, planejadas com elegância do início ao fim.",
-    image: "/images/eventos/casamento-beijo.jpg",
+    // Foto real: cerimônia de casamento no salão (noiva de véu no altar).
+    image: "/images/portfolio/casamentos/casamentos-09.jpg",
   },
   {
     slug: "15-anos",
     title: "15 Anos",
     description:
       "Uma festa à altura do momento, com ambientação luxuosa e experiência impecável.",
-    image: "/images/eventos/quinze-anos-debutante.jpg",
+    // Foto real: debutante de vestido azul ao lado da mesa do bolo.
+    image: "/images/portfolio/quinze-anos/quinze-anos-21.jpg",
   },
   {
     slug: "aniversarios",
@@ -120,16 +91,16 @@ export const services: Service[] = [
     title: "Eventos Corporativos",
     description:
       "Confraternizações, lançamentos e conferências com estrutura profissional completa.",
-    // Foto real: salão montado com mesas e ambientação formal.
-    image: "/images/portfolio/casamentos/casamentos-15.jpg",
+    // Foto real: mesa posta com numeração e cardápio, montagem formal.
+    image: "/images/portfolio/casamentos/casamentos-26.jpg",
   },
   {
     slug: "cha-revelacao",
     title: "Chá Revelação",
     description:
       "Momentos únicos transformados em celebrações delicadas e cheias de emoção.",
-    // Foto real: decoração em tons de azul, próxima ao clima de um chá revelação.
-    image: "/images/portfolio/quinze-anos/quinze-anos-08.jpg",
+    // Foto real: mesas em azul e rosa-claro, no clima de um chá revelação.
+    image: "/images/portfolio/infantil/infantil-21.jpg",
   },
   {
     slug: "formaturas",
@@ -138,49 +109,20 @@ export const services: Service[] = [
       "Celebre essa conquista com uma festa memorável e à altura do seu esforço.",
     image: "/images/eventos/formatura.jpg",
   },
-  {
-    slug: "decoracao",
-    title: "Decoração",
-    description:
-      "Ambientações autorais que traduzem sofisticação em cada elemento do espaço.",
-    image: "/images/eventos/casamento-mesa-bolo.jpg",
-  },
-  {
-    slug: "buffet-completo",
-    title: "Buffet Completo",
-    description:
-      "Gastronomia refinada, do coquetel de boas-vindas à sobremesa, para todos os paladares.",
-    // Foto real: mesa de doces e sobremesas servida pela Rosa Buffet.
-    image: "/images/portfolio/casamentos/casamentos-20.jpg",
-  },
-  {
-    slug: "producao-de-eventos",
-    title: "Produção de Eventos",
-    description:
-      "Planejamento e execução completos, cuidando de cada etapa com excelência.",
-    image: "/images/eventos/casamento-bolo-verde.jpg",
-  },
-  {
-    slug: "eventos-personalizados",
-    title: "Eventos Personalizados",
-    description:
-      "Projetos sob medida para transformar qualquer ocasião em uma experiência única.",
-    image: "/images/eventos/quinze-anos-quadro.jpg",
-  },
 ];
 
 // Galeria com fotos REAIS de eventos realizados pela Rosa Buffet.
 // Para ampliar o acervo, basta adicionar novos itens a esta lista.
 export const galleryImages: { src: string; alt: string }[] = [
-  { src: "/images/eventos/casamento-mesa-bolo.jpg", alt: "Mesa do bolo em decoração dourada de casamento" },
-  { src: "/images/eventos/salao-15-anos.jpg", alt: "Salão da Rosa Buffet montado para festa de 15 anos" },
-  { src: "/images/eventos/aniversario.jpg", alt: "Painel dourado e cadeiras clássicas em aniversário" },
-  { src: "/images/eventos/casamento-beijo.jpg", alt: "Noivos em cerimônia realizada pela Rosa Buffet" },
-  { src: "/images/eventos/formatura.jpg", alt: "Mesa do bolo em festa de formatura" },
   { src: "/images/eventos/quinze-anos-debutante.jpg", alt: "Debutante em festa de 15 anos com painel dourado" },
-  { src: "/images/eventos/casamento-bolo-verde.jpg", alt: "Bolo e decoração verde e dourada de casamento" },
-  { src: "/images/eventos/casamento-noivos.jpg", alt: "Noivos em recepção elegante" },
-  { src: "/images/eventos/quinze-anos-quadro.jpg", alt: "Detalhe decorativo de festa de 15 anos" },
+  { src: "/images/portfolio/infantil/infantil-25.jpg", alt: "Bolo da Minnie em festa infantil" },
+  { src: "/images/portfolio/quinze-anos/quinze-anos-04.jpg", alt: "Máscara veneziana e flores em festa de 15 anos" },
+  { src: "/images/portfolio/casamentos/casamentos-03.jpg", alt: "Mesa do bolo com tapete vermelho em casamento" },
+  { src: "/images/portfolio/formaturas/formaturas-05.jpg", alt: "Mesa decorada de formatura do ABC" },
+  { src: "/images/eventos/casamento-mesa-bolo-recorte.jpg", alt: "Bolo de casamento em mesa dourada entalhada, com espelho ao fundo" },
+  { src: "/images/portfolio/infantil/infantil-14.jpg", alt: "Mesa de doces e bolo em festa infantil com balões" },
+  { src: "/images/portfolio/formaturas/formaturas-03.jpg", alt: "Bolo de formatura do ABC com letras coloridas" },
+  { src: "/images/portfolio/casamentos/casamentos-13.jpg", alt: "Entrada do salão com cortinas e luzes em casamento" },
 ];
 
 export type FaqItem = {

@@ -16,14 +16,11 @@ export default function Gallery() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
-    <section id="galeria" className="bg-gray-light py-24 sm:py-32">
+    <section id="galeria" className="bg-gray-light py-14 sm:py-16">
       <Container>
-        <SectionHeading
-          title="Momentos que já ganharam vida em nossos eventos."
-          description="Uma amostra da sofisticação e do cuidado que aplicamos em cada celebração."
-        />
+        <SectionHeading title="Algumas festas que já fizemos." />
 
-        <div className="mt-16 grid auto-rows-[220px] grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-8 grid auto-rows-[92px] grid-cols-3 gap-2 sm:mt-10 sm:auto-rows-[140px] sm:grid-cols-4 sm:gap-3 lg:auto-rows-[132px] lg:grid-cols-6">
           {galleryImages.map((image, index) => (
             <motion.button
               key={image.src}
@@ -34,7 +31,7 @@ export default function Gallery() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: (index % 8) * 0.05, ease: "easeOut" }}
               className={`reveal focus-gold group relative overflow-hidden rounded-xl ${
-                index % 5 === 0 ? "col-span-2 row-span-2" : ""
+                index === 0 ? "col-span-2 row-span-2" : ""
               }`}
               aria-label={`Ampliar imagem: ${image.alt}`}
             >
@@ -42,7 +39,7 @@ export default function Gallery() {
                 src={image.src}
                 alt={image.alt}
                 fill
-                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                sizes={index === 0 ? "(min-width: 1024px) 380px, (min-width: 640px) 50vw, 66vw" : "(min-width: 1024px) 190px, (min-width: 640px) 25vw, 33vw"}
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-ink/0 transition-colors duration-300 group-hover:bg-ink/30" />
@@ -55,11 +52,11 @@ export default function Gallery() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="reveal mt-12 flex justify-center"
+          className="reveal mt-8 flex justify-center"
         >
           <Link
             href="/celebracoes"
-            className="focus-gold inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-base font-semibold tracking-wide text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-ink-soft"
+            className="focus-gold inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold tracking-wide text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-ink-soft"
           >
             Ver portfólio completo
             <ArrowRight className="h-4 w-4" aria-hidden="true" />

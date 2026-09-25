@@ -1,17 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { buildWhatsappUrl } from "@/lib/site-config";
 import { services } from "@/lib/site-data";
 
-// Mapeia o slug do serviço para a página de festa correspondente em
-// /festas/[slug], quando existir. Serviços sem página dedicada (decoração,
-// buffet completo, produção de eventos, eventos personalizados) continuam
-// levando direto para o WhatsApp.
+// Cada serviço aqui é um tipo de evento e leva direto para a página
+// dedicada em /festas/[slug].
 const festaSlugByService: Record<string, string> = {
   "festas-infantis": "buffet-infantil-manaus",
   casamentos: "buffet-para-casamento-manaus",
@@ -24,62 +22,46 @@ const festaSlugByService: Record<string, string> = {
 
 export default function Services() {
   return (
-    <section id="servicos" className="bg-cream py-24 sm:py-32">
+    <section id="servicos" className="bg-cream py-14 sm:py-20">
       <Container>
         <SectionHeading
-          title="Soluções completas para cada tipo de celebração."
-          description="Do planejamento à execução, cuidamos de cada detalhe para que seu evento seja perfeito."
+          title="Um tipo de festa para cada celebração."
+          description="Escolha o evento e veja como cuidamos de cada detalhe."
         />
 
-        <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 md:grid-cols-4 lg:grid-cols-7">
           {services.map((service, index) => (
-            <motion.article
+            <motion.div
               key={service.slug}
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: (index % 3) * 0.1, ease: "easeOut" }}
-              className="reveal group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-ink/5 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl"
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.4, delay: (index % 7) * 0.05, ease: "easeOut" }}
+              className="w-[78%] flex-none snap-start sm:w-auto"
             >
-              <div className="relative aspect-[4/3] overflow-hidden">
+              <Link
+                href={`/festas/${festaSlugByService[service.slug]}`}
+                className="focus-gold group relative block aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-ink/5 transition-shadow duration-300 hover:shadow-lg"
+              >
                 <Image
                   src={service.image}
                   alt={service.title}
                   fill
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  sizes="(min-width: 1024px) 15vw, (min-width: 640px) 25vw, 78vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent" />
-              </div>
-
-              <div className="flex flex-1 flex-col gap-3 p-6">
-                <h3 className="font-display text-xl text-ink">{service.title}</h3>
-                <p className="flex-1 text-sm leading-relaxed text-gray-dark">
-                  {service.description}
-                </p>
-                {festaSlugByService[service.slug] ? (
-                  <a
-                    href={`/festas/${festaSlugByService[service.slug]}`}
-                    className="focus-gold mt-2 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gold transition-colors hover:text-ink"
-                  >
-                    Saiba mais
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-                  </a>
-                ) : (
-                  <a
-                    href={buildWhatsappUrl(
-                      `Olá! Gostaria de solicitar um orçamento para ${service.title}.`
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="focus-gold mt-2 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gold transition-colors hover:text-ink"
-                  >
-                    Solicitar orçamento
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-                  </a>
-                )}
-              </div>
-            </motion.article>
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 p-3">
+                  <span className="font-display text-sm leading-tight text-cream sm:text-base">
+                    {service.title}
+                  </span>
+                  <ArrowRight
+                    className="h-3.5 w-3.5 flex-none text-cream transition-transform duration-300 group-hover:translate-x-1"
+                    aria-hidden="true"
+                  />
+                </div>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </Container>

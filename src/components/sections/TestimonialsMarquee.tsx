@@ -12,8 +12,8 @@ type MarqueeItem =
   | { kind: "static"; src: string; w: number; h: number }
   | { kind: "db"; id: string; w: number; h: number };
 
-const SECONDS_PER_ITEM = 2.5;
-const MIN_DURATION_SECONDS = 60;
+const SECONDS_PER_ITEM = 3.5;
+const MIN_DURATION_SECONDS = 90;
 
 /**
  * Faixa do carrossel de depoimentos. Renderiza os estáticos primeiro (igual
@@ -59,7 +59,7 @@ export default function TestimonialsMarquee() {
 
   return (
     <div
-      className="relative mt-16"
+      className="relative mt-8 sm:mt-10"
       style={{ "--marquee-duration": `${durationSeconds}s` } as React.CSSProperties}
     >
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-ink to-transparent sm:w-32" />
@@ -69,15 +69,15 @@ export default function TestimonialsMarquee() {
         {track.map((item, index) => {
           const key = item.kind === "static" ? `${item.src}-${index}` : `${item.id}-${index}`;
           return (
-            <div key={key} className="shrink-0 pr-5">
-              <div className="h-72 overflow-hidden rounded-2xl border border-cream/10 sm:h-80 lg:h-96">
+            <div key={key} className="shrink-0 pr-4">
+              <div className="h-44 overflow-hidden rounded-xl border border-cream/10 sm:h-52">
                 {item.kind === "static" ? (
                   <Image
                     src={item.src}
                     alt="Depoimento de cliente da Rosa Buffet"
                     width={item.w}
                     height={item.h}
-                    sizes={`${Math.ceil((384 * item.w) / item.h)}px`}
+                    sizes={`${Math.ceil((240 * item.w) / item.h)}px`}
                     loading="eager"
                     className="h-full w-auto object-cover"
                   />
