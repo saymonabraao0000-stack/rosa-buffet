@@ -18,7 +18,7 @@ export default function LeadFields({ lead }: { lead?: Lead }) {
       />
 
       <SelectField label="Tema (opcional)" name="temaSlug" defaultValue={lead?.temaSlug ?? ""}>
-        <option value="">—</option>
+        <option value="">-</option>
         {quizThemes.map((t) => (
           <option key={t.slug} value={t.slug}>
             {t.label}
@@ -31,7 +31,7 @@ export default function LeadFields({ lead }: { lead?: Lead }) {
         name="guestRangeSlug"
         defaultValue={lead?.guestRangeSlug ?? ""}
       >
-        <option value="">—</option>
+        <option value="">-</option>
         {guestOptions.map((g) => (
           <option key={g.slug} value={g.slug}>
             {g.label}
@@ -44,7 +44,7 @@ export default function LeadFields({ lead }: { lead?: Lead }) {
         name="buffetTierSlug"
         defaultValue={lead?.buffetTierSlug ?? ""}
       >
-        <option value="">—</option>
+        <option value="">-</option>
         {partyPackages.map((p) => (
           <option key={p.slug} value={p.slug}>
             {p.label}
@@ -60,7 +60,7 @@ export default function LeadFields({ lead }: { lead?: Lead }) {
       />
 
       <SelectField label="Origem (opcional)" name="origem" defaultValue={lead?.origem ?? ""}>
-        <option value="">—</option>
+        <option value="">-</option>
         {Object.entries(LEAD_ORIGENS).map(([value, label]) => (
           <option key={value} value={value}>
             {label}

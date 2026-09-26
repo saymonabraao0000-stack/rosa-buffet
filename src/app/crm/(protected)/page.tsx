@@ -180,7 +180,7 @@ export default async function CrmDashboardPage() {
 
         {datasLiberadas.length > 0 && (
           <section className="lg:col-span-2">
-            <h2 className="mb-4 font-display text-xl text-cream">Data liberada — pessoas esperando</h2>
+            <h2 className="mb-4 font-display text-xl text-cream">Data liberada: pessoas esperando</h2>
             <ul className="flex flex-col gap-3">
               {datasLiberadas.map((d) => (
                 <li key={d.data} className="rounded-xl border border-cream/10 bg-cream/5 p-4">

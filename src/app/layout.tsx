@@ -72,7 +72,7 @@ export const metadata: Metadata = {
 // convidados dos 3 pacotes.
 const allPrices = partyPackages.flatMap((pkg) => Object.values(pkg.pricesByGuests));
 const priceRange = allPrices.length
-  ? `R$ ${Math.min(...allPrices).toLocaleString("pt-BR")} – R$ ${Math.max(...allPrices).toLocaleString("pt-BR")}`
+  ? `R$ ${Math.min(...allPrices).toLocaleString("pt-BR")} a R$ ${Math.max(...allPrices).toLocaleString("pt-BR")}`
   : undefined;
 
 // sameAs só entra com perfis reais confirmados.

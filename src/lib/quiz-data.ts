@@ -19,7 +19,7 @@ export const quizThemes: QuizTheme[] = [
   { slug: "infantil", label: "Festa Infantil", image: imageForTheme("infantil") },
   { slug: "formaturas", label: "Formatura", image: imageForTheme("formaturas") },
   { slug: "aniversarios", label: "Aniversário", image: imageForTheme("aniversarios") },
-  { slug: "outro", label: "Corporativo / Outro" },
+  { slug: "outro", label: "Outro" },
 ];
 
 export type GuestOption = {
@@ -77,7 +77,7 @@ export const partyPackages: PartyPackage[] = [
       "Cerimonial, fotografia, bolo de 3 andares, decoração completa, DJ e cabine fotográfica inclusos",
     ],
     pricesByGuests: { 80: 9999, 100: 10999, 120: 12500, 150: 13999 },
-    note: "Pacote com poucas vagas — consulte a disponibilidade da sua data. Parcelamos em até 8x sem juros.",
+    note: "Pacote com poucas vagas, consulte a disponibilidade da sua data. Parcelamos em até 8x sem juros.",
   },
   {
     slug: "gold",
@@ -98,7 +98,7 @@ export const partyPackages: PartyPackage[] = [
       "Cerimonialista e palhaço acompanhando o dia todo, além de cabine fotográfica e lembrancinhas para os convidados",
     ],
     pricesByGuests: { 80: 9999, 100: 10999, 120: 12500, 150: 13999 },
-    note: "Valores conforme o Pacote Kids da Rosa Buffet — consulte disponibilidade da sua data.",
+    note: "Valores conforme o Pacote Kids da Rosa Buffet, consulte disponibilidade da sua data.",
     themes: ["infantil"],
   },
 ];

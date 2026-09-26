@@ -120,7 +120,7 @@ export default async function CrmRelatorioPage({ searchParams }: PageProps) {
           value={
             relatorio.tempoRespostaMedioHoras !== null
               ? formatHoras(relatorio.tempoRespostaMedioHoras)
-              : "—"
+              : "-"
           }
         />
         <StatTile label="Faturamento do mês" value={currency.format(relatorio.faturamentoMes)} />
@@ -190,7 +190,7 @@ export default async function CrmRelatorioPage({ searchParams }: PageProps) {
               <span className="text-cream">
                 {relatorio.tempoRespostaMedioHoras !== null
                   ? formatHoras(relatorio.tempoRespostaMedioHoras)
-                  : "—"}
+                  : "-"}
               </span>
             </li>
             <li className="flex items-center justify-between">
@@ -198,13 +198,13 @@ export default async function CrmRelatorioPage({ searchParams }: PageProps) {
               <span className="text-cream">
                 {relatorio.tempoRespostaMedianaHoras !== null
                   ? formatHoras(relatorio.tempoRespostaMedianaHoras)
-                  : "—"}
+                  : "-"}
               </span>
             </li>
             <li className="flex items-center justify-between">
               <span className="text-cream/60">Respondidos em até 1h</span>
               <span className="text-cream">
-                {relatorio.respondidosEm1hPct !== null ? `${relatorio.respondidosEm1hPct}%` : "—"}
+                {relatorio.respondidosEm1hPct !== null ? `${relatorio.respondidosEm1hPct}%` : "-"}
               </span>
             </li>
             <li className="flex items-center justify-between">

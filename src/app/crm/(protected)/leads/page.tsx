@@ -241,11 +241,11 @@ export default async function CrmLeadsPage({
                     </div>
                   </td>
                   <td className="px-4 py-3 text-cream/60">{lead.telefone}</td>
-                  <td className="px-4 py-3 text-cream/60">{tema?.label ?? "—"}</td>
+                  <td className="px-4 py-3 text-cream/60">{tema?.label ?? "-"}</td>
                   <td className="px-4 py-3 text-cream/60">
                     {lead.dataEvento
                       ? dateTimeFormatter.format(new Date(`${lead.dataEvento}T00:00:00`))
-                      : "—"}
+                      : "-"}
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={lead.status} />

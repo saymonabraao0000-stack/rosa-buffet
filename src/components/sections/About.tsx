@@ -38,7 +38,7 @@ export default function About() {
           </h2>
           <p className="text-base leading-relaxed text-gray-dark sm:text-lg">
             Rosilene Moreira, a Dona Rosa pra quem já foi cliente, comanda a
-            Rosa Buffet ao lado do filho Wellington — negócio de família, do
+            Rosa Buffet ao lado do filho Wellington, negócio de família, do
             jeito que se cuida de festa de gente conhecida. Tudo acontece no
             salão próprio, na Rua São João, 310, Cidade de Deus, com buffet,
             decoração, cerimonial, foto e DJ inclusos.

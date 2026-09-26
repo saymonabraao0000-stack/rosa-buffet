@@ -60,7 +60,7 @@ export default function FinanceiroForm({ lead }: { lead: Lead }) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-cream/10 pt-3">
         <span className="text-sm text-cream/60">
           Falta receber:{" "}
-          <strong className="text-cream">{falta != null ? currency.format(falta) : "—"}</strong>
+          <strong className="text-cream">{falta != null ? currency.format(falta) : "-"}</strong>
         </span>
         <button
           type="submit"

@@ -108,7 +108,7 @@ export const festas: FestaContent[] = [
     heroImage: "/images/portfolio/quinze-anos/quinze-anos-01.jpg",
     heroAlt: "Salão decorado para festa de 15 anos realizada pela Rosa Buffet",
     intro: [
-      "A Rosa Buffet organiza festas de 15 anos no seu próprio salão, na Rua São João, 310, Cidade de Deus, em Manaus — com cerimonial, decoração, fotografia, bolo, DJ e buffet já inclusos no pacote fechado.",
+      "A Rosa Buffet organiza festas de 15 anos no seu próprio salão, na Rua São João, 310, Cidade de Deus, em Manaus, com cerimonial, decoração, fotografia, bolo, DJ e buffet já inclusos no pacote fechado.",
       "No Pacote Premium a festa vem com cerimonial e fotografia, bolo verdadeiro de 3 andares, 100 doces finos, salão climatizado com camarim, mesa imperial dourada, cadeira Tiffany, DJ com estrutura de iluminação e cabine fotográfica 360. O Pacote Gold soma a isso filmagem e book externo, open bar, um terceiro sabor de suco e playground com sala de jogos para os convidados mais jovens.",
       "Os dois pacotes são fechados: os itens listados já vêm inclusos, sem cobrança avulsa por item.",
     ],
@@ -123,7 +123,7 @@ export const festas: FestaContent[] = [
       {
         question: "Qual a diferença entre o Pacote Premium e o Gold para 15 anos?",
         answer:
-          "O Premium tem 2 pratos quentes e 100 doces finos. O Gold tem 3 pratos quentes, 200 doces finos, open bar, filmagem/book externo e playground com sala de jogos — é o pacote mais completo.",
+          "O Premium tem 2 pratos quentes e 100 doces finos. O Gold tem 3 pratos quentes, 200 doces finos, open bar, filmagem/book externo e playground com sala de jogos: é o pacote mais completo.",
       },
       {
         question: "O Pacote Premium pode ser parcelado?",
@@ -279,102 +279,6 @@ export const festas: FestaContent[] = [
         question: "Como reservo a data do aniversário?",
         answer:
           "Com um sinal de R$ 2.000 a data fica reservada; o restante é pago até 2 semanas antes da festa. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
-      },
-    ],
-  },
-  {
-    slug: "eventos-corporativos-manaus",
-    h1: "Eventos Corporativos em Manaus",
-    introHeading: "Como é um evento corporativo na Rosa Buffet",
-    metaTitle: "Eventos Corporativos em Manaus | Rosa Buffet",
-    metaDescription:
-      "Eventos corporativos em Manaus com salão próprio, estrutura completa e buffet. Confraternizações e lançamentos com a Rosa Buffet, na Cidade de Deus.",
-    heroImage: "/images/eventos/hero-salao.jpg",
-    heroAlt: "Salão da Rosa Buffet montado com mesas e lustre, usado também para eventos corporativos",
-    intro: [
-      "A Rosa Buffet recebe confraternizações, lançamentos e conferências no seu salão próprio, na Rua São João, 310, Cidade de Deus, em Manaus — a mesma estrutura climatizada usada em casamentos e festas de 15 anos, com camarim, segurança para os carros e buffet completo.",
-      "Para evento corporativo, os Pacotes Premium e Gold servem de base: cerimonial e organização do evento, salão climatizado com data show e tela, estrutura de som e iluminação, buffet com pratos quentes e acompanhamentos, e cabine fotográfica. Como cada evento corporativo tem formato próprio (coquetel, jantar, lançamento), o ideal é conversar com a equipe para ajustar o pacote à ocasião.",
-      "Os valores dos pacotes seguem as faixas de convidados do simulador; para formatos fora do padrão de festa, o orçamento é sob consulta.",
-    ],
-    packageSlugs: ["premium", "gold"],
-    gallery: [
-      { src: "/images/eventos/hero-salao.jpg", alt: "Salão da Rosa Buffet montado com mesas e lustre" },
-      { src: "/images/eventos/salao-15-anos.jpg", alt: "Salão da Rosa Buffet preparado para evento" },
-      { src: "/images/eventos/quinze-anos-quadro.jpg", alt: "Detalhe de decoração do salão da Rosa Buffet" },
-    ],
-    faq: [
-      {
-        question: "A Rosa Buffet atende eventos corporativos?",
-        answer:
-          "Sim, o salão recebe confraternizações, lançamentos de produtos, conferências e outros eventos corporativos, com estrutura de data show, tela, som e iluminação.",
-      },
-      {
-        question: "O salão tem estrutura para apresentações?",
-        answer:
-          "Sim, o pacote inclui data show e tela, caixa de som e microfone sem fio, além de iluminação para o ambiente.",
-      },
-      {
-        question: "Existe um pacote específico para evento corporativo?",
-        answer:
-          "Não existe um pacote fechado só para corporativo — usamos como base os Pacotes Premium e Gold e ajustamos com a equipe conforme o formato do seu evento. Fale pelo WhatsApp para montar o orçamento.",
-      },
-      {
-        question: "Como funciona o orçamento para evento corporativo?",
-        answer:
-          "Como o formato varia bastante (coquetel, jantar, lançamento), o orçamento é conversado direto com a equipe pelo WhatsApp. Você também pode simular uma faixa de valor em /orcamento com base nos pacotes padrão.",
-      },
-      {
-        question: "Como agendar uma visita ao salão antes de decidir?",
-        answer:
-          "Pela página /visita, escolhendo dia e horário livre para conhecer o espaço antes de fechar o evento.",
-      },
-    ],
-  },
-  {
-    slug: "cha-revelacao-manaus",
-    h1: "Chá Revelação em Manaus",
-    introHeading: "Como é um chá revelação na Rosa Buffet",
-    metaTitle: "Chá Revelação em Manaus | Rosa Buffet",
-    metaDescription:
-      "Chá revelação em Manaus com salão próprio, decoração e buffet completos. Celebre a revelação do bebê com a Rosa Buffet, na Cidade de Deus.",
-    heroImage: "/images/eventos/aniversario.jpg",
-    heroAlt: "Painel dourado e cadeiras clássicas no salão da Rosa Buffet",
-    intro: [
-      "A Rosa Buffet recebe chá revelação no seu salão próprio, na Rua São João, 310, Cidade de Deus, em Manaus, com decoração, bolo e buffet organizados para transformar o momento da revelação em uma celebração completa.",
-      "Os Pacotes Premium e Gold servem de base para o chá revelação: salão climatizado com decoração, mesa imperial dourada, bolo verdadeiro, buffet com pratos quentes e acompanhamentos, DJ com som e iluminação, e cabine fotográfica para registrar o momento. Como o chá revelação costuma reunir menos convidados que uma festa de 15 anos ou casamento, o formato exato é ajustado com a equipe.",
-      "O orçamento considera a quantidade de convidados e o formato desejado — fale com a equipe para ajustar o pacote à sua celebração.",
-    ],
-    packageSlugs: ["premium", "gold"],
-    gallery: [
-      { src: "/images/eventos/aniversario.jpg", alt: "Painel dourado e cadeiras clássicas no salão da Rosa Buffet" },
-      { src: "/images/eventos/hero-salao.jpg", alt: "Salão da Rosa Buffet montado com mesas e lustre" },
-      { src: "/images/eventos/salao-15-anos.jpg", alt: "Salão da Rosa Buffet preparado para festa" },
-    ],
-    faq: [
-      {
-        question: "A Rosa Buffet organiza chá revelação?",
-        answer:
-          "Sim, o chá revelação é montado no salão próprio da Rosa Buffet, com decoração, bolo, buffet e DJ, usando como base os Pacotes Premium e Gold.",
-      },
-      {
-        question: "Existe um pacote específico para chá revelação?",
-        answer:
-          "Não existe um pacote fechado só para chá revelação — usamos os Pacotes Premium e Gold como base e ajustamos com a equipe conforme o número de convidados e o formato da celebração.",
-      },
-      {
-        question: "Quantos convidados cabem em um chá revelação?",
-        answer:
-          "O simulador em /orcamento calcula valores para as faixas de 80, 100, 120 e 150 convidados. Para grupos menores ou formatos diferentes, o orçamento é conversado direto com a equipe.",
-      },
-      {
-        question: "Como faço o orçamento do chá revelação?",
-        answer:
-          "Fale com a equipe pelo WhatsApp para ajustar o pacote ao seu chá revelação, ou simule uma faixa de valor em /orcamento com base nos pacotes padrão.",
-      },
-      {
-        question: "Como reservo a data?",
-        answer:
-          "A reserva é garantida com um sinal de R$ 2.000, e o restante é pago até 2 semanas antes da festa. Dá para agendar uma visita ao salão em /visita antes de decidir.",
       },
     ],
   },

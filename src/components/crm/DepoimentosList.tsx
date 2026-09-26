@@ -74,7 +74,7 @@ function DepoimentoCard({ item, status }: { item: TestimonialWithLead; status: S
     <div className="rounded-xl border border-cream/10 bg-cream/5 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-display text-lg text-cream">{item.nome ?? "—"}</p>
+          <p className="font-display text-lg text-cream">{item.nome ?? "-"}</p>
           {item.leadId && (
             <Link
               href={`/crm/leads/${item.leadId}`}

@@ -31,18 +31,18 @@ function nomeAparelho(): string {
   if (/iphone/i.test(ua)) return "iPhone";
   if (/ipad/i.test(ua)) return "iPad";
   if (/android/i.test(ua)) {
-    if (/chrome/i.test(ua)) return "Android — Chrome";
+    if (/chrome/i.test(ua)) return "Android (Chrome)";
     return "Android";
   }
   if (/windows/i.test(ua)) {
-    if (/edg\//i.test(ua)) return "Windows — Edge";
-    if (/chrome/i.test(ua)) return "Windows — Chrome";
-    if (/firefox/i.test(ua)) return "Windows — Firefox";
+    if (/edg\//i.test(ua)) return "Windows (Edge)";
+    if (/chrome/i.test(ua)) return "Windows (Chrome)";
+    if (/firefox/i.test(ua)) return "Windows (Firefox)";
     return "Windows";
   }
   if (/macintosh/i.test(ua)) {
-    if (/chrome/i.test(ua)) return "Mac — Chrome";
-    if (/safari/i.test(ua)) return "Mac — Safari";
+    if (/chrome/i.test(ua)) return "Mac (Chrome)";
+    if (/safari/i.test(ua)) return "Mac (Safari)";
     return "Mac";
   }
   return "Aparelho desconhecido";

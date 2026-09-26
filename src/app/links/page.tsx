@@ -56,7 +56,7 @@ export default function LinksPage() {
       </div>
 
       <div className="relative mx-auto flex max-w-md flex-col items-center px-5 pt-14 pb-12">
-        <h1 className="sr-only">{siteConfig.fullName} — Links</h1>
+        <h1 className="sr-only">{siteConfig.fullName} | Links</h1>
         <Image
           src="/images/logo-vertical.png"
           alt={siteConfig.fullName}

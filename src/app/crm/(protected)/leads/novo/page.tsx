@@ -8,7 +8,7 @@ export default async function CrmNovoLeadPage() {
     <div className="max-w-xl">
       <h1 className="font-display text-3xl text-cream">Novo lead</h1>
       <p className="mt-2 text-sm text-cream/60">
-        Para clientes que chegaram por telefone, Instagram ou indicação — não passaram pelo simulador.
+        Para clientes que chegaram por telefone, Instagram ou indicação, que não passaram pelo simulador.
       </p>
 
       <form action={createManualLeadAction} className="mt-6 flex flex-col gap-4">

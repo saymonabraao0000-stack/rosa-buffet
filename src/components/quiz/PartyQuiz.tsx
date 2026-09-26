@@ -558,7 +558,7 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                   </h2>
                   <p className="mt-2 text-sm text-gray-dark">
                     Os dois já incluem cerimonial, fotografia, bolo de 3 andares, decoração
-                    completa, DJ e cabine fotográfica — a diferença está abaixo.
+                    completa, DJ e cabine fotográfica, a diferença está abaixo.
                   </p>
                   <div className="mt-6 flex flex-col gap-3">
                     {partyPackages
@@ -582,7 +582,7 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                           </span>
                           <span>
                             <span className="block font-semibold text-ink">
-                              {p.label} — {p.tagline}
+                              {p.label}: {p.tagline}
                             </span>
                             <ul className="mt-1 list-disc pl-4 text-sm text-gray-dark">
                               {p.highlights.map((h) => (
@@ -634,7 +634,7 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                     )}
                     <div className="col-span-full border-b border-ink/10 py-2">
                       <dt className="font-medium text-ink">Pacote:</dt>
-                      <dd className="mt-1">{pacote.label} — {pacote.tagline}</dd>
+                      <dd className="mt-1">{pacote.label}: {pacote.tagline}</dd>
                     </div>
                   </dl>
 
@@ -661,7 +661,7 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-cream/75">
                       Na visita você vê o espaço de perto, tira as dúvidas com a nossa
-                      equipe e a gente confere junto as datas livres — muitas vezes a
+                      equipe e a gente confere junto as datas livres, muitas vezes a
                       data ideal aparece ali mesmo.
                     </p>
                     <Link

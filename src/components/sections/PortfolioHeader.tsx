@@ -39,7 +39,7 @@ export default function PortfolioHeader() {
           className="reveal max-w-2xl text-base leading-relaxed text-cream/75 sm:text-lg"
         >
           Reunimos <PhotoCounter initialCount={staticTotal} /> momentos reais de celebrações que ganharam vida em
-          nossos espaços — de 15 anos e casamentos a festas infantis e
+          nossos espaços, de 15 anos e casamentos a festas infantis e
           formaturas. Explore por tema e imagine a sua.
         </motion.p>
         <motion.div

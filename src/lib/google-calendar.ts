@@ -268,7 +268,7 @@ function buildEventBody(lead: LeadForSync) {
   const dataEvento = lead.data_evento as string;
 
   return {
-    summary: `Festa – ${lead.nome} (${temaLabel})`,
+    summary: `Festa: ${lead.nome} (${temaLabel})`,
     description: descricaoLinhas.join("\n"),
     start: { date: dataEvento, timeZone: "America/Manaus" },
     end: { date: nextDay(dataEvento), timeZone: "America/Manaus" },

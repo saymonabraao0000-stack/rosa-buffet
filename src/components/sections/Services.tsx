@@ -15,8 +15,6 @@ const festaSlugByService: Record<string, string> = {
   casamentos: "buffet-para-casamento-manaus",
   "15-anos": "festa-de-15-anos-manaus",
   aniversarios: "festa-de-aniversario-manaus",
-  "eventos-corporativos": "eventos-corporativos-manaus",
-  "cha-revelacao": "cha-revelacao-manaus",
   formaturas: "festa-de-formatura-manaus",
 };
 
@@ -29,7 +27,7 @@ export default function Services() {
           description="Escolha o evento e veja como cuidamos de cada detalhe."
         />
 
-        <div className="mt-8 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 md:grid-cols-4 lg:grid-cols-7">
+        <div className="mt-8 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5">
           {services.map((service, index) => (
             <motion.div
               key={service.slug}

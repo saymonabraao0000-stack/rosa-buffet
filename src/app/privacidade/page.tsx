@@ -40,10 +40,10 @@ export default function PrivacidadePage() {
                 Esta página explica, de forma simples e direta, o que a{" "}
                 <strong className="text-ink">{siteConfig.fullName}</strong>{" "}
                 ({siteConfig.address.full}) faz com os dados pessoais que você
-                nos envia pelo site — em especial pelo simulador de orçamento
+                nos envia pelo site, em especial pelo simulador de orçamento
                 (<em>/orcamento</em>) e por qualquer formulário de contato.
-                Seguimos a Lei Geral de Proteção de Dados (Lei nº 13.709/2018
-                — LGPD).
+                Seguimos a Lei Geral de Proteção de Dados (Lei nº 13.709/2018,
+                LGPD).
               </p>
 
               <section>
@@ -87,7 +87,7 @@ export default function PrivacidadePage() {
                 <p className="mt-2">
                   Usamos esses dados exclusivamente para entrar em contato
                   com você, entender melhor o que você precisa para o seu
-                  evento e enviar um orçamento — nunca para vender a
+                  evento e enviar um orçamento, nunca para vender a
                   terceiros, nem para envio de propaganda não relacionada ao
                   seu pedido.
                 </p>

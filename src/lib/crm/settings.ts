@@ -45,7 +45,7 @@ export const DEFAULT_MODELOS_WHATSAPP: ModelosWhatsapp = {
     "Oi, {nome}! Passando para saber se você já conseguiu dar uma olhada no orçamento que te enviamos para a festa " +
     "de {tema} do dia {data}. Ficou alguma dúvida?",
   reservaConfirmada:
-    "Oi, {nome}! Sua data ({data}) está reservada com a gente 🎉 Recebemos o sinal de {valor} — muito obrigado pela confiança! " +
+    "Oi, {nome}! Sua data ({data}) está reservada com a gente 🎉 Recebemos o sinal de {valor}, muito obrigado pela confiança! " +
     "Qualquer detalhe da festa é só chamar por aqui.",
   lembreteSaldo:
     "Oi, {nome}! Passando para lembrar que o saldo da sua festa do dia {data} é de {saldo}, com vencimento próximo. " +

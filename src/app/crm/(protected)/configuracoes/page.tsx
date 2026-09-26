@@ -73,7 +73,7 @@ export default async function CrmConfiguracoesPage() {
       <div className="mt-8 flex flex-col gap-6">
         <Section
           title="Avisos no celular"
-          description="Notificação nativa do CRM (Web Push) quando chega lead novo ou algo precisa de atenção — sem depender de app terceiro."
+          description="Notificação nativa do CRM (Web Push) quando chega lead novo ou algo precisa de atenção, sem depender de app terceiro."
         >
           <PushSettings />
         </Section>

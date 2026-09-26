@@ -27,7 +27,7 @@ export default async function CrmDepoimentosPage() {
       <div className="mt-8">
         <h2 className="font-display text-xl text-cream">Prints de avaliações</h2>
         <p className="mt-1 text-sm text-cream/60">
-          Envie capturas de tela de avaliações (Instagram, WhatsApp, Google) — elas entram no carrossel da
+          Envie capturas de tela de avaliações (Instagram, WhatsApp, Google): elas entram no carrossel da
           home junto com os depoimentos escritos.
         </p>
         <div className="mt-4">

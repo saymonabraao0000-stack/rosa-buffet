@@ -162,7 +162,7 @@ export default async function CrmLeadDetailPage({
                     ? "Ainda não decidida"
                     : lead.dataEvento
                       ? dateTimeFormatter.format(new Date(`${lead.dataEvento}T00:00:00`))
-                      : "—"
+                      : "-"
                 }
               />
               <Field label="Pacote" value={pacoteLabel} />
@@ -179,7 +179,7 @@ export default async function CrmLeadDetailPage({
                 label="Estimativa"
                 value={
                   lead.estimateMin != null && lead.estimateMax != null
-                    ? `${currency.format(lead.estimateMin)} – ${currency.format(lead.estimateMax)}`
+                    ? `${currency.format(lead.estimateMin)} a ${currency.format(lead.estimateMax)}`
                     : undefined
                 }
               />
@@ -252,7 +252,7 @@ function Field({ label, value }: { label: string; value: string | undefined }) {
   return (
     <div>
       <dt className="text-xs font-semibold uppercase tracking-wide text-cream/60">{label}</dt>
-      <dd className="mt-1 text-cream">{value ?? "—"}</dd>
+      <dd className="mt-1 text-cream">{value ?? "-"}</dd>
     </div>
   );
 }

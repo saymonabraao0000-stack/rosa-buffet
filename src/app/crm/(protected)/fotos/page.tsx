@@ -13,7 +13,7 @@ export default async function CrmFotosPage() {
     <div>
       <h1 className="font-display text-3xl text-cream">Fotos das festas</h1>
       <p className="mt-2 text-sm text-cream/60">
-        Envie fotos de festas realizadas — elas aparecem no topo do portfólio (/celebracoes), no tema escolhido,
+        Envie fotos de festas realizadas: elas aparecem no topo do portfólio (/celebracoes), no tema escolhido,
         junto das fotos já existentes.
       </p>
 

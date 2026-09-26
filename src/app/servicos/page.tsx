@@ -8,7 +8,7 @@ import { siteConfig } from "@/lib/site-config";
 
 const title = "Serviços de Buffet e Eventos em Manaus";
 const description =
-  "Festas infantis, 15 anos, casamentos, aniversários, formaturas, chá revelação e eventos corporativos em Manaus. Buffet, decoração e produção completa com a Rosa Buffet.";
+  "Festas infantis, 15 anos, casamentos, aniversários e formaturas em Manaus. Buffet, decoração e produção completa com a Rosa Buffet.";
 
 export const metadata: Metadata = {
   title,
@@ -34,7 +34,7 @@ export default function ServicosPage() {
       <main>
         <PageHeader
           title="Serviços"
-          description="Festas infantis, 15 anos, casamentos, formaturas, aniversários, chá revelação e eventos corporativos, com buffet, decoração e produção no mesmo lugar."
+          description="Festas infantis, 15 anos, casamentos, formaturas e aniversários, com buffet, decoração e produção no mesmo lugar."
         />
         <Services />
         <FAQ />

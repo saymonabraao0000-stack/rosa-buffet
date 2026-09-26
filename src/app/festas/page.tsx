@@ -11,7 +11,7 @@ import { festas } from "@/lib/festas-data";
 export const metadata: Metadata = {
   title: `Festas em Manaus | ${siteConfig.name}`,
   description:
-    "Conheça os tipos de festa que a Rosa Buffet organiza em Manaus: 15 anos, casamento, aniversário, formatura, festa infantil, evento corporativo e chá revelação.",
+    "Conheça os tipos de festa que a Rosa Buffet organiza em Manaus: 15 anos, casamento, aniversário, formatura e festa infantil.",
   alternates: { canonical: "/festas" },
 };
 
@@ -52,7 +52,7 @@ export default function FestasIndexPage() {
                 Festas na <span className="text-gold">Rosa Buffet</span>
               </h1>
               <p className="mt-5 max-w-md text-base leading-relaxed text-cream/80 sm:text-lg">
-                Do 15 anos ao chá revelação, cada tipo de festa tem um jeito
+                Do 15 anos à festa infantil, cada tipo de festa tem um jeito
                 próprio de acontecer no nosso salão, na Cidade de Deus, em
                 Manaus.
               </p>

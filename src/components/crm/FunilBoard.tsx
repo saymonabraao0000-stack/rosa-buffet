@@ -289,7 +289,7 @@ function MotivoPerdidoModal({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 md:items-center">
       <div className="w-full max-w-sm rounded-xl border border-cream/10 bg-ink p-5">
         <h3 className="font-display text-lg text-cream">Motivo da perda</h3>
-        <p className="mt-1 text-xs text-cream/50">Opcional — ajuda a entender por que o lead não fechou.</p>
+        <p className="mt-1 text-xs text-cream/50">Opcional: ajuda a entender por que o lead não fechou.</p>
         <textarea
           autoFocus
           value={motivo}

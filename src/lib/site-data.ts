@@ -87,22 +87,6 @@ export const services: Service[] = [
     image: "/images/eventos/aniversario.jpg",
   },
   {
-    slug: "eventos-corporativos",
-    title: "Eventos Corporativos",
-    description:
-      "Confraternizações, lançamentos e conferências com estrutura profissional completa.",
-    // Foto real: mesa posta com numeração e cardápio, montagem formal.
-    image: "/images/portfolio/casamentos/casamentos-26.jpg",
-  },
-  {
-    slug: "cha-revelacao",
-    title: "Chá Revelação",
-    description:
-      "Momentos únicos transformados em celebrações delicadas e cheias de emoção.",
-    // Foto real: mesas em azul e rosa-claro, no clima de um chá revelação.
-    image: "/images/portfolio/infantil/infantil-21.jpg",
-  },
-  {
     slug: "formaturas",
     title: "Formaturas",
     description:
@@ -140,11 +124,6 @@ export const faqItems: FaqItem[] = [
     question: "Vocês possuem espaço próprio?",
     answer:
       "Sim. A Rosa Buffet conta com estrutura própria, totalmente equipada para receber eventos de diferentes portes com conforto e sofisticação.",
-  },
-  {
-    question: "Atendem eventos corporativos?",
-    answer:
-      "Sim, realizamos confraternizações, lançamentos de produtos, conferências e demais eventos corporativos com estrutura profissional completa.",
   },
   {
     question: "Posso personalizar meu evento?",
