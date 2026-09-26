@@ -8,7 +8,8 @@ import Container from "@/components/ui/Container";
 import VisitaCalendar from "@/components/visita/VisitaCalendar";
 import { createVisitaAction } from "@/lib/visita/actions";
 import { lerOrigemSalva } from "@/lib/origem-visitante";
-import { siteConfig, buildWhatsappUrl } from "@/lib/site-config";
+import { siteConfig } from "@/lib/site-config";
+import WhatsAppChoice from "@/components/ui/WhatsAppChoice";
 import type { DiaComHorarios } from "@/lib/visitas";
 
 const dateFormatterCompleto = new Intl.DateTimeFormat("pt-BR", {
@@ -84,11 +85,9 @@ export default function VisitaForm({
   };
 
   if (step === "sucesso" && dataEscolhida && horaEscolhida) {
-    const whatsappUrl = buildWhatsappUrl(
-      `Olá! Agendei uma visita ao salão para ${dateFormatterCompleto.format(
-        new Date(`${dataEscolhida}T12:00:00`),
-      )} às ${horaEscolhida}. Meu nome é ${nome}.`,
-    );
+    const whatsappMessage = `Olá! Agendei uma visita ao salão para ${dateFormatterCompleto.format(
+      new Date(`${dataEscolhida}T12:00:00`),
+    )} às ${horaEscolhida}. Meu nome é ${nome}.`;
     return (
       <Container className="max-w-lg">
         <div className="rounded-2xl border border-cream/10 bg-cream/5 p-8 text-center shadow-sm">
@@ -123,14 +122,15 @@ export default function VisitaForm({
                 Adicionar ao calendário
               </a>
             )}
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="focus-gold inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft"
+            <WhatsAppChoice
+              message={whatsappMessage}
+              ariaLabel="Confirmar pelo WhatsApp"
+              menuAlign="center"
+              containerClassName="relative inline-block flex-1"
+              className="focus-gold flex w-full items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft"
             >
               Confirmar pelo WhatsApp
-            </a>
+            </WhatsAppChoice>
           </div>
 
           <Link href="/" className="focus-gold mt-6 inline-block text-sm text-cream/65 underline underline-offset-2 hover:text-cream">

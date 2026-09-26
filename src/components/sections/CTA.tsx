@@ -32,7 +32,9 @@ export default function CTA() {
         >
           Nossa equipe está pronta para transformar sua ideia em uma
           celebração única. Garanta sua data com um sinal de apenas{" "}
-          <span className="whitespace-nowrap">R$ {reservationDeposit}.</span>
+          <span className="whitespace-nowrap">
+            R$ {reservationDeposit.toLocaleString("pt-BR")}.
+          </span>
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 24 }}

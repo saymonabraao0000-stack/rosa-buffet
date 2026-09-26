@@ -28,7 +28,7 @@ export type PrecosSetting = Record<
 >;
 
 export const DEFAULT_CONDICOES_PAGAMENTO =
-  "Sinal de R$ 500 na reserva da data; restante até 7 dias antes da festa.";
+  "Sinal de R$ 2.000 na reserva da data; restante até 2 semanas antes da festa.";
 
 export const DEFAULT_LINK_AVALIACAO_GOOGLE = "";
 

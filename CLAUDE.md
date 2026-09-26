@@ -87,7 +87,7 @@ src/
     portfolio-data.ts        # dados gerados das fotos do portfólio (ver seção "Fotos")
     testimonials-data.ts       # lista gerada das capturas de depoimentos reais (ver seção "Fotos")
     quiz-data.ts              # temas/faixas de convidados/cardápio/opcionais do simulador (preços ilustrativos — ver Pendências)
-    availability-data.ts       # só reservationDeposit (R$500, valor real) e o helper formatISODate — datas reservadas de verdade vêm do banco agora
+    availability-data.ts       # só reservationDeposit (R$2.000, valor real) e o helper formatISODate — datas reservadas de verdade vêm do banco agora
     notify.ts                  # envia notificação via ntfy quando há novo lead
     google-calendar.ts         # integração com Google Calendar API (criar/atualizar/apagar eventos)
     db/client.ts               # cliente Postgres (Neon), singleton exportado como `sql`
@@ -132,6 +132,7 @@ public/
   - **Para adicionar fotos**: coloque o(s) arquivo(s) na pasta do tema em `public/images/portfolio/<tema>/`, depois regenere `portfolio-data.ts` — reinstale `sharp` temporariamente, leia as dimensões de cada arquivo da pasta e reescreva o array `portfolioCategories` (ou peça para o Claude fazer isso). Não edite as dimensões à mão.
 - As duas telas de portfólio ([celebracoes/page.tsx](src/app/celebracoes/page.tsx) e `public/portfolio.html`) consomem esse mesmo conjunto de 110 fotos — mudar as fotos do portfólio afeta as duas.
 - **Depoimentos** (seção "Depoimentos" da home, [Testimonials.tsx](src/components/sections/Testimonials.tsx)): 30 capturas de tela reais de conversas com clientes (Instagram/WhatsApp), fornecidas pelo dono do negócio, em `public/images/depoimentos/depoimento-01.jpeg` a `depoimento-30.jpeg`. Catalogadas com dimensões reais em [testimonials-data.ts](src/lib/testimonials-data.ts), mesmo esquema do portfólio (mas sem sharp — usei Pillow/Python, que já estava disponível na sessão). Renderizadas em carrossel infinito CSS puro (`.animate-marquee` em [globals.css](src/app/globals.css)). **Para adicionar mais**: solte o arquivo em `public/images/depoimentos/`, renomeie para o próximo `depoimento-NN.jpeg` e adicione a entrada com as dimensões reais em `testimonials-data.ts`.
+- **Fotos e prints enviados pelo CRM** (PrintsUploader, PartyPhotosUploader) são compactados automaticamente no navegador antes do upload por [src/lib/compress-image.ts](src/lib/compress-image.ts) — não sobem no tamanho original.
 
 ## Os dois portfólios (e por que ambos existem)
 
@@ -150,7 +151,9 @@ Fluxo: boas-vindas → **contato (nome + telefone)** → tema da festa (reaprove
 
 O resultado calcula uma faixa de valor estimado (`calculateEstimate` em [quiz-data.ts](src/lib/quiz-data.ts)) e monta uma mensagem de WhatsApp pré-preenchida com todas as respostas via `buildWhatsappUrl` (o mesmo helper usado no resto do site) — isso continua sendo o "orçamento exato", só que agora em paralelo ao registro no CRM.
 
-**Datas**: `QuizCalendar` recebe `bookedDates: string[]` como prop (não busca mais nada sozinho) — vem de `getBookedDates()` em [leads.ts](src/lib/crm/leads.ts), que consulta `leads` com `status = 'fechado'`. `reservationDeposit` (R$ 500, valor real informado pelo dono do negócio) continua em [availability-data.ts](src/lib/availability-data.ts), que agora só guarda essa constante e o helper `formatISODate` — a lista de datas reservadas deixou de existir ali.
+**Datas**: `QuizCalendar` recebe `bookedDates: string[]` como prop (não busca mais nada sozinho) — vem de `getBookedDates()` em [leads.ts](src/lib/crm/leads.ts), que consulta `leads` com `status = 'fechado'`. `reservationDeposit` (R$ 2.000, valor real informado pelo dono do negócio, reajustado em 2026-09-25 — o restante vence até `finalPaymentDaysBefore`, 2 semanas antes da festa) continua em [availability-data.ts](src/lib/availability-data.ts), que agora só guarda essas duas constantes e o helper `formatISODate` — a lista de datas reservadas deixou de existir ali.
+
+**Etapa "data" desligada (2026-09-25)**: `ESCOLHER_DATA = false` em [PartyQuiz.tsx](src/components/quiz/PartyQuiz.tsx) tira a etapa de escolher data do quiz (pedido do Wellington: o simulador foca em orçamento e a data se resolve na visita ao salão). Para reativar, basta virar essa constante para `true` — o `QuizCalendar` e o restante do fluxo continuam no código, só ficam fora de `STEPS` enquanto ela for `false`. Em linha com isso, o [Hero.tsx](src/components/sections/Hero.tsx) da home tem dois botões lado a lado: "Simular minha festa" (`/orcamento`) e "Falar no WhatsApp" (`WhatsAppButton`), sem depender de escolher data antes.
 
 ## Backend: banco de dados, CRM e autenticação
 
@@ -200,7 +203,7 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 1. **Lembrete de retorno** — data + atalhos (amanhã, 3 dias, 1 semana, limpar) na ficha; Dashboard mostra retornos de hoje/atrasados; Lista tem filtro.
 2. **Modelos de WhatsApp editáveis** — menu "Mais mensagens" na ficha com textos por fase (primeiro contato, retomar simulação, cobrar resposta, reserva confirmada, lembrete de saldo, pós-festa); variáveis (`{nome}`, `{tema}`, `{data}`, `{valor}`, etc) editáveis em Configurações.
 3. **Origem do lead** — rastreamento: `site`, `instagram`, `indicacao`, `google`, `whatsapp`, `passou_na_frente`, `outro`. Quiz grava `site` por padrão. Dashboard mostra distribuição por origem (% dos fechados).
-4. **Financeiro** — na ficha de festa fechada: valor fechado, sinal (default R$ 500), valor já pago, data pagamento final. Dashboard: faturamento do mês + a receber.
+4. **Financeiro** — na ficha de festa fechada: valor fechado, sinal (default R$ 2.000), valor já pago, data pagamento final. Dashboard: faturamento do mês + a receber.
 5. **Agenda em calendário** — `/crm/agenda` monta calendário mensal; festas fechadas em dourado, bloqueios em cinza; clicar em dia livre → bloquear (com motivo); em bloqueado → desbloquear. `getBookedDates()` inclui bloqueios.
 6. **Trava de login** — 5 erros em 15 min → bloqueia 15 min. Registra IP do header `cf-connecting-ip` (fallback `x-forwarded-for`).
 7. **App no celular** — PWA manifest em `/crm` (nome "Rosa Buffet CRM", ícone, `display: standalone`). Sem service worker.
@@ -237,7 +240,7 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 - **Preencher configurações em `/crm/configuracoes`**:
   - Link de avaliação do Google (mensagem pós-festa) — sai do Perfil da Empresa (ver "Google e SEO" abaixo), depende de acesso de administrador.
   - Revisar/ajustar preços dos pacotes (setting `precos`; fallback ilustrativo em [quiz-data.ts](src/lib/quiz-data.ts)).
-  - Revisar/ajustar condições de pagamento (padrão: "Sinal de R$ 500 na reserva da data; restante até 7 dias antes da festa.").
+  - Revisar/ajustar condições de pagamento (padrão desde 2026-09-25: "Sinal de R$ 2.000 na reserva da data; restante até 2 semanas antes da festa.").
 - **Domínio `rosabuffeteventos.com.br`** — registrado em 2026-09-23, vence em 2027-09-23 (renovação anual, Pix pela dona). Titular: CPF da Rosilene Moreira de Paula. Conta Registro.br ID `ROMPA342` (Saymon tem acesso; trocar o contato técnico não é necessário por ora — decisão de 2026-09-24). **Não usar `rosabuffet.com.br`**: é de outro buffet (Roselina Soares).
 - **Links placeholder em [site-config.ts](src/lib/site-config.ts)**:
   - `googleMapsUrl`/`googleMapsEmbedUrl`: busca por endereço em texto — trocar pelo link do Perfil da Empresa quando houver acesso.
@@ -252,7 +255,7 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 - **Selo "★ 4,6 no Google · 266 avaliações"** (2026-09-24) — [GoogleRating.tsx](src/components/ui/GoogleRating.tsx) no topo da home, na tela inicial do simulador e em /depoimentos. Números em `siteConfig.googleReviews`, **atualizados à mão** (conferir de tempos em tempos); o link hoje é uma busca no Maps — trocar pelo link direto das avaliações quando houver acesso ao perfil. Não colocar `aggregateRating` no JSON-LD (Google não aceita avaliação do próprio negócio como rich result).
 - **Origem do visitante** (2026-09-24) — [origem-visitante.ts](src/lib/origem-visitante.ts) + `OrigemTracker` no layout raiz guardam no localStorage (`rb_origem`, 30 dias, primeiro contato vence) de onde a pessoa chegou: `?origem=` na URL ou referrer google.*/instagram. Simulador e /visita usam `origem da URL ?? origem salva`; o servidor valida contra `LEAD_ORIGENS`. O link do site no Perfil da Empresa deve ser `https://rosabuffeteventos.com.br/?origem=google`.
 - **Cloudflare Web Analytics** (2026-09-24) — beacon em [CloudflareAnalytics.tsx](src/components/layout/CloudflareAnalytics.tsx) no layout raiz, fora do `/crm`. Painel: Cloudflare → Analytics & Logs → Web Analytics.
-- **Telefones diferentes de propósito** (decisão da família, 2026-09-24): o perfil do Google fica com o número do Wellington, (92) 99459-8954; o site, o CRM e os PDFs ficam com o da Rosilene, (92) 99207-3047. Não "corrigir" um pelo outro.
+- **Telefones diferentes de propósito** (decisão da família, 2026-09-24; site público mudou em 2026-09-25): o perfil do Google fica com o número do Wellington, (92) 99459-8954. No site público, todo contato de WhatsApp (botões, rodapé, `/links`, simulador etc.) oferece os dois atendentes — "Falar com a Rosa" e "Falar com o Wellington" — para acabar com o impasse entre os dois números (`whatsappAttendants` em [site-config.ts](src/lib/site-config.ts), popover/bottom sheet em [WhatsAppChoice.tsx](src/components/ui/WhatsAppChoice.tsx)). CRM, PDFs e JSON-LD continuam só com o da Rosilene, (92) 99207-3047 (`siteConfig.whatsappNumber`/`phoneDisplay`) — não "corrigir" um pelo outro.
 - **`updated_at` é manual** — toda escrita em `leads` deve incluir `updated_at = now()` (sem trigger). Se adicionar função nova em [leads.ts](src/lib/crm/leads.ts), lembrar disso.
 
 <!-- BEGIN:nextjs-agent-rules -->

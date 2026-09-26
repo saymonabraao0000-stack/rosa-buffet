@@ -1,10 +1,12 @@
+"use client";
+
 import { WhatsAppIcon } from "@/components/ui/SocialIcons";
-import { buildWhatsappUrl } from "@/lib/site-config";
+import WhatsAppChoice from "@/components/ui/WhatsAppChoice";
 
 type WhatsAppButtonProps = {
   message?: string;
   label?: string;
-  variant?: "primary" | "secondary" | "outline-light";
+  variant?: "primary" | "secondary" | "outline-light" | "outline-dark";
   size?: "md" | "lg";
   className?: string;
   showIcon?: boolean;
@@ -17,6 +19,8 @@ const variantStyles: Record<NonNullable<WhatsAppButtonProps["variant"]>, string>
     "bg-ink text-cream hover:bg-ink-soft border border-white/10",
   "outline-light":
     "bg-transparent text-cream border border-cream/40 hover:bg-cream/10",
+  "outline-dark":
+    "bg-transparent text-ink border border-ink/15 hover:border-gold hover:text-gold",
 };
 
 const sizeStyles: Record<NonNullable<WhatsAppButtonProps["size"]>, string> = {
@@ -24,6 +28,10 @@ const sizeStyles: Record<NonNullable<WhatsAppButtonProps["size"]>, string> = {
   lg: "px-8 py-4 text-base",
 };
 
+// Ao clicar, abre a escolha entre falar com a Rosa ou com o Wellington (os
+// dois atendem no WhatsApp) — ver WhatsAppChoice. A API (label, message,
+// variant, size, className) continua a mesma para não quebrar quem já usa
+// esse componente pelo site.
 export default function WhatsAppButton({
   message,
   label = "Solicitar orçamento",
@@ -33,14 +41,13 @@ export default function WhatsAppButton({
   showIcon = true,
 }: WhatsAppButtonProps) {
   return (
-    <a
-      href={buildWhatsappUrl(message)}
-      target="_blank"
-      rel="noopener noreferrer"
+    <WhatsAppChoice
+      message={message}
+      ariaLabel={label}
       className={`focus-gold inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide transition-all duration-300 hover:-translate-y-0.5 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
     >
       {showIcon && <WhatsAppIcon className="h-4 w-4" aria-hidden="true" />}
       {label}
-    </a>
+    </WhatsAppChoice>
   );
 }

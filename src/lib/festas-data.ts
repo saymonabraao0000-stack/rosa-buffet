@@ -93,7 +93,7 @@ export const festas: FestaContent[] = [
       {
         question: "Como reservo a data da festa?",
         answer:
-          "A reserva é garantida com um sinal de R$ 500. Você pode simular sua festa em /orcamento ou agendar uma visita ao salão em /visita para ver o espaço antes de decidir.",
+          "A reserva é garantida com um sinal de R$ 2.000, e o restante é pago até 2 semanas antes da festa. Você pode simular sua festa em /orcamento ou agendar uma visita ao salão em /visita para ver o espaço antes de decidir.",
       },
     ],
   },
@@ -138,7 +138,7 @@ export const festas: FestaContent[] = [
       {
         question: "Como garanto a data da minha festa de 15 anos?",
         answer:
-          "Com um sinal de R$ 500 a data fica reservada. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
+          "Com um sinal de R$ 2.000 a data fica reservada; o restante é pago até 2 semanas antes da festa. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
       },
     ],
   },
@@ -183,7 +183,7 @@ export const festas: FestaContent[] = [
       {
         question: "Como reservo a data do casamento?",
         answer:
-          "A reserva é garantida com um sinal de R$ 500. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
+          "A reserva é garantida com um sinal de R$ 2.000, e o restante é pago até 2 semanas antes da festa. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
       },
     ],
   },
@@ -228,7 +228,7 @@ export const festas: FestaContent[] = [
       {
         question: "Como reservo a data da festa?",
         answer:
-          "Com um sinal de R$ 500 a data fica reservada. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
+          "Com um sinal de R$ 2.000 a data fica reservada; o restante é pago até 2 semanas antes da festa. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
       },
     ],
   },
@@ -278,7 +278,7 @@ export const festas: FestaContent[] = [
       {
         question: "Como reservo a data do aniversário?",
         answer:
-          "Com um sinal de R$ 500 a data fica reservada. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
+          "Com um sinal de R$ 2.000 a data fica reservada; o restante é pago até 2 semanas antes da festa. Dá para simular o orçamento em /orcamento ou agendar uma visita ao salão em /visita antes de decidir.",
       },
     ],
   },
@@ -374,7 +374,7 @@ export const festas: FestaContent[] = [
       {
         question: "Como reservo a data?",
         answer:
-          "A reserva é garantida com um sinal de R$ 500. Dá para agendar uma visita ao salão em /visita antes de decidir.",
+          "A reserva é garantida com um sinal de R$ 2.000, e o restante é pago até 2 semanas antes da festa. Dá para agendar uma visita ao salão em /visita antes de decidir.",
       },
     ],
   },

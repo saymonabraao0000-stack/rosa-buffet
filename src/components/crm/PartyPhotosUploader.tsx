@@ -10,52 +10,13 @@ import {
   uploadPartyPhotoAction,
 } from "@/lib/crm/party-photos-actions";
 import type { PartyPhotoMeta } from "@/lib/crm/party-photos";
+import { compressImageFile } from "@/lib/compress-image";
 
-const MAX_SIDE = 1600;
-const MAX_BYTES = 900 * 1024;
-const START_QUALITY = 0.82;
-const MIN_QUALITY = 0.4;
+// O servidor aceita até 900 KB (party-photos.ts); fica uma folga para o
+// arquivo nunca ser recusado.
+const COMPRESS = { maxBytes: 850 * 1024, maxWidth: 1600, maxHeight: 1600 };
 
 type UploadState = { total: number; current: number } | null;
-
-/**
- * Redimensiona um arquivo de imagem no navegador (canvas), sem ampliar, até
- * no máximo MAX_SIDE no lado maior, exporta como WebP (fallback JPEG) e
- * reduz a qualidade em passos até caber em MAX_BYTES.
- */
-async function resizeImageFile(file: File): Promise<{ blob: Blob; width: number; height: number }> {
-  const bitmap = await createImageBitmap(file);
-  const largerSide = Math.max(bitmap.width, bitmap.height);
-  const scale = Math.min(1, MAX_SIDE / largerSide);
-  const width = Math.max(1, Math.round(bitmap.width * scale));
-  const height = Math.max(1, Math.round(bitmap.height * scale));
-
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas não suportado neste navegador.");
-  ctx.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close?.();
-
-  const tryExport = (type: string, quality: number) =>
-    new Promise<Blob | null>((resolve) => canvas.toBlob((b) => resolve(b), type, quality));
-
-  let quality = START_QUALITY;
-  let blob = (await tryExport("image/webp", quality)) ?? (await tryExport("image/jpeg", quality));
-  if (!blob) throw new Error("Não foi possível processar a imagem.");
-  const type = blob.type || "image/jpeg";
-
-  while (blob && blob.size > MAX_BYTES && quality > MIN_QUALITY) {
-    quality -= 0.12;
-    blob = await tryExport(type, quality);
-  }
-
-  if (!blob) throw new Error("Não foi possível processar a imagem.");
-  if (blob.size > MAX_BYTES) throw new Error("Imagem não coube no limite de 900 KB mesmo reduzindo a qualidade.");
-
-  return { blob, width, height };
-}
 
 export default function PartyPhotosUploader({ photos: initialPhotos }: { photos: PartyPhotoMeta[] }) {
   const [photos, setPhotos] = useState(initialPhotos);
@@ -87,7 +48,7 @@ export default function PartyPhotosUploader({ photos: initialPhotos }: { photos:
       setUploadState({ total: files.length, current: i + 1 });
 
       try {
-        const { blob, width, height } = await resizeImageFile(file);
+        const { blob, width, height } = await compressImageFile(file, COMPRESS);
 
         const formData = new FormData();
         formData.set("blob", blob, file.name);

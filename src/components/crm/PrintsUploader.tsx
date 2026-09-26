@@ -8,43 +8,13 @@ import {
   uploadReviewPrintAction,
 } from "@/lib/crm/review-print-actions";
 import type { ReviewPrintMeta } from "@/lib/crm/review-prints";
+import { compressImageFile } from "@/lib/compress-image";
 
-const MAX_WIDTH = 1080;
-const WEBP_QUALITY = 0.82;
+// O servidor aceita até 600 KB e 4000 px (review-prints.ts); fica uma folga
+// para o arquivo nunca ser recusado.
+const COMPRESS = { maxBytes: 560 * 1024, maxWidth: 1080, maxHeight: 3800 };
 
 type UploadState = { total: number; current: number } | null;
-
-/**
- * Redimensiona um arquivo de imagem no navegador (canvas), sem ampliar,
- * até no máximo MAX_WIDTH de largura, e exporta como WebP (fallback JPEG se
- * o navegador não suportar toBlob("image/webp")). Mantém a proporção.
- */
-async function resizeImageFile(file: File): Promise<{ blob: Blob; width: number; height: number }> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_WIDTH / bitmap.width);
-  const width = Math.max(1, Math.round(bitmap.width * scale));
-  const height = Math.max(1, Math.round(bitmap.height * scale));
-
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas não suportado neste navegador.");
-  ctx.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close?.();
-
-  const webpBlob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob((b) => resolve(b), "image/webp", WEBP_QUALITY),
-  );
-  if (webpBlob) return { blob: webpBlob, width, height };
-
-  // Fallback: navegador não suporta exportar WebP via canvas.
-  const jpegBlob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob((b) => resolve(b), "image/jpeg", WEBP_QUALITY),
-  );
-  if (!jpegBlob) throw new Error("Não foi possível processar a imagem.");
-  return { blob: jpegBlob, width, height };
-}
 
 export default function PrintsUploader({ prints: initialPrints }: { prints: ReviewPrintMeta[] }) {
   const [prints, setPrints] = useState(initialPrints);
@@ -67,7 +37,7 @@ export default function PrintsUploader({ prints: initialPrints }: { prints: Revi
       setUploadState({ total: files.length, current: i + 1 });
 
       try {
-        const { blob, width, height } = await resizeImageFile(file);
+        const { blob, width, height } = await compressImageFile(file, COMPRESS);
 
         const formData = new FormData();
         formData.set("file", blob, file.name);

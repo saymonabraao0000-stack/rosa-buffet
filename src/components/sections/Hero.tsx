@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { PartyPopper } from "lucide-react";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
@@ -49,10 +51,20 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col items-start gap-5">
-            <WhatsAppButton
-              size="lg"
-              label="Solicitar orçamento"
-            />
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <Link
+                href="/orcamento"
+                className="focus-gold inline-flex items-center justify-center gap-2 rounded-full bg-gold px-8 py-4 text-base font-semibold tracking-wide text-ink shadow-[0_8px_30px_-10px_rgba(201,162,39,0.6)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold-soft"
+              >
+                <PartyPopper className="h-4 w-4" aria-hidden="true" />
+                Simular minha festa
+              </Link>
+              <WhatsAppButton
+                size="lg"
+                variant="outline-light"
+                label="Falar no WhatsApp"
+              />
+            </div>
             <GoogleRating />
           </div>
         </motion.div>

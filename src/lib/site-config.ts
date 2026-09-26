@@ -12,7 +12,10 @@ export const siteConfig = {
     "A Rosa Buffet é referência em buffet e produção de eventos em Manaus-AM: casamentos, 15 anos e festas infantis. Simule o orçamento no site ou fale no WhatsApp.",
   url: "https://rosabuffeteventos.com.br",
 
-  // TODO: substituir pelo número oficial de WhatsApp da empresa, caso mude.
+  // Número institucional (Rosa/Rosilene) — usado em JSON-LD, PDF do
+  // orçamento e no CRM. NÃO é mais o único que atende no site: o site
+  // público oferece Rosa e Wellington como escolha (ver `whatsappAttendants`
+  // e `buildWhatsappUrl` abaixo). Decisão de 2026-09-25.
   whatsappNumber: "5592992073047",
   whatsappDefaultMessage:
     "Olá! Gostaria de solicitar um orçamento para meu evento.",
@@ -59,7 +62,22 @@ export const siteConfig = {
   ],
 } as const;
 
-export function buildWhatsappUrl(message?: string) {
+// Os dois atendentes que recebem clientes pelo WhatsApp do site público
+// (decisão de 2026-09-25, para acabar com o impasse entre os dois números).
+// Rosa é o padrão de `buildWhatsappUrl` para não quebrar quem chama sem
+// atendente. CRM, PDFs e JSON-LD continuam com `siteConfig.whatsappNumber`
+// (o da Rosa) — não usam essa lista.
+export const whatsappAttendants = [
+  { nome: "Rosa", saudacao: "a Rosa", telefone: "5592992073047", phoneDisplay: "(92) 99207-3047" },
+  { nome: "Wellington", saudacao: "o Wellington", telefone: "5592994598954", phoneDisplay: "(92) 99459-8954" },
+] as const;
+
+export type WhatsappAttendant = (typeof whatsappAttendants)[number];
+
+export function buildWhatsappUrl(
+  message?: string,
+  atendente: WhatsappAttendant = whatsappAttendants[0],
+) {
   const text = encodeURIComponent(message ?? siteConfig.whatsappDefaultMessage);
-  return `https://wa.me/${siteConfig.whatsappNumber}?text=${text}`;
+  return `https://wa.me/${atendente.telefone}?text=${text}`;
 }

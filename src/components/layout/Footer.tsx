@@ -3,7 +3,8 @@ import Link from "next/link";
 import { CalendarCheck, Calculator, ChevronDown, MapPin, Phone } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { FacebookIcon, InstagramIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
-import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
+import { buildWhatsappUrl, siteConfig, whatsappAttendants } from "@/lib/site-config";
+import WhatsAppChoice from "@/components/ui/WhatsAppChoice";
 import { festas } from "@/lib/festas-data";
 
 // Rótulo curto no rodapé; o "em Manaus" já está no título da coluna.
@@ -98,9 +99,13 @@ export default function Footer() {
               <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook da Rosa Buffet" className={socialClass}>
                 <FacebookIcon className="h-5 w-5" aria-hidden="true" />
               </a>
-              <a href={buildWhatsappUrl()} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp da Rosa Buffet" className={socialClass}>
+              <WhatsAppChoice
+                ariaLabel="WhatsApp da Rosa Buffet"
+                menuAlign="left"
+                className={socialClass}
+              >
                 <WhatsAppIcon className="h-5 w-5" aria-hidden="true" />
-              </a>
+              </WhatsAppChoice>
             </div>
           </div>
 
@@ -135,10 +140,20 @@ export default function Footer() {
             <ul className="flex flex-col gap-3 text-sm text-cream/75 sm:gap-4">
               <li className="flex items-start gap-2.5">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gold" aria-hidden="true" />
-                <a href={buildWhatsappUrl()} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                  {siteConfig.phoneDisplay}
-                  <span className="block text-xs text-cream/50">WhatsApp</span>
-                </a>
+                <div className="flex flex-col gap-2">
+                  {whatsappAttendants.map((atendente) => (
+                    <a
+                      key={atendente.nome}
+                      href={buildWhatsappUrl(undefined, atendente)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={linkClass}
+                    >
+                      {atendente.nome} {atendente.phoneDisplay}
+                    </a>
+                  ))}
+                  <span className="text-xs text-cream/50">WhatsApp</span>
+                </div>
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" aria-hidden="true" />

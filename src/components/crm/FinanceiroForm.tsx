@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { updateLeadFinanceiroAction } from "@/lib/crm/actions";
 import type { Lead } from "@/lib/crm/types";
+import { reservationDeposit } from "@/lib/availability-data";
 
 const currency = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -11,7 +12,7 @@ const currency = new Intl.NumberFormat("pt-BR", {
 });
 
 // Item 4 — financeiro da festa (só para leads fechados): valor fechado,
-// sinal (padrão 500), valor já pago, data do pagamento final e "falta receber".
+// sinal (padrão = reservationDeposit), valor já pago, data do pagamento final e "falta receber".
 export default function FinanceiroForm({ lead }: { lead: Lead }) {
   const [isPending, startTransition] = useTransition();
   const [valorFechado, setValorFechado] = useState(lead.valorFechado?.toString() ?? "");
@@ -37,7 +38,7 @@ export default function FinanceiroForm({ lead }: { lead: Lead }) {
         <NumberField
           label="Sinal (R$)"
           name="valorSinal"
-          defaultValue={(lead.valorSinal ?? 500).toString()}
+          defaultValue={(lead.valorSinal ?? reservationDeposit).toString()}
         />
         <NumberField
           label="Já pago (R$)"

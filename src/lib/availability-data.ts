@@ -9,7 +9,10 @@
  */
 
 /** Valor do sinal para garantir a reserva de uma data, em reais. */
-export const reservationDeposit = 500;
+export const reservationDeposit = 2000;
+
+/** O restante do pagamento vence até este número de dias antes da festa (2 semanas). */
+export const finalPaymentDaysBefore = 14;
 
 export function formatISODate(date: Date): string {
   const y = date.getFullYear();

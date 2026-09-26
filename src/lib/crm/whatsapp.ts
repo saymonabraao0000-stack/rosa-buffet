@@ -1,6 +1,7 @@
 import { getThemeLabel } from "@/lib/quiz-data";
 import type { Lead } from "./types";
 import { isQuizIncomplete } from "./quiz-progress";
+import { reservationDeposit } from "@/lib/availability-data";
 
 // Link "Abrir WhatsApp" da ficha do lead, já com a primeira mensagem escrita
 // (a equipe só revisa e envia).
@@ -81,7 +82,7 @@ export function buildTemplateWhatsappUrl(
     tema: getThemeLabel(lead.temaSlug),
     data: lead.dataEvento ? formatDate(lead.dataEvento) : undefined,
     // {valor} nos modelos padrão se refere ao sinal (ex.: "reserva confirmada").
-    valor: currencyBR.format(lead.valorSinal ?? 500),
+    valor: currencyBR.format(lead.valorSinal ?? reservationDeposit),
     saldo: faltaReceber != null ? currencyBR.format(faltaReceber) : undefined,
     link_avaliacao: opts.linkAvaliacaoGoogle || undefined,
     link_depoimento: opts.linkDepoimento || undefined,

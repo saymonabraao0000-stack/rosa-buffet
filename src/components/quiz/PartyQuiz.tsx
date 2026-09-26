@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
+  CalendarCheck,
   Check,
   ChevronUp,
   PartyPopper,
@@ -15,7 +16,11 @@ import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import GoogleRating from "@/components/ui/GoogleRating";
 import { lerOrigemSalva } from "@/lib/origem-visitante";
 import QuizCalendar from "@/components/quiz/QuizCalendar";
-import { reservationDeposit, formatISODate } from "@/lib/availability-data";
+import {
+  finalPaymentDaysBefore,
+  formatISODate,
+  reservationDeposit,
+} from "@/lib/availability-data";
 import { createLeadAction, updateLeadAction } from "@/lib/quiz/actions";
 import type { LeadProgressPatch } from "@/lib/crm/types";
 import type { PrecosSetting } from "@/lib/crm/settings";
@@ -26,7 +31,15 @@ import {
   quizThemes,
 } from "@/lib/quiz-data";
 
-const STEPS = [
+/**
+ * Etapa de escolher a data da festa — desligada em 2026-09-25 a pedido do
+ * Wellington: quem não achava a data livre desistia ali, e na visita ao salão
+ * costuma topar outro dia. O simulador agora leva para a visita. Para voltar
+ * a mostrar o calendário, é só trocar para true.
+ */
+const ESCOLHER_DATA = false;
+
+const ALL_STEPS = [
   "welcome",
   "contato",
   "tema",
@@ -36,9 +49,13 @@ const STEPS = [
   "resultado",
 ] as const;
 
-type Step = (typeof STEPS)[number];
+type Step = (typeof ALL_STEPS)[number];
 
-const ANSWERABLE_STEPS: Step[] = ["contato", "tema", "convidados", "data", "pacote"];
+const STEPS: readonly Step[] = ALL_STEPS.filter((s) => ESCOLHER_DATA || s !== "data");
+
+const ANSWERABLE_STEPS: Step[] = (["contato", "tema", "convidados", "data", "pacote"] as Step[]).filter(
+  (s) => STEPS.includes(s),
+);
 
 const currency = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -247,11 +264,13 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
       answers.nome ? `Nome: ${answers.nome}` : null,
       tema ? `Tema: ${tema.label}` : null,
       `Convidados: ${guestOption.label}`,
-      answers.dateSkipped
-        ? `Data: ainda não decidida`
-        : answers.date
-          ? `Data desejada: ${dateFormatter.format(answers.date)}`
-          : null,
+      !ESCOLHER_DATA
+        ? null
+        : answers.dateSkipped
+          ? `Data: ainda não decidida`
+          : answers.date
+            ? `Data desejada: ${dateFormatter.format(answers.date)}`
+            : null,
       `Pacote: ${pacote.label}`,
       price != null
         ? `Valor do pacote: ${currency.format(price)}`
@@ -325,7 +344,7 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                   <p className="mt-5 max-w-xl text-base leading-relaxed text-gray-dark sm:text-lg">
                     Responda algumas perguntas rápidas sobre tema, convidados e
                     estilo do evento e receba uma estimativa de valor na hora.
-                    Depois é só confirmar os detalhes com a gente pelo WhatsApp.
+                    Depois é só vir conhecer o salão e acertar os detalhes com a gente.
                   </p>
                   <button
                     type="button"
@@ -603,14 +622,16 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                       <dt className="font-medium text-ink">Convidados:</dt>
                       <dd>{guestOption?.label}</dd>
                     </div>
-                    <div className="flex justify-between border-b border-ink/10 py-2 sm:justify-start sm:gap-2">
-                      <dt className="font-medium text-ink">Data:</dt>
-                      <dd>
-                        {answers.dateSkipped || !answers.date
-                          ? "A definir"
-                          : dateFormatter.format(answers.date)}
-                      </dd>
-                    </div>
+                    {ESCOLHER_DATA && (
+                      <div className="flex justify-between border-b border-ink/10 py-2 sm:justify-start sm:gap-2">
+                        <dt className="font-medium text-ink">Data:</dt>
+                        <dd>
+                          {answers.dateSkipped || !answers.date
+                            ? "A definir"
+                            : dateFormatter.format(answers.date)}
+                        </dd>
+                      </div>
+                    )}
                     <div className="col-span-full border-b border-ink/10 py-2">
                       <dt className="font-medium text-ink">Pacote:</dt>
                       <dd className="mt-1">{pacote.label} — {pacote.tagline}</dd>
@@ -628,30 +649,38 @@ export default function PartyQuiz({ bookedDates, precos, origem }: PartyQuizProp
                       *Estimativa gerada pelo simulador, sujeita a confirmação com
                       nossa equipe. Não inclui taxas específicas do espaço ou
                       personalizações extras.
-                      {!answers.dateSkipped && answers.date && (
-                        <>
-                          {" "}
-                          Para reservar a data escolhida é pedido um sinal de{" "}
-                          {currency.format(reservationDeposit)}.
-                        </>
-                      )}
+                      {" "}A data é reservada com um sinal de{" "}
+                      {currency.format(reservationDeposit)}; o restante é pago até{" "}
+                      {finalPaymentDaysBefore / 7} semanas antes da festa.
                     </p>
                   </div>
 
-                  <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:flex-wrap">
-                    <WhatsAppButton
-                      size="lg"
-                      label="Receber orçamento exato pelo WhatsApp"
-                      message={whatsappMessage}
-                    />
+                  <div className="mt-8 rounded-2xl bg-ink px-6 py-6 text-cream">
+                    <h3 className="font-display text-xl sm:text-2xl">
+                      Próximo passo: venha conhecer o salão
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-cream/75">
+                      Na visita você vê o espaço de perto, tira as dúvidas com a nossa
+                      equipe e a gente confere junto as datas livres — muitas vezes a
+                      data ideal aparece ali mesmo.
+                    </p>
                     <Link
                       href={`/visita?nome=${encodeURIComponent(answers.nome)}&tel=${encodeURIComponent(answers.telefone)}${
                         origem ? `&origem=${encodeURIComponent(origem)}` : ""
                       }`}
-                      className="focus-gold inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-gold hover:text-gold"
+                      className="focus-gold mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-gold px-8 py-4 text-base font-semibold text-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold-soft"
                     >
+                      <CalendarCheck className="h-4 w-4" aria-hidden="true" />
                       Agendar visita ao salão
                     </Link>
+                  </div>
+
+                  <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:flex-wrap">
+                    <WhatsAppButton
+                      variant="outline-dark"
+                      message={whatsappMessage}
+                      label="Prefiro falar pelo WhatsApp"
+                    />
                     <button
                       type="button"
                       onClick={() => {

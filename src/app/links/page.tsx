@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { Calculator, CalendarCheck, ChevronRight, Gift, Globe, Images, MapPin, Star } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
-import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
+import { buildWhatsappUrl, siteConfig, whatsappAttendants } from "@/lib/site-config";
 
 // Página de links da bio do Instagram (@rosabuffetoficial_). Sem Navbar/Footer
 // e sem o botão flutuante do WhatsApp (escondido em /links no
@@ -32,9 +32,7 @@ export const metadata: Metadata = {
   },
 };
 
-const whatsappUrl = buildWhatsappUrl(
-  "Olá! Vim pelo Instagram e gostaria de um orçamento para a minha festa.",
-);
+const linksWhatsappMessage = "Olá! Vim pelo Instagram e gostaria de um orçamento para a minha festa.";
 
 const pacotes = [
   { label: "Pacote Premium", href: "/pacotes/premium?origem=instagram" },
@@ -93,9 +91,16 @@ export default function LinksPage() {
             Agendar visita ao salão
           </LinkButton>
 
-          <LinkButton href={whatsappUrl} external icon={<WhatsAppIcon className="h-5 w-5" aria-hidden="true" />}>
-            Falar no WhatsApp
-          </LinkButton>
+          {whatsappAttendants.map((atendente) => (
+            <LinkButton
+              key={atendente.nome}
+              href={buildWhatsappUrl(linksWhatsappMessage, atendente)}
+              external
+              icon={<WhatsAppIcon className="h-5 w-5" aria-hidden="true" />}
+            >
+              Falar com {atendente.saudacao} no WhatsApp
+            </LinkButton>
+          ))}
           <LinkButton href="/celebracoes" icon={<Images className="h-5 w-5" aria-hidden="true" />}>
             Fotos das nossas festas
           </LinkButton>
@@ -138,7 +143,13 @@ export default function LinksPage() {
             @rosabuffetoficial_
           </a>
           <span>{siteConfig.address.full}</span>
-          <span>{siteConfig.phoneDisplay}</span>
+          <span className="flex flex-col gap-0.5">
+            {whatsappAttendants.map((atendente) => (
+              <span key={atendente.nome}>
+                {atendente.nome} {atendente.phoneDisplay}
+              </span>
+            ))}
+          </span>
         </div>
       </div>
     </main>

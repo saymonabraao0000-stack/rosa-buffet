@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
-import { buildWhatsappUrl, siteConfig } from "@/lib/site-config";
+import WhatsAppChoice from "@/components/ui/WhatsAppChoice";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Política de Privacidade",
@@ -136,14 +137,13 @@ export default function PrivacidadePage() {
                 <p className="mt-3">
                   Para exercer qualquer um desses direitos, fale com a gente
                   pelo WhatsApp:{" "}
-                  <a
-                    href={buildWhatsappUrl()}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <WhatsAppChoice
+                    ariaLabel={`WhatsApp da ${siteConfig.name}`}
+                    menuAlign="left"
                     className="focus-gold font-semibold text-ink underline underline-offset-2 hover:text-gold"
                   >
                     {siteConfig.phoneDisplay}
-                  </a>
+                  </WhatsAppChoice>
                   .
                 </p>
               </section>
