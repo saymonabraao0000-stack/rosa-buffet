@@ -116,22 +116,6 @@ export default async function CrmLeadsPage({
             <option value="1">Parou no meio</option>
           </select>
         </Field>
-        <Field label="De">
-          <input
-            type="date"
-            name="from"
-            defaultValue={params.from}
-            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold [color-scheme:dark]"
-          />
-        </Field>
-        <Field label="Até">
-          <input
-            type="date"
-            name="to"
-            defaultValue={params.to}
-            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream outline-none focus:border-gold [color-scheme:dark]"
-          />
-        </Field>
         <Field label="Retorno">
           <select
             name="retorno"
@@ -143,23 +127,41 @@ export default async function CrmLeadsPage({
             <option value="atrasados">Atrasados</option>
           </select>
         </Field>
-        <button
-          type="submit"
-          className="focus-gold rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-gold-soft"
-        >
-          Filtrar
-        </button>
-        {(params.q || params.status || params.tema || params.from || params.to || params.incompleto || params.retorno) && (
-          <Link href="/crm/leads" className="focus-gold text-sm font-medium text-cream/60 hover:text-cream">
-            Limpar
-          </Link>
-        )}
-        <a
-          href={exportHref}
-          className="focus-gold rounded-full border border-cream/15 px-5 py-2 text-sm font-semibold text-cream transition-colors hover:border-gold hover:text-gold"
-        >
-          Exportar planilha
-        </a>
+        <Field label="De">
+          <input
+            type="date"
+            name="from"
+            defaultValue={params.from}
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream block min-w-0 appearance-none outline-none focus:border-gold [color-scheme:dark] [&::-webkit-date-and-time-value]:text-left"
+          />
+        </Field>
+        <Field label="Até">
+          <input
+            type="date"
+            name="to"
+            defaultValue={params.to}
+            className="focus-gold rounded-lg border border-cream/15 bg-ink px-3 py-2 text-sm text-cream block min-w-0 appearance-none outline-none focus:border-gold [color-scheme:dark] [&::-webkit-date-and-time-value]:text-left"
+          />
+        </Field>
+        <div className="col-span-2 flex items-center gap-3 md:contents">
+          <button
+            type="submit"
+            className="focus-gold h-10 flex-1 rounded-full bg-gold px-5 text-sm md:flex-none font-semibold text-ink transition-colors hover:bg-gold-soft"
+          >
+            Filtrar
+          </button>
+          {(params.q || params.status || params.tema || params.from || params.to || params.incompleto || params.retorno) && (
+            <Link href="/crm/leads" className="focus-gold whitespace-nowrap text-sm font-medium text-cream/60 hover:text-cream">
+              Limpar
+            </Link>
+          )}
+          <a
+            href={exportHref}
+            className="focus-gold inline-flex h-10 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-cream/15 px-4 text-sm font-semibold text-cream md:flex-none transition-colors hover:border-gold hover:text-gold"
+          >
+            Exportar planilha
+          </a>
+        </div>
       </form>
 
       {/* Celular: cartões. Tabela a partir de md. */}
@@ -271,7 +273,7 @@ export default async function CrmLeadsPage({
 function Field({ label, wide, children }: { label: string; wide?: boolean; children: React.ReactNode }) {
   return (
     <label
-      className={`flex min-w-0 flex-col gap-1 text-xs font-medium text-cream/60 [&>*]:w-full md:[&>*]:w-auto ${wide ? "col-span-2" : ""}`}
+      className={`flex min-w-0 flex-col gap-1 text-xs font-medium text-cream/60 [&>*]:h-10 [&>*]:w-full md:[&>*]:w-auto ${wide ? "col-span-2" : ""}`}
     >
       {label}
       {children}
