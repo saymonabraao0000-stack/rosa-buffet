@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rosa CRM — tela de aplicativos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --ink-soft: #171717;
+    --ink-line: rgba(250, 248, 243, .1);
+    --gold: #c9a227;
+    --gold-soft: #e0c368;
+    --cream: #faf8f3;
+    --cream-60: rgba(250, 248, 243, .6);
+    --cream-40: rgba(250, 248, 243, .4);
+    --display: "Playfair Display", Georgia, serif;
+    --body: "Inter", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #ece8df; color: var(--ink); font-family: var(--body); padding: 40px 16px 64px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  /* ---------- página de apresentação ---------- */
+  .intro { max-width: 1240px; margin: 0 auto 32px; }
+  .intro h1 { font-family: var(--display); font-weight: 600; font-size: clamp(26px, 4vw, 36px); }
+  .intro p { margin-top: 8px; color: #4a4a4a; max-width: 640px; line-height: 1.5; }
+  .stage { max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; justify-content: center; }
+  .stage figure { display: flex; flex-direction: column; gap: 12px; }
+  .stage figcaption { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #4a4a4a; }
+  .stage .desk-fig { flex: 1 1 760px; min-width: 0; max-width: 820px; }
+
+  /* ---------- molduras ---------- */
+  .phone {
+    width: 390px; max-width: 100%; height: 820px; border-radius: 54px; padding: 12px;
+    background: #050505; box-shadow: 0 30px 60px -20px rgba(0,0,0,.45), inset 0 0 0 2px #2a2a2a;
+  }
+  .phone .screen { border-radius: 42px; }
+  .island { position: absolute; top: 10px; left: 50%; translate: -50% 0; width: 112px; height: 32px; border-radius: 20px; background: #000; z-index: 5; }
+  .statusbar { height: 50px; padding: 18px 28px 0; display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--cream); }
+  .desk {
+    width: 100%; border-radius: 14px; overflow: hidden; background: #000;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,.45);
+  }
+  .desk-bar { height: 38px; display: flex; align-items: center; gap: 8px; padding: 0 14px; background: #1c1c1c; }
+  .desk-bar i { width: 11px; height: 11px; border-radius: 50%; background: #3a3a3a; }
+  .desk-bar span { margin-left: 16px; flex: 1; max-width: 360px; height: 24px; border-radius: 6px; background: #2a2a2a; color: var(--cream-40); font-size: 12px; display: flex; align-items: center; padding: 0 10px; }
+  .desk .screen { height: 680px; }
+
+  /* ---------- o CRM em si ---------- */
+  .screen { position: relative; height: 100%; overflow: hidden; background: var(--ink-soft); color: var(--cream); }
+  .view { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; }
+  .phone .view { top: 50px; }
+  .view.entra { animation: abre .26s cubic-bezier(.2, .8, .2, 1); }
+  .view.volta { animation: fecha .2s ease-out; }
+  @keyframes abre { from { opacity: 0; transform: scale(.94); } }
+  @keyframes fecha { from { opacity: 0; transform: scale(1.03); } }
+
+  .topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--ink-line); background: var(--ink); position: sticky; top: 0; z-index: 2; }
+  .topo img { height: 24px; display: block; }
+  .desk .topo { padding: 14px 28px; }
+  .desk .topo img { height: 28px; }
+  .acoes { display: flex; align-items: center; gap: 6px; }
+  .btn-ouro { display: inline-flex; align-items: center; gap: 6px; background: var(--gold); color: var(--ink); font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 999px; }
+  .btn-ouro:hover { background: var(--gold-soft); }
+  .btn-icone { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--cream-60); }
+  .btn-icone:hover { color: var(--cream); }
+  .ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .saudacao { padding: 26px 22px 8px; }
+  .saudacao h2 { font-family: var(--display); font-weight: 500; font-size: 26px; }
+  .saudacao p { margin-top: 4px; font-size: 14px; color: var(--cream-60); }
+  .desk .saudacao { text-align: center; padding: 48px 0 12px; }
+  .desk .saudacao h2 { font-size: 34px; }
+
+  /* grade de aplicativos */
+  .grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 10px; padding: 22px 18px 8px; }
+  .desk .home { display: grid; grid-template-columns: auto 300px; gap: 56px; justify-content: center; align-items: start; padding: 36px 24px 40px; }
+  .desk .grade { gap: 30px 34px; padding: 0; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 9px; border-radius: 22px; padding: 4px 0; transition: transform .12s ease-out; }
+  .app:active { transform: scale(.94); }
+  .app:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+  .app-icone {
+    position: relative; width: 74px; height: 74px; border-radius: 22px; display: grid; place-items: center;
+    background: radial-gradient(120% 90% at 30% 10%, #2a2620 0%, #121212 60%, #0a0a0a 100%);
+    box-shadow: inset 0 0 0 1px rgba(201, 162, 39, .35), inset 0 1px 0 rgba(255, 240, 200, .08), 0 8px 18px -8px rgba(0,0,0,.7);
+    transition: box-shadow .18s ease-out;
+  }
+  .desk .app-icone { width: 92px; height: 92px; border-radius: 26px; }
+  .app:hover .app-icone { box-shadow: inset 0 0 0 1px rgba(224, 195, 104, .8), inset 0 1px 0 rgba(255, 240, 200, .12), 0 10px 24px -8px rgba(201, 162, 39, .35); }
+  .app-icone svg { width: 34px; height: 34px; fill: none; stroke: url(#ouro); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .desk .app-icone svg { width: 42px; height: 42px; }
+  .app-nome { font-size: 12.5px; font-weight: 500; color: var(--cream); text-align: center; line-height: 1.25; }
+  .desk .app-nome { font-size: 14px; }
+  .selo { position: absolute; top: -6px; right: -6px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--gold); color: var(--ink); font-size: 12px; font-weight: 600; display: grid; place-items: center; box-shadow: 0 0 0 3px var(--ink-soft); }
+
+  .hoje { margin: 22px 18px 28px; border: 1px solid var(--ink-line); border-radius: 16px; background: var(--ink); }
+  .desk .hoje { margin: 0; }
+  .hoje h3 { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); padding: 14px 16px 4px; font-weight: 600; }
+  .hoje li { list-style: none; display: flex; justify-content: space-between; gap: 12px; padding: 11px 16px; font-size: 14px; border-top: 1px solid var(--ink-line); }
+  .hoje li:first-of-type { border-top: 0; }
+  .hoje ul { padding: 0; }
+  .hoje span { color: var(--cream-60); }
+
+  /* telas internas */
+  .barra-app { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--ink-line); background: var(--ink); position: sticky; top: 0; z-index: 2; }
+  .voltar { display: inline-flex; align-items: center; gap: 2px; color: var(--gold); font-size: 15px; font-weight: 500; padding: 6px 8px; border-radius: 8px; }
+  .voltar .ico { width: 20px; height: 20px; }
+  .barra-app h2 { font-family: var(--display); font-weight: 500; font-size: 18px; flex: 1; text-align: center; margin-right: 76px; }
+  .desk .barra-app { padding: 12px 24px; }
+  .desk .barra-app h2 { text-align: left; margin: 0 0 0 12px; font-size: 22px; }
+  .desk .barra-app img { height: 26px; cursor: pointer; }
+  .corpo { padding: 20px 18px 32px; }
+  .desk .corpo { padding: 28px; }
+
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .desk .stats { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .stat { background: var(--ink); border: 1px solid var(--ink-line); border-radius: 14px; padding: 14px; }
+  .stat b { display: block; font-family: var(--display); font-weight: 500; font-size: 22px; color: var(--gold); margin-top: 6px; }
+  .stat small { font-size: 12px; color: var(--cream-60); }
+
+  .busca { display: flex; align-items: center; gap: 8px; background: var(--ink); border: 1px solid var(--ink-line); border-radius: 12px; padding: 10px 12px; color: var(--cream-40); font-size: 14px; margin-bottom: 14px; }
+  .lead { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--ink-line); }
+  .lead strong { font-weight: 500; font-size: 15px; display: block; }
+  .lead small { font-size: 12.5px; color: var(--cream-60); }
+  .pill { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; background: rgba(250,248,243,.08); color: var(--cream-60); }
+  .pill.novo { background: rgba(201,162,39,.16); color: var(--gold-soft); }
+  .pill.fechado { background: var(--gold); color: var(--ink); }
+
+  .mes { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: var(--display); font-size: 18px; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 13px; }
+  .cal .dow { font-size: 11px; color: var(--cream-40); padding-bottom: 4px; }
+  .cal .d { aspect-ratio: 1; display: grid; place-items: center; border-radius: 10px; background: var(--ink); }
+  .desk .cal .d { aspect-ratio: auto; height: 62px; }
+  .cal .festa { background: var(--gold); color: var(--ink); font-weight: 600; }
+  .cal .bloq { background: #3a3a3a; color: var(--cream-60); }
+  .cal .visita { box-shadow: inset 0 0 0 1.5px var(--gold); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 12px; color: var(--cream-60); }
+  .legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  .esqueleto div { height: 54px; border-radius: 12px; background: var(--ink); border: 1px solid var(--ink-line); margin-bottom: 10px; }
+  .nota { font-size: 13px; color: var(--cream-40); text-align: center; margin: 18px 0 6px; line-height: 1.5; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .view.entra, .view.volta { animation: none; }
+    .app { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- degradê dourado dos ícones (mesmo tom da logo) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="ouro" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22">
+      <stop offset="0" stop-color="#f3dc8a"/>
+      <stop offset=".5" stop-color="#d4af37"/>
+      <stop offset="1" stop-color="#a8841c"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="intro">
+  <h1>Rosa CRM: entrada com aplicativos</h1>
+  <p>Protótipo para aprovação. Ao entrar no CRM, as áreas do menu viram ícones de aplicativo. Toque em qualquer um para abrir a área e use "Início" para voltar. Nada disso está no ar.</p>
+</header>
+
+<main class="stage">
+  <figure>
+    <figcaption>Celular</figcaption>
+    <div class="phone">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
+        <div class="crm" data-tipo="celular"></div>
+      </div>
+    </div>
+  </figure>
+
+  <figure class="desk-fig">
+    <figcaption>Computador</figcaption>
+    <div class="desk">
+      <div class="desk-bar"><i></i><i></i><i></i><span>rosabuffeteventos.com.br/crm</span></div>
+      <div class="screen"><div class="crm" data-tipo="computador"></div></div>
+    </div>
+  </figure>
+</main>
+
+<script>
+  const LOGO = "../public/images/logo-header.png";
+
+  // Ícones do lucide (os mesmos do menu atual, em CrmSidebar.tsx)
+  const ICONES = {
+    dashboard: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+    leads: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    agenda: '<path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/>',
+    visitas: '<path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+    funil: '<path d="M6 5v11"/><path d="M12 5v6"/><path d="M18 5v14"/>',
+    relatorio: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+    depoimentos: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 12a2 2 0 0 0 2-2V8H8"/><path d="M14 12a2 2 0 0 0 2-2V8h-2"/>',
+    fotos: '<path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect x="6" y="2" width="16" height="16" rx="2"/>',
+    configuracoes: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+  };
+  const ico = (d) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  const MAIS = ico('<path d="M5 12h14"/><path d="M12 5v14"/>');
+  const SAIR = ico('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>');
+  const VOLTAR = ico('<path d="m15 18-6-6 6-6"/>');
+  const BUSCA = ico('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>');
+
+  // As 9 áreas do menu atual, na mesma ordem. "selo" = contador de pendências.
+  const APPS = [
+    { id: "dashboard", nome: "Dashboard" },
+    { id: "leads", nome: "Leads", selo: 4 },
+    { id: "agenda", nome: "Agenda" },
+    { id: "visitas", nome: "Visitas", selo: 2 },
+    { id: "funil", nome: "Funil" },
+    { id: "relatorio", nome: "Relatório" },
+    { id: "depoimentos", nome: "Depoimentos", selo: 1 },
+    { id: "fotos", nome: "Fotos das festas" },
+    { id: "configuracoes", nome: "Configurações" },
+  ];
+
+  const inicio = () => `
+    <div class="topo">
+      <img src="${LOGO}" alt="Rosa Buffet">
+      <div class="acoes">
+        <button class="btn-ouro">${MAIS} Novo lead</button>
+        <button class="btn-icone" aria-label="Sair">${SAIR}</button>
+      </div>
+    </div>
+    <div class="saudacao">
+      <h2>Boa tarde, Rosilene</h2>
+      <p>Sábado, 3 de outubro</p>
+    </div>
+    <div class="home">
+    <nav class="grade" aria-label="Áreas do CRM">
+      ${APPS.map((a) => `
+        <button class="app" data-app="${a.id}">
+          <span class="app-icone">
+            <svg viewBox="0 0 24 24" aria-hidden="true">${ICONES[a.id]}</svg>
+            ${a.selo ? `<span class="selo">${a.selo}</span>` : ""}
+          </span>
+          <span class="app-nome">${a.nome}</span>
+        </button>`).join("")}
+    </nav>
+    <section class="hoje">
+      <h3>Pra hoje</h3>
+      <ul>
+        <li>Festa infantil · Família Souza <span>18h</span></li>
+        <li>Retornar para Carla Mendes <span>15 anos</span></li>
+        <li>Visita ao salão · Rafael Lima <span>16h</span></li>
+      </ul>
+    </section>
+    </div>`;
+
+  const LEADS = [
+    ["Juliana Souza", "Infantil · 80 convidados", "novo", "Novo"],
+    ["Marcos Vinícius", "Casamento · 150 convidados", "", "Em conversa"],
+    ["Carla Mendes", "15 anos · 120 convidados", "", "Orçamento enviado"],
+    ["Ana Paula Reis", "Aniversário · 60 convidados", "fechado", "Fechado"],
+    ["Rafael Lima", "Formatura · 200 convidados", "novo", "Novo"],
+    ["Bruna Castro", "Infantil · 50 convidados", "", "Em conversa"],
+  ];
+
+  function agenda() {
+    const dias = ["D", "S", "T", "Q", "Q", "S", "S"].map((d) => `<span class="dow">${d}</span>`);
+    // Outubro/2026 começa numa quinta: 4 casas vazias antes do dia 1
+    const casas = Array(4).fill('<span></span>');
+    const festas = [3, 10, 17, 24, 31, 11, 25], bloq = [12], visitas = [6, 8, 15, 22];
+    for (let d = 1; d <= 31; d++) {
+      const c = festas.includes(d) ? "festa" : bloq.includes(d) ? "bloq" : visitas.includes(d) ? "visita" : "";
+      casas.push(`<span class="d ${c}">${d}</span>`);
+    }
+    return `
+      <div class="mes"><span>Outubro 2026</span></div>
+      <div class="cal">${dias.join("")}${casas.join("")}</div>
+      <div class="legenda">
+        <span><i style="background:var(--gold)"></i>Festa fechada</span>
+        <span><i style="background:#3a3a3a"></i>Bloqueado</span>
+        <span><i style="box-shadow:inset 0 0 0 1.5px var(--gold)"></i>Visita</span>
+      </div>`;
+  }
+
+  const CONTEUDO = {
+    dashboard: () => `<div class="stats">
+      ${[["Leads este mês", "23"], ["Total de leads", "187"], ["Taxa de conversão", "18%"], ["Aguardando contato", "4"], ["Faturamento do mês", "R$ 38.400"], ["A receber", "R$ 21.600"]]
+        .map(([l, v]) => `<div class="stat"><small>${l}</small><b>${v}</b></div>`).join("")}
+    </div><p class="nota">O resto do Dashboard continua como é hoje.</p>`,
+    leads: () => `<div class="busca">${BUSCA} Buscar por nome ou telefone</div>
+      ${LEADS.map(([n, s, c, st]) => `<div class="lead"><div><strong>${n}</strong><small>${s}</small></div><span class="pill ${c}">${st}</span></div>`).join("")}`,
+    agenda,
+  };
+  const generico = () => `<div class="esqueleto"><div></div><div></div><div></div><div></div></div>
+    <p class="nota">Aqui abre a tela que já existe hoje,<br>sem mudança no conteúdo.</p>`;
+
+  const area = (app, tipo) => `
+    <div class="barra-app">
+      <button class="voltar" data-inicio>${VOLTAR} Início</button>
+      ${tipo === "computador" ? `<img src="${LOGO}" alt="Rosa Buffet" data-inicio>` : ""}
+      <h2>${app.nome}</h2>
+    </div>
+    <div class="corpo">${(CONTEUDO[app.id] || generico)()}</div>`;
+
+  // Cada moldura é um CRM independente: clicar num app abre a área, "Início" volta.
+  document.querySelectorAll(".crm").forEach((crm) => {
+    const tipo = crm.dataset.tipo;
+    const mostrar = (html, anim) => {
+      crm.innerHTML = `<div class="view ${anim || ""}">${html}</div>`;
+    };
+    crm.addEventListener("click", (e) => {
+      const app = e.target.closest("[data-app]");
+      if (app) return mostrar(area(APPS.find((a) => a.id === app.dataset.app), tipo), "entra");
+      if (e.target.closest("[data-inicio]")) mostrar(inicio(), "volta");
+    });
+    mostrar(inicio());
+  });
+</script>
+</body>
+</html>

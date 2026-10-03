@@ -101,3 +101,18 @@ body {
     animation-iteration-count: infinite !important;
   }
 }
+
+/* CRM: cada área abre com um zoom curto a partir da tela de aplicativos
+   ((protected)/template.tsx). Sem fill-mode: no fim o transform some, para
+   não prender elementos `fixed` de dentro da página. O bloco de
+   prefers-reduced-motion lá em cima já zera a duração. */
+@keyframes abrir-app {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+.animate-abrir-app {
+  animation: abrir-app 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}

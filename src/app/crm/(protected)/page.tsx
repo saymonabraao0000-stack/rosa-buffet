@@ -1,361 +1,149 @@
-import { requireSession } from "@/lib/crm/require-session";
-import { headers } from "next/headers";
 import Link from "next/link";
-import { getDashboardStats } from "@/lib/crm/leads";
-import { getDatasLiberadasComEspera, getRecompras } from "@/lib/crm/daily";
-import { getPedidosDeAvaliacao } from "@/lib/crm/pos-festa";
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  CalendarCheck,
+  Kanban,
+  BarChart3,
+  MessageSquareQuote,
+  Images,
+  Settings,
+  type LucideIcon,
+} from "lucide-react";
+import { requireSession } from "@/lib/crm/require-session";
+import { getInicioResumo, type InicioItem } from "@/lib/crm/inicio";
 import { getThemeLabel } from "@/lib/quiz-data";
-import { toWhatsappNumber, fillWhatsappTemplate } from "@/lib/crm/whatsapp";
-import { LEAD_ORIGENS } from "@/lib/crm/types";
-import { CHECKLIST_TOTAL_ITENS } from "@/lib/crm/checklist";
-import RecompraOfertaButton from "@/components/crm/RecompraOfertaButton";
-import AvisarEsperaButton from "@/components/crm/AvisarEsperaButton";
-import PedirAvaliacaoBotoes from "@/components/crm/PedirAvaliacaoBotoes";
-import { hasAnyPushSubscription } from "@/lib/webpush";
-import { getSetting, DEFAULT_MODELOS_WHATSAPP, DEFAULT_LINK_AVALIACAO_GOOGLE } from "@/lib/crm/settings";
-import { getOrCreateTestimonialToken } from "@/lib/crm/testimonials";
 
 export const dynamic = "force-dynamic";
 
-const STATUS_LABELS: Record<string, string> = {
-  novo: "Novo",
-  contatado: "Contatado",
-  orcamento_enviado: "Orçamento enviado",
-  fechado: "Fechado",
-  perdido: "Perdido",
-};
+// Tela de entrada do CRM: cada área vira um "aplicativo" (protótipo aprovado
+// em Planos/prototipo-crm-apps.html). Dentro das áreas, a barra do topo tem
+// "Início" para voltar aqui.
+const APPS: { href: string; nome: string; icon: LucideIcon; selo?: "leads" | "visitas" | "depoimentos" }[] = [
+  { href: "/crm/dashboard", nome: "Dashboard", icon: LayoutDashboard },
+  { href: "/crm/leads", nome: "Leads", icon: Users, selo: "leads" },
+  { href: "/crm/agenda", nome: "Agenda", icon: Calendar },
+  { href: "/crm/visitas", nome: "Visitas", icon: CalendarCheck, selo: "visitas" },
+  { href: "/crm/funil", nome: "Funil", icon: Kanban },
+  { href: "/crm/relatorio", nome: "Relatório", icon: BarChart3 },
+  { href: "/crm/depoimentos", nome: "Depoimentos", icon: MessageSquareQuote, selo: "depoimentos" },
+  { href: "/crm/fotos", nome: "Fotos das festas", icon: Images },
+  { href: "/crm/configuracoes", nome: "Configurações", icon: Settings },
+];
 
-const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-});
-
-const currency = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-  maximumFractionDigits: 0,
-});
-
-function parseISODate(iso: string) {
-  const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d);
+function saudacao() {
+  const agora = new Date();
+  const hora = Number(
+    new Intl.DateTimeFormat("en-US", { timeZone: "America/Manaus", hour: "numeric", hourCycle: "h23" }).format(agora),
+  );
+  const data = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Manaus",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(agora);
+  return {
+    titulo: hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite",
+    data: data.charAt(0).toUpperCase() + data.slice(1),
+  };
 }
 
-export default async function CrmDashboardPage() {
+function itemHoje(item: InicioItem) {
+  if (item.tipo === "festa")
+    return { href: `/crm/leads/${item.id}`, texto: `Festa · ${item.nome}`, detalhe: getThemeLabel(item.temaSlug) ?? "" };
+  if (item.tipo === "visita")
+    return { href: "/crm/visitas", texto: `Visita ao salão · ${item.nome}`, detalhe: item.hora };
+  return { href: `/crm/leads/${item.id}`, texto: `Retornar para ${item.nome}`, detalhe: "retorno" };
+}
+
+export default async function CrmInicioPage() {
   await requireSession();
-  const [stats, recompras, datasLiberadas, temAvisoAtivo, pedidosAvaliacao, modelosWhatsapp, linkAvaliacaoGoogle] =
-    await Promise.all([
-      getDashboardStats(),
-      getRecompras(),
-      getDatasLiberadasComEspera(),
-      hasAnyPushSubscription(),
-      getPedidosDeAvaliacao(),
-      getSetting("modelos_whatsapp", DEFAULT_MODELOS_WHATSAPP),
-      getSetting("link_avaliacao_google", DEFAULT_LINK_AVALIACAO_GOOGLE),
-    ]);
-  const totalLeads = Object.values(stats.porStatus).reduce((a, b) => a + b, 0);
-  const porOrigemOrdenado = [...stats.porOrigem].sort((a, b) => b.total - a.total);
-  const maxOrigemTotal = Math.max(1, ...porOrigemOrdenado.map((o) => o.total));
-
-  const host = (await headers()).get("host") ?? "";
-  const origin = host ? `${host.startsWith("localhost") ? "http" : "https"}://${host}` : "";
-
-  // Gera (ou reaproveita) o link de depoimento de cada pedido pendente e
-  // monta a URL do WhatsApp já com o modelo pós-festa preenchido.
-  const pedidosAvaliacaoComLink = await Promise.all(
-    pedidosAvaliacao.map(async (p) => {
-      const token = await getOrCreateTestimonialToken(p.id, p.nome);
-      const primeiroNome = p.nome.trim().split(/\s+/)[0];
-      const texto = fillWhatsappTemplate(modelosWhatsapp.posFesta, {
-        nome: primeiroNome,
-        tema: getThemeLabel(p.temaSlug) ?? undefined,
-        link_avaliacao: linkAvaliacaoGoogle || undefined,
-        link_depoimento: origin ? `${origin}/depoimento/${token}` : undefined,
-      });
-      const whatsappUrl = `https://wa.me/${toWhatsappNumber(p.telefone)}?text=${encodeURIComponent(texto)}`;
-      return { ...p, whatsappUrl };
-    }),
-  );
+  const resumo = await getInicioResumo();
+  const { titulo, data } = saudacao();
+  const selos = { leads: resumo.leadsNovos, visitas: resumo.visitasHoje, depoimentos: resumo.depoimentosParaAprovar };
 
   return (
-    <div>
-      <h1 className="font-display text-3xl text-cream">Dashboard</h1>
+    <div className="mx-auto max-w-5xl">
+      {/* Degradê dourado dos ícones, no tom da logo. userSpaceOnUse porque as
+          linhas retas dos ícones têm caixa de largura zero. */}
+      <svg width="0" height="0" className="absolute" aria-hidden="true">
+        <defs>
+          <linearGradient id="ouro-app" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22">
+            <stop offset="0" stopColor="#f3dc8a" />
+            <stop offset=".5" stopColor="#d4af37" />
+            <stop offset="1" stopColor="#a8841c" />
+          </linearGradient>
+        </defs>
+      </svg>
 
-      {!temAvisoAtivo && (
-        <Link
-          href="/crm/configuracoes"
-          className="focus-gold mt-4 block rounded-lg border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-cream/80 transition-colors hover:border-gold/50"
-        >
-          Ative os avisos no celular em <span className="text-gold">Configurações</span> para não perder um lead novo.
-        </Link>
-      )}
+      <header className="lg:text-center">
+        <h1 className="font-display text-3xl text-cream lg:text-4xl">{titulo}</h1>
+        <p className="mt-1 text-sm text-cream/60">{data}</p>
+      </header>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatTile label="Leads este mês" value={stats.leadsEsteMes} />
-        <StatTile label="Total de leads" value={totalLeads} />
-        <StatTile
-          label="Taxa de conversão"
-          value={`${Math.round(stats.taxaConversao * 100)}%`}
-        />
-        <StatTile label="Aguardando contato" value={stats.porStatus.novo} />
-        <StatTile label="Faturamento do mês" value={currency.format(stats.faturamentoMes)} />
-        <StatTile label="A receber" value={currency.format(stats.aReceber)} />
-      </div>
+      <div className="mt-8 lg:mt-12 lg:grid lg:grid-cols-[auto_320px] lg:items-start lg:justify-center lg:gap-14">
+        <nav aria-label="Áreas do CRM" className="grid grid-cols-3 gap-x-2.5 gap-y-6 lg:gap-x-9 lg:gap-y-8">
+          {APPS.map((app) => {
+            const Icon = app.icon;
+            const selo = app.selo ? selos[app.selo] : 0;
+            return (
+              <Link
+                key={app.href}
+                href={app.href}
+                className="focus-gold group flex flex-col items-center gap-2.5 rounded-3xl py-1 transition-transform duration-100 active:scale-95"
+              >
+                <span className="relative grid h-[74px] w-[74px] place-items-center rounded-[22px] bg-[radial-gradient(120%_90%_at_30%_10%,#2a2620_0%,#121212_60%,#0a0a0a_100%)] shadow-[inset_0_0_0_1px_rgba(201,162,39,.35),inset_0_1px_0_rgba(255,240,200,.08),0_8px_18px_-8px_rgba(0,0,0,.7)] transition-shadow group-hover:shadow-[inset_0_0_0_1px_rgba(224,195,104,.8),inset_0_1px_0_rgba(255,240,200,.12),0_10px_24px_-8px_rgba(201,162,39,.35)] lg:h-[92px] lg:w-[92px] lg:rounded-[26px]">
+                  <Icon color="url(#ouro-app)" strokeWidth={1.6} className="h-[34px] w-[34px] lg:h-[42px] lg:w-[42px]" aria-hidden="true" />
+                  {selo > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 grid h-[22px] min-w-[22px] place-items-center rounded-full bg-gold px-1.5 text-xs font-semibold text-ink shadow-[0_0_0_3px_var(--color-ink-soft)]">
+                      {selo}
+                    </span>
+                  )}
+                </span>
+                <span className="text-center text-[12.5px] font-medium leading-tight text-cream lg:text-sm">{app.nome}</span>
+              </Link>
+            );
+          })}
+        </nav>
 
-      <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {recompras.length > 0 && (
-          <section className="lg:col-span-2">
-            <h2 className="mb-4 font-display text-xl text-cream">Oferecer a festa do ano que vem</h2>
-            <ul className="flex flex-col gap-3">
-              {recompras.map((r) => {
-                const primeiroNome = r.nome.trim().split(/\s+/)[0];
-                const temaLabel = getThemeLabel(r.temaSlug) ?? "festa";
-                const texto =
-                  `Olá, ${primeiroNome}! Aqui é da Rosa Buffet 🌹 Já está chegando de novo a data da sua festa ` +
-                  `de ${temaLabel}! Vamos organizar a comemoração desse ano com a gente?`;
-                const url = `https://wa.me/${toWhatsappNumber(r.telefone)}?text=${encodeURIComponent(texto)}`;
-                return (
-                  <li
-                    key={r.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4"
+        <section className="mt-8 rounded-2xl border border-cream/10 bg-ink lg:mt-0">
+          <h2 className="px-4 pt-3.5 pb-1 text-xs font-semibold uppercase tracking-widest text-gold">Pra hoje</h2>
+          <ul>
+            {resumo.hoje.map((item) => {
+              const { href, texto, detalhe } = itemHoje(item);
+              return (
+                <li key={`${item.tipo}-${item.id}`} className="border-t border-cream/10 first:border-t-0">
+                  <Link
+                    href={href}
+                    className="focus-gold flex justify-between gap-3 px-4 py-3 text-sm text-cream transition-colors hover:text-gold"
                   >
-                    <div>
-                      <Link
-                        href={`/crm/leads/${r.id}`}
-                        className="focus-gold font-semibold text-cream transition-colors hover:text-gold"
-                      >
-                        {r.nome}
-                      </Link>
-                      <p className="text-sm text-cream/60">
-                        {temaLabel} · festa anterior em {dateFormatter.format(parseISODate(r.dataEventoAnterior))} ·
-                        aniversário em {dateFormatter.format(parseISODate(r.proximoAniversario))}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="focus-gold rounded-full bg-gold px-4 py-2 text-xs font-semibold text-ink transition-colors hover:bg-gold-soft"
-                      >
-                        WhatsApp
-                      </a>
-                      <RecompraOfertaButton id={r.id} />
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        )}
-
-        {pedidosAvaliacaoComLink.length > 0 && (
-          <section className="lg:col-span-2">
-            <h2 className="mb-4 font-display text-xl text-cream">Pedir avaliação</h2>
-            <ul className="flex flex-col gap-3">
-              {pedidosAvaliacaoComLink.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4"
+                    <span>{texto}</span>
+                    <span className="shrink-0 text-cream/60">{detalhe}</span>
+                  </Link>
+                </li>
+              );
+            })}
+            {resumo.retornosAtrasados > 0 && (
+              <li className="border-t border-cream/10 first:border-t-0">
+                <Link
+                  href="/crm/leads?retorno=atrasados"
+                  className="focus-gold flex justify-between gap-3 px-4 py-3 text-sm text-amber-300/90 transition-colors hover:text-gold"
                 >
-                  <div>
-                    <Link
-                      href={`/crm/leads/${p.id}`}
-                      className="focus-gold font-semibold text-cream transition-colors hover:text-gold"
-                    >
-                      {p.nome}
-                    </Link>
-                    <p className="text-sm text-cream/60">
-                      {getThemeLabel(p.temaSlug) ?? "festa"} · festa em{" "}
-                      {dateFormatter.format(parseISODate(p.dataEvento))}
-                    </p>
-                  </div>
-                  <PedirAvaliacaoBotoes id={p.id} whatsappUrl={p.whatsappUrl} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {datasLiberadas.length > 0 && (
-          <section className="lg:col-span-2">
-            <h2 className="mb-4 font-display text-xl text-cream">Data liberada: pessoas esperando</h2>
-            <ul className="flex flex-col gap-3">
-              {datasLiberadas.map((d) => (
-                <li key={d.data} className="rounded-xl border border-cream/10 bg-cream/5 p-4">
-                  <p className="mb-2 text-sm font-semibold text-cream">
-                    {dateFormatter.format(parseISODate(d.data))} ficou livre
-                  </p>
-                  <ul className="flex flex-col gap-2">
-                    {d.pessoas.map((p) => {
-                      const primeiroNome = p.nome.trim().split(/\s+/)[0];
-                      const texto =
-                        `Olá, ${primeiroNome}! Aqui é da Rosa Buffet 🌹 Boa notícia: a data que você estava ` +
-                        "aguardando ficou disponível! Quer fechar com a gente?";
-                      const url = `https://wa.me/${toWhatsappNumber(p.telefone)}?text=${encodeURIComponent(texto)}`;
-                      return (
-                        <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
-                          <span className="text-cream">{p.nome}</span>
-                          <div className="flex shrink-0 items-center gap-2">
-                            <a
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="focus-gold rounded-full bg-gold px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-gold-soft"
-                            >
-                              WhatsApp
-                            </a>
-                            <AvisarEsperaButton id={p.id} />
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        <section>
-          <h2 className="mb-4 font-display text-xl text-cream">Retornos de hoje</h2>
-          {stats.retornosHoje.length === 0 ? (
-            <p className="text-sm text-cream/60">Nenhum retorno marcado para hoje.</p>
-          ) : (
-            <ul className="flex flex-col gap-2 rounded-xl border border-cream/10 bg-cream/5 p-4">
-              {stats.retornosHoje.map((item) => (
-                <li key={item.id} className="flex items-center justify-between text-sm">
-                  <Link
-                    href={`/crm/leads/${item.id}`}
-                    className="focus-gold text-cream transition-colors hover:text-gold"
-                  >
-                    {item.nome}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section>
-          <h2 className="mb-4 font-display text-xl text-cream">Atrasados</h2>
-          {stats.retornosAtrasados.length === 0 ? (
-            <p className="text-sm text-cream/60">Nenhum retorno atrasado.</p>
-          ) : (
-            <ul className="flex flex-col gap-2 rounded-xl border border-amber-400/20 bg-amber-500/5 p-4">
-              {stats.retornosAtrasados.map((item) => (
-                <li key={item.id} className="flex items-center justify-between text-sm">
-                  <Link
-                    href={`/crm/leads/${item.id}`}
-                    className="focus-gold text-cream transition-colors hover:text-gold"
-                  >
-                    {item.nome}
-                  </Link>
-                  <span className="text-amber-300/80">
-                    desde {dateFormatter.format(parseISODate(item.retornarEm))}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section>
-          <h2 className="mb-4 font-display text-xl text-cream">Leads por status</h2>
-          <ul className="flex flex-col gap-2 rounded-xl border border-cream/10 bg-cream/5 p-4">
-            {Object.entries(stats.porStatus).map(([status, count]) => (
-              <li key={status} className="flex items-center justify-between text-sm">
-                <span className="text-cream/60">{STATUS_LABELS[status] ?? status}</span>
-                <span className="font-semibold text-cream">{count}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="mb-4 font-display text-xl text-cream">Próximos eventos fechados</h2>
-          {stats.proximosEventos.length === 0 ? (
-            <p className="text-sm text-cream/60">Nenhum evento confirmado por enquanto.</p>
-          ) : (
-            <ul className="flex flex-col gap-2 rounded-xl border border-cream/10 bg-cream/5 p-4">
-              {stats.proximosEventos.map((evento) => (
-                <li key={evento.id} className="flex items-center justify-between text-sm">
-                  <Link
-                    href={`/crm/leads/${evento.id}`}
-                    className="focus-gold text-cream transition-colors hover:text-gold"
-                  >
-                    {evento.nome}
-                  </Link>
-                  <span className="text-cream/60">
-                    {dateFormatter.format(parseISODate(evento.dataEvento))}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section>
-          <h2 className="mb-4 font-display text-xl text-cream">De onde vêm os leads</h2>
-          <ul className="flex flex-col gap-3 rounded-xl border border-cream/10 bg-cream/5 p-4">
-            {porOrigemOrdenado.map((o) => (
-              <li key={o.origem ?? "sem-origem"}>
-                <div className="flex items-center justify-between text-xs text-cream/60">
-                  <span>{o.origem ? LEAD_ORIGENS[o.origem] : "Não informado"}</span>
                   <span>
-                    {o.total} · {o.fechados} fechado{o.fechados === 1 ? "" : "s"}
+                    {resumo.retornosAtrasados} retorno{resumo.retornosAtrasados === 1 ? "" : "s"} atrasado
+                    {resumo.retornosAtrasados === 1 ? "" : "s"}
                   </span>
-                </div>
-                <div className="mt-1 h-2 rounded-full bg-cream/10">
-                  <div
-                    className="h-2 rounded-full bg-gold"
-                    style={{ width: `${Math.round((o.total / maxOrigemTotal) * 100)}%` }}
-                  />
-                </div>
+                  <span className="shrink-0">ver</span>
+                </Link>
               </li>
-            ))}
-            {porOrigemOrdenado.length === 0 && (
-              <li className="text-sm text-cream/60">Nenhum lead ainda.</li>
+            )}
+            {resumo.hoje.length === 0 && resumo.retornosAtrasados === 0 && (
+              <li className="px-4 py-3 text-sm text-cream/60">Nada marcado pra hoje.</li>
             )}
           </ul>
         </section>
-
-        <section>
-          <h2 className="mb-4 font-display text-xl text-cream">Próximas festas (30 dias)</h2>
-          {stats.proximasFestas.length === 0 ? (
-            <p className="text-sm text-cream/60">Nenhuma festa fechada nos próximos 30 dias.</p>
-          ) : (
-            <ul className="flex flex-col gap-2 rounded-xl border border-cream/10 bg-cream/5 p-4">
-              {stats.proximasFestas.map((festa) => (
-                <li key={festa.id} className="flex items-center justify-between text-sm">
-                  <Link
-                    href={`/crm/leads/${festa.id}`}
-                    className="focus-gold text-cream transition-colors hover:text-gold"
-                  >
-                    {festa.nome}
-                  </Link>
-                  <span className="text-cream/60">
-                    {dateFormatter.format(parseISODate(festa.dataEvento))} ·{" "}
-                    {festa.checklistProntos}/{CHECKLIST_TOTAL_ITENS}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
       </div>
-    </div>
-  );
-}
-
-function StatTile({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="rounded-xl border border-cream/10 bg-cream/5 p-4">
-      <span className="block text-xs font-semibold uppercase tracking-wide text-cream/60">
-        {label}
-      </span>
-      <span className="mt-2 block font-display text-3xl text-cream">{value}</span>
     </div>
   );
 }

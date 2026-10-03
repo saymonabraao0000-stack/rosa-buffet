@@ -59,7 +59,9 @@ src/
         [id]/orcamento/route.ts # PDF do orçamento (protegida por sessão)
         exportar.csv/route.ts   # exportação CSV dos leads (protegida por sessão)
       (protected)/            # route group: layout chama requireSession() e monta o chrome do CRM
-        page.tsx                # dashboard
+        page.tsx                # tela de entrada: grade de aplicativos (uma por área) + "Pra hoje"
+        template.tsx            # zoom curto ao abrir cada área
+        dashboard/page.tsx      # dashboard (era /crm até 2026-10-03)
         leads/page.tsx          # lista + filtros
         leads/novo/page.tsx     # cadastro manual de lead
         leads/[id]/page.tsx     # ficha do lead
@@ -79,7 +81,7 @@ src/
     layout/                # Navbar, Footer, WhatsAppFloatingButton
     sections/               # uma seção da home ou do portfólio por arquivo
     quiz/                   # PartyQuiz.tsx e QuizCalendar.tsx, usados só em /orcamento
-    crm/                    # CrmSidebar, LoginForm, StatusForm, SinalToggle, NoteForm — os pedaços do CRM
+    crm/                    # CrmTopBar, LoginForm, StatusForm, SinalToggle, NoteForm — os pedaços do CRM
     ui/                     # botões, contadores, wrappers genéricos
   lib/
     site-config.ts          # dados institucionais centrais (contato, endereço, links, nav pública — /crm não entra aqui)
@@ -218,6 +220,8 @@ O CRM ganhou na madrugada de 23→24/09/2026 (fases 1–6 do plano `Planos/crm-m
 16. **Funil em colunas (kanban)** — `/crm/funil`: colunas por status; arrastar no computador, botão "Mover…" no celular. Perdido pede motivo.
 18. **Exportar CSV** — botão "Exportar CSV" na lista de leads (respeita filtros), rota `GET /crm/leads/exportar.csv` (UTF-8 com BOM, separador `;`).
 19. **Lead duplicado** — quando quiz cria lead com telefone igual a outro dos últimos 90 dias, marca na ficha e lista "Possível duplicado de {nome}" com link. Sem mesclar automático.
+
+- **Entrada em aplicativos** (2026-10-03): `/crm` virou uma grade de ícones (3 por linha no celular e no computador), um por área, com contador dourado de leads novos, visitas de hoje e depoimentos para aprovar, e a lista "Pra hoje" (festas, visitas, retornos, atrasados) — dados em [inicio.ts](src/lib/crm/inicio.ts). O menu lateral e as abas de baixo saíram: a barra única [CrmTopBar.tsx](src/components/crm/CrmTopBar.tsx) tem "‹ Início", logo, Novo lead e Sair. Protótipo aprovado em `Planos/prototipo-crm-apps.html`. Área nova no CRM = entrada nova em `APPS` de `(protected)/page.tsx`.
 
 **Item 17 (login por pessoa)** ficou para depois por decisão do Saymon em 2026-09-23 — mantém a senha única.
 - **Alerta de lead sem resposta** (2026-09-24): Cron Trigger `*/15 * * * *` → `POST /api/cron/sem-resposta` ([sem-resposta.ts](src/lib/crm/sem-resposta.ts)). Lead do simulador ainda "novo" 1h depois gera um aviso no ntfy, uma vez só (`leads.alerta_sem_resposta_em`), só entre 7h e 22h de Manaus e para leads de até 3 dias. O `custom-worker.ts` escolhe a rota pelo `event.cron`; o token dos crons fica em [cron-auth.ts](src/lib/cron-auth.ts).
