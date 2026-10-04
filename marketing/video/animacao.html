@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Rosa Buffet - vídeo da marca</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+/* =====================================================================
+   TEMPOS (segundos no VÍDEO, já contando o atraso de 2,0 s da voz).
+   Voz: Sulafat (gemini-3.8-flash-tts, 23,0 s depois de cortar a instrução lida
+   e encurtar pausas). Frases medidas com silencedetect + transcrição por trecho;
+   palavras dentro da frase estimadas por sílaba.
+   Para trocar a narração, mexa SÓ aqui. O resto da página lê daqui.
+   ===================================================================== */
+const TEMPOS = {
+  cenas: {
+    praSempre: 2.00,  // 2,06–4,36 "Tem dia que a gente guarda pra sempre."
+    momentos: 4.70,   // 4,78–11,55 "O sim no altar. A valsa... O diploma... O parabéns..."
+    detalhes: 11.80,  // 11,97–18,51 "Na Rosa Bifê, cada detalhe... o salão, a mesa, o sabor."
+    momento: 18.75,   // 18,93–20,52 "Você só vive o momento."
+    marca: 20.70,     // 20,94–24,96 "Rosa Bifê e Eventos. Sua festa, do jeito que você sonhou."
+  },
+  abertura:  { flor: 0.15, nome: 0.75, brilho: 1.25 },
+  praSempre: { tem: 2.06, guarda: 3.54, sempre: 3.87 },
+  // painéis da montagem: início do painel e a palavra destacada
+  momentos: [
+    { ini: 4.70, destaque: 5.53 },   // O sim no altar
+    { ini: 6.40, destaque: 7.29 },   // A valsa dos quinze anos   (virar de página)
+    { ini: 8.42, destaque: 9.08 },   // O diploma na mão          (íris)
+    { ini: 9.69, destaque: 10.99 },  // O parabéns cantado bem alto (virar de página)
+  ],
+  detalhes: { naRosa: 11.97, cada: 13.31, pensado: 14.32, historia: 14.99, salao: 16.09, mesa: 17.01, sabor: 17.90 },
+  momento:  { voce: 18.93, oMomento: 19.81 },
+  marca:    { logo: 20.85, festa: 22.73, jeito: 23.66, sonhou: 24.64, final: 25.40 },
+  fim:      { parado: 28.50, fim: 30.00 },
+};
+</script>
+<style>
+:root{--ink:#0d0d0d;--ink-soft:#171717;--gold:#c9a227;--gold-soft:#e0c368;--gold-deep:#9c7c16;--cream:#faf8f3;--gray-light:#f2f0ec;
+  --display:"Playfair Display",Georgia,serif;--body:"Inter",Helvetica,Arial,sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--ink);overflow:hidden}
+#st{position:relative;overflow:hidden;background:var(--ink);font-family:var(--body)}
+.v #st{width:1080px;height:1920px}
+.h #st{width:1920px;height:1080px}
+.cena{position:absolute;inset:0;display:none;overflow:hidden;z-index:0} /* cada cena numa camada própria: a ordem no HTML decide quem fica por cima */
+.ab{position:absolute}
+.ink{background:radial-gradient(ellipse at 50% 40%,#1c1a16 0%,var(--ink) 70%)}
+.creme{background:var(--cream)}
+img{display:block}
+.tt{font-family:var(--display);font-weight:500;line-height:1.08;white-space:nowrap;letter-spacing:-.01em}
+.it{font-style:italic;font-weight:700}
+.ouro{background:linear-gradient(100deg,#a8841a 0%,#e0c368 38%,#fff1bf 50%,#e0c368 62%,#a8841a 100%);background-size:320% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.ouro-esc{background:linear-gradient(100deg,#8a6c10 0%,#c9a227 38%,#ead07a 50%,#c9a227 62%,#8a6c10 100%);background-size:320% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.kick{font-family:var(--body);font-weight:600;text-transform:uppercase;letter-spacing:.24em;white-space:nowrap}
+.mask{overflow:hidden;padding:.05em .3em .16em .12em;margin:-.05em -.3em -.16em -.12em}
+.mask>*{display:inline-block;will-change:transform}
+.foto{position:absolute;overflow:hidden}
+.foto img{width:100%;height:100%;object-fit:cover}
+.moldura{position:absolute;inset:0;border:3px solid var(--gold);pointer-events:none}
+.moldura::after{content:"";position:absolute;inset:12px;border:1px solid rgba(224,195,104,.55)}
+.fio{position:absolute;height:2px;background:linear-gradient(90deg,rgba(201,162,39,0),var(--gold) 20%,var(--gold-soft) 50%,var(--gold) 80%,rgba(201,162,39,0));transform-origin:50% 50%}
+#brilho{position:absolute;left:0;top:0;pointer-events:none;z-index:30}
+#luz{position:absolute;inset:0;pointer-events:none;z-index:31;mix-blend-mode:screen}
+#flash{position:absolute;inset:0;pointer-events:none;z-index:31;background:radial-gradient(circle at 50% 50%,#fff6dc 0%,#e9cf86 45%,rgba(201,162,39,0) 100%);opacity:0}
+
+/* ---------- logo (flor + nome separados para montar) ---------- */
+.logo{position:absolute}
+.logo .pt{position:absolute;inset:0}
+.logo .pt img{width:100%;height:auto}
+.logo .flor{clip-path:inset(0 0 49% 0)}
+.logo .nome{clip-path:inset(51% 0 0 0)}
+.logo .reflexo{filter:brightness(1.9) saturate(.55);pointer-events:none}
+.v #lg1{left:160px;top:640px;width:760px;height:532px}
+.h #lg1{left:580px;top:250px;width:760px;height:532px}
+
+/* ---------- CENA 2: pra sempre ---------- */
+#c2 .t{color:#fff;font-size:122px}
+.v #c2 .t1{left:72px;top:236px}
+.v #c2 .t2{left:72px;top:368px}
+.v #c2 .t3{left:72px;top:500px;font-size:138px}
+.v #f2{left:190px;top:700px;width:700px;height:930px}
+.h #c2 .t{font-size:124px}
+.h #c2 .t1{left:130px;top:250px}
+.h #c2 .t2{left:130px;top:390px}
+.h #c2 .t3{left:130px;top:530px;font-size:140px}
+.h #f2{left:1190px;top:100px;width:620px;height:880px}
+#fio2{width:520px}
+.v #fio2{left:72px;top:672px}
+.h #fio2{left:130px;top:720px}
+
+/* ---------- CENA 3: momentos (painéis) ---------- */
+.pn{position:absolute;inset:0;display:none;overflow:hidden;background:var(--ink)}
+.pn .foto{inset:0}
+.pn .grad{position:absolute;inset:0}
+.v .pn .grad{background:linear-gradient(to top,rgba(13,13,13,.92) 0%,rgba(13,13,13,.55) 30%,rgba(13,13,13,0) 55%),linear-gradient(to bottom,rgba(13,13,13,.55),rgba(13,13,13,0) 22%)}
+.h .pn .foto{left:820px;width:1100px}
+.h .pn .grad{left:820px;background:linear-gradient(to right,var(--ink) 0%,rgba(13,13,13,.6) 18%,rgba(13,13,13,0) 45%)}
+.pn .kick{color:var(--gold-soft);font-size:40px}
+.pn .l1{color:#fff;font-size:118px}
+.pn .l2{font-size:150px}
+.v .pn .kick{left:76px;top:250px}
+.v .pn .l1{left:72px;top:1250px}
+.v .pn .l2{left:66px;top:1380px}
+.h .pn .kick{left:120px;top:330px}
+.h .pn .l1{left:116px;top:420px}
+.h .pn .l2{left:110px;top:560px}
+.pn .fio{width:300px}
+.v .pn .fio{left:76px;top:318px}
+.h .pn .fio{left:120px;top:396px}
+#dobra{position:absolute;top:-30%;height:160%;width:220px;display:none;z-index:9;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.45) 42%,rgba(255,244,214,.75) 50%,rgba(250,248,243,.25) 62%,rgba(0,0,0,0) 100%)}
+#iris{position:absolute;border-radius:50%;border:5px solid var(--gold-soft);box-shadow:0 0 40px rgba(224,195,104,.8),inset 0 0 30px rgba(224,195,104,.5);display:none;z-index:9;pointer-events:none}
+
+/* ---------- CENA 4: detalhes (creme) ---------- */
+#c4 .kick{color:var(--gold-deep);font-size:44px}
+#c4 .t{color:var(--ink);font-size:120px}
+.v #c4 .kick{left:76px;top:244px}
+.v #c4 .t1{left:72px;top:310px}
+.v #c4 .t2{left:72px;top:438px}
+.v #c4 .t3{left:72px;top:566px}
+.h #c4 .kick{left:124px;top:250px}
+.h #c4 .t1{left:120px;top:320px}
+.h #c4 .t2{left:120px;top:450px}
+.h #c4 .t3{left:120px;top:580px}
+.card{position:absolute;background:#fff;padding:14px;box-shadow:0 24px 60px rgba(13,13,13,.28);transform-origin:50% 50%}
+.card .foto{position:relative;width:100%;height:100%}
+.card .rot{position:absolute;left:-18px;bottom:-34px;font-family:var(--display);font-style:italic;font-weight:700;color:var(--ink);background:var(--gold);padding:.02em .38em .1em;font-size:74px;white-space:nowrap;transform-origin:0 50%}
+.v .card{width:760px;height:507px}
+.h .card{width:600px;height:400px}
+.h .card .rot{font-size:62px}
+#k0 .rot{bottom:auto;top:-40px}
+#k1 .rot{left:auto;right:-18px;bottom:auto;top:-40px;transform-origin:100% 50%}
+
+/* ---------- CENA 5: o momento ---------- */
+#c5 .t1{color:#fff;font-size:122px}
+#c5 .t2{font-size:150px}
+.v #c5 .t1{left:72px;top:236px}
+.v #c5 .t2{left:66px;top:368px}
+.v #f5{left:180px;top:610px;width:720px;height:970px}
+.h #c5 .t1{left:130px;top:340px}
+.h #c5 .t2{left:124px;top:480px}
+.h #f5{left:1170px;top:80px;width:680px;height:920px}
+
+/* ---------- CENA 6: marca + cartão final ---------- */
+#c6 .tg{color:#fff;font-size:112px}
+#c6 .tg3{font-size:124px}
+.v #c6 .tg{left:0;right:0;text-align:center}
+.v #c6 .tg1{top:960px}
+.v #c6 .tg2{top:1088px}
+.v #c6 .tg3{top:1216px}
+.h #c6 .tg1{left:1010px;top:300px}
+.h #c6 .tg2{left:1010px;top:430px}
+.h #c6 .tg3{left:1010px;top:560px}
+#c6 .info{position:absolute;color:#fff;white-space:nowrap;font-family:var(--body);font-weight:500}
+#c6 .info svg{display:inline-block;width:.9em;height:.9em;vertical-align:-.12em;margin-right:.4em}
+#c6 .lema{position:absolute;font-family:var(--display);font-style:italic;font-weight:500;color:var(--gold-soft);white-space:nowrap}
+.v #c6 .lema{left:0;right:0;text-align:center;top:900px;font-size:54px}
+.v #c6 .info{left:0;right:0;text-align:center}
+.v #c6 .i1{top:1040px;font-size:58px}
+.v #c6 .i2{top:1140px;font-size:58px}
+.v #c6 .i3{top:1240px;font-size:52px}
+.v #c6 .i4{top:1346px;font-size:36px;color:rgba(255,255,255,.72)}
+.v #fio6{left:290px;width:500px;top:998px}
+.h #c6 .lema{left:1010px;top:300px;font-size:56px}
+.h #c6 .info{left:1010px}
+.h #c6 .i1{top:440px;font-size:56px}
+.h #c6 .i2{top:540px;font-size:56px}
+.h #c6 .i3{top:640px;font-size:50px}
+.h #c6 .i4{left:0;right:0;text-align:center;top:900px;font-size:36px;color:rgba(255,255,255,.72)}
+.h #fio6{left:1010px;width:640px;top:392px}
+.v #lg6{width:820px;height:574px}
+.h #lg6{width:780px;height:546px}
+</style>
+</head>
+<body>
+<div id="st">
+
+  <!-- 1 abertura: logo se monta -->
+  <div class="cena ink" id="c1">
+    <div class="logo" id="lg1"></div>
+  </div>
+
+  <!-- 2 tem dia que a gente guarda pra sempre -->
+  <div class="cena ink" id="c2">
+    <div class="foto" id="f2"><img src="../../public/images/portfolio/casamentos/casamentos-29.jpg" alt=""><div class="moldura"></div></div>
+    <div class="ab tt t t1 mask"><span>Tem dia que</span></div>
+    <div class="ab tt t t2 mask"><span>a gente guarda</span></div>
+    <div class="ab tt t t3 it mask"><span class="ouro">pra sempre.</span></div>
+    <div class="fio" id="fio2"></div>
+  </div>
+
+  <!-- 3 momentos -->
+  <div class="cena" id="c3">
+    <div class="pn" id="p0"><div class="foto"><img src="../../public/images/portfolio/casamentos/casamentos-18.jpg" alt="" style="object-position:50% 35%"></div><div class="grad"></div>
+      <div class="ab kick mask"><span>Casamento</span></div><div class="fio"></div>
+      <div class="ab tt l1 mask"><span>O sim</span></div><div class="ab tt l2 it mask"><span class="ouro">no altar.</span></div></div>
+    <div class="pn" id="p1"><div class="foto"><img src="../../public/images/portfolio/quinze-anos/quinze-anos-25.jpg" alt="" style="object-position:50% 30%"></div><div class="grad"></div>
+      <div class="ab kick mask"><span>15 anos</span></div><div class="fio"></div>
+      <div class="ab tt l1 mask"><span>A valsa dos</span></div><div class="ab tt l2 it mask"><span class="ouro">quinze anos.</span></div></div>
+    <div class="pn" id="p2"><div class="foto"><img src="../../public/images/portfolio/formaturas/formaturas-10.jpg" alt="" style="object-position:50% 40%"></div><div class="grad"></div>
+      <div class="ab kick mask"><span>Formatura</span></div><div class="fio"></div>
+      <div class="ab tt l1 mask"><span>O diploma</span></div><div class="ab tt l2 it mask"><span class="ouro">na mão.</span></div></div>
+    <div class="pn" id="p3"><div class="foto"><img src="../../public/images/portfolio/infantil/infantil-31.jpg" alt="" style="object-position:50% 30%"></div><div class="grad"></div>
+      <div class="ab kick mask"><span>Aniversário</span></div><div class="fio"></div>
+      <div class="ab tt l1 mask"><span>O parabéns</span></div><div class="ab tt l2 it mask"><span class="ouro">bem alto.</span></div></div>
+    <div id="dobra"></div>
+    <div id="iris"></div>
+  </div>
+
+  <!-- 4 cada detalhe -->
+  <div class="cena creme" id="c4">
+    <div class="card" id="k0"><div class="foto"><img src="../../public/images/eventos/hero-salao.jpg" alt=""></div><div class="rot"><span>o salão</span></div></div>
+    <div class="card" id="k1"><div class="foto"><img src="../../public/images/portfolio/casamentos/casamentos-26.jpg" alt=""></div><div class="rot"><span>a mesa</span></div></div>
+    <div class="card" id="k2"><div class="foto"><img src="../../public/images/portfolio/casamentos/casamentos-20.jpg" alt=""></div><div class="rot"><span>o sabor</span></div></div>
+    <div class="ab kick mask"><span>Na Rosa Buffet,</span></div>
+    <div class="ab tt t t1 mask"><span>cada detalhe</span></div>
+    <div class="ab tt t t2 mask"><span>pensado pra</span></div>
+    <div class="ab tt t t3 it mask"><span class="ouro-esc">sua história.</span></div>
+  </div>
+
+  <!-- 5 você só vive o momento -->
+  <div class="cena ink" id="c5">
+    <div class="foto" id="f5"><img src="../../public/images/eventos/casamento-beijo.jpg" alt=""><div class="moldura"></div></div>
+    <div class="ab tt t1 mask"><span>Você só vive</span></div>
+    <div class="ab tt t2 it mask"><span class="ouro">o momento.</span></div>
+  </div>
+
+  <!-- 6 marca + cartão final -->
+  <div class="cena ink" id="c6">
+    <div class="logo" id="lg6"></div>
+    <div class="ab tt tg tg1 mask"><span>Sua festa,</span></div>
+    <div class="ab tt tg tg2 mask"><span>do jeito que</span></div>
+    <div class="ab tt tg tg3 it mask"><span class="ouro">você sonhou.</span></div>
+    <div class="lema">Sua festa, do jeito que você sonhou.</div>
+    <div class="fio" id="fio6"></div>
+    <div class="info i1"><svg viewBox="0 0 24 24" fill="none" stroke="#e0c368" stroke-width="2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.6"/><circle cx="17.6" cy="6.4" r="1.2" fill="#e0c368" stroke="none"/></svg>@rosabuffetoficial_</div>
+    <div class="info i2"><svg viewBox="0 0 24 24"><path fill="#e0c368" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>(92) 99207-3047</div>
+    <div class="info i3"><svg viewBox="0 0 24 24" fill="none" stroke="#e0c368" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.8 3 2.8 16 0 19M12 2.5c-2.8 3-2.8 16 0 19"/></svg>rosabuffeteventos.com.br</div>
+    <div class="info i4">Rua São João, 310 · Cidade de Deus · Manaus</div>
+  </div>
+
+  <canvas id="brilho"></canvas>
+  <div id="luz"></div>
+  <div id="flash"></div>
+</div>
+
+<script>
+const LOGO = '../../public/images/logo-vertical.png';
+const F = new URLSearchParams(location.search).get('f') === 'h' ? 'h' : 'v';
+document.body.className = F;
+const W = F === 'v' ? 1080 : 1920, H = F === 'v' ? 1920 : 1080;
+const $ = id => document.getElementById(id);
+const Q = (sel, root = document) => root.querySelector(sel);
+const QA = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+/* ---------- matemática ---------- */
+const cl = (x, a = 0, b = 1) => x < a ? a : x > b ? b : x;
+const P = (t, a, d) => cl((t - a) / d);
+const L = (a, b, k) => a + (b - a) * k;
+const E = {
+  oc: k => 1 - Math.pow(1 - k, 3),
+  oq: k => 1 - Math.pow(1 - k, 5),
+  ox: k => k >= 1 ? 1 : 1 - Math.pow(2, -10 * k),
+  io: k => k < .5 ? 8 * k ** 4 : 1 - Math.pow(-2 * k + 2, 4) / 2,
+  ios: k => -(Math.cos(Math.PI * k) - 1) / 2,
+  ob: (k, s = 1.70158) => 1 + (s + 1) * Math.pow(k - 1, 3) + s * Math.pow(k - 1, 2),
+};
+function tf(el, o = {}) {
+  const sx = o.sx ?? o.s ?? 1, sy = o.sy ?? o.s ?? 1;
+  el.style.transform = `translate(${o.x || 0}px,${o.y || 0}px) rotate(${o.r || 0}deg) scale(${sx},${sy})`;
+  el.style.opacity = o.o ?? 1;
+}
+// texto que sobe por trás da máscara, com um leve desfoque que limpa
+function sobe(el, t, t0, d = .55) {
+  const k = E.oq(P(t, t0, d)), f = el.firstElementChild;
+  tf(f, { y: (1 - k) * el.offsetHeight * 1.05 });
+  f.style.filter = k < 1 ? `blur(${(1 - k) * 6}px)` : 'none';
+}
+// palavra dourada: revela da esquerda e um brilho passa por dentro
+function douradoEntra(el, t, t0, d = .6) {
+  const k = E.oc(P(t, t0, d)), f = el.firstElementChild;
+  el.style.clipPath = `inset(-20% ${(1 - k) * 100}% -30% -5%)`;
+  tf(f, { x: (1 - k) * -40 });
+  f.style.backgroundPosition = `${L(100, 0, E.ios(P(t, t0 + .1, 1.3)))}% 0`;
+}
+// brilho correndo por dentro do logo
+// (cópia clareada do logo, recortada numa faixa diagonal: a luz só aparece dentro do desenho)
+function reflexo(el, t, t0, d = .9) {
+  const k = P(t, t0, d), x = L(-40, 140, E.ios(k));
+  el.style.display = t < t0 || k >= 1 ? 'none' : 'block';
+  el.style.clipPath = `polygon(${x + 3}% 0, ${x + 21}% 0, ${x - 3}% 100%, ${x - 21}% 100%)`;
+}
+function fio(el, t, t0, d = .7) { const k = E.oc(P(t, t0, d)); el.style.transform = `scaleX(${k})`; el.style.opacity = t >= t0 ? 1 : 0; }
+// foto "revelando": sai do claro e desfocado para a cor
+function revela(img, t, t0, d = .9) {
+  const k = E.oc(P(t, t0, d));
+  img.style.filter = k >= 1 ? 'none' : `brightness(${L(2.2, 1, k)}) saturate(${L(.2, 1, k)}) blur(${L(10, 0, k)}px)`;
+}
+
+/* ---------- logo em partes ---------- */
+function logoHTML() {
+  return `<div class="pt flor"><img src="${LOGO}" alt=""></div><div class="pt nome"><img src="${LOGO}" alt=""></div><div class="pt reflexo"><img src="${LOGO}" alt=""></div>`;
+}
+$('lg1').innerHTML = logoHTML();
+$('lg6').innerHTML = logoHTML();
+// flor sobe e abre, nome revela da esquerda, um brilho atravessa
+function montaLogo(lg, t, t0, r = 1) {
+  const flor = Q('.flor', lg), nome = Q('.nome', lg);
+  const kf = E.oq(P(t, t0, .8 * r));
+  flor.style.transformOrigin = '50% 45%';
+  flor.style.transform = `translateY(${(1 - kf) * 60}px) scale(${L(.6, 1, E.ob(P(t, t0, .8 * r), 1.2))})`;
+  flor.style.opacity = cl(kf * 1.6);
+  flor.style.filter = kf < 1 ? `blur(${(1 - kf) * 12}px)` : 'none';
+  const tn = t0 + .55 * r, kn = E.oc(P(t, tn, .7 * r));
+  nome.style.clipPath = `inset(51% ${(1 - kn) * 100}% 0 0)`;
+  nome.style.opacity = t >= tn ? 1 : 0;
+  const tb = t0 + 1.05 * r;
+  reflexo(Q('.reflexo', lg), t, tb, .9);
+  return tb;
+}
+
+/* ---------- brilho dourado (partículas determinísticas) ---------- */
+const cv = $('brilho'); cv.width = W; cv.height = H;
+const cx = cv.getContext('2d');
+let sd = 11; const R = () => (sd = (sd * 9301 + 49297) % 233280) / 233280;
+const PO = Array.from({ length: 170 }, () => ({ x: R() * W, y: R() * H, r: 1.2 + R() * 3.4, vx: (R() - .5) * 16, vy: -8 - R() * 26, w: 1.2 + R() * 3.5, ph: R() * 6.28, big: R() < .14 }));
+// rajadas de brilho (tempo, x, y relativos ao quadro)
+const TB = TEMPOS;
+const RAJADAS = [
+  [TB.abertura.brilho + .2, .5, F === 'v' ? .42 : .45, 40],
+  [TB.praSempre.sempre + .2, F === 'v' ? .4 : .3, F === 'v' ? .3 : .55, 26],
+  [TB.momento.oMomento + .15, F === 'v' ? .45 : .3, F === 'v' ? .22 : .5, 30],
+  [TB.marca.logo + 1.05, F === 'v' ? .5 : .28, F === 'v' ? .3 : .45, 46],
+  [TB.marca.sonhou + .15, F === 'v' ? .5 : .66, F === 'v' ? .66 : .58, 30],
+].map(([t, x, y, n]) => ({ t, x: x * W, y: y * H, p: Array.from({ length: n }, () => ({ a: R() * 6.28, v: 180 + R() * 520, r: 1.5 + R() * 3.5, big: R() < .25 })) }));
+// nível do pó dourado ao longo do vídeo
+const TC = TEMPOS.cenas;
+const NIVEL = [[0, .2], [.6, .9], [TC.praSempre + .15, .9], [TC.praSempre + .45, .45], [TC.momentos - .05, .45], [TC.momentos + .15, .12], [TC.detalhes - .2, .12], [TC.detalhes + .05, 0], [TC.momento, 0], [TC.momento + .3, .5], [TC.marca - .05, .5], [TC.marca + .25, 1], [30, 1]];
+function nivel(t) {
+  for (let i = 1; i < NIVEL.length; i++) if (t <= NIVEL[i][0]) { const [a, va] = NIVEL[i - 1], [b, vb] = NIVEL[i]; return L(va, vb, (t - a) / (b - a)); }
+  return 1;
+}
+function estrela(x, y, r, a, big) {
+  if (a <= .01) return;
+  const g = cx.createRadialGradient(x, y, 0, x, y, r * 4);
+  g.addColorStop(0, `rgba(255,246,214,${a})`); g.addColorStop(.35, `rgba(224,195,104,${a * .55})`); g.addColorStop(1, 'rgba(201,162,39,0)');
+  cx.fillStyle = g; cx.beginPath(); cx.arc(x, y, r * 4, 0, 6.2832); cx.fill();
+  if (big) { // cintilado em cruz
+    cx.fillStyle = `rgba(255,248,225,${a * .85})`;
+    cx.fillRect(x - r * 7, y - .7, r * 14, 1.4); cx.fillRect(x - .7, y - r * 7, 1.4, r * 14);
+  }
+}
+function brilho(t) {
+  cx.clearRect(0, 0, W, H);
+  const lv = nivel(t);
+  if (lv > 0) for (const p of PO) {
+    const x = ((p.x + p.vx * t) % W + W) % W, y = ((p.y + p.vy * t) % H + H) % H;
+    const tw = Math.pow(.5 + .5 * Math.sin(t * p.w + p.ph), 3);
+    estrela(x, y, p.r, lv * tw * .8, p.big && tw > .7);
+  }
+  for (const b of RAJADAS) {
+    const k = P(t, b.t, 1.6); if (t < b.t || k >= 1) continue;
+    for (const p of b.p) {
+      const d = E.oc(k) * p.v;
+      estrela(b.x + Math.cos(p.a) * d, b.y + Math.sin(p.a) * d + k * k * 80, p.r * (1 - k * .5), (1 - k) * (k < .08 ? k / .08 : 1), p.big);
+    }
+  }
+}
+
+/* ---------- cena 4: posições dos cartões ---------- */
+const CARDS = F === 'v'
+  ? { slots: [[60, 800, -5], [258, 952, 4], [112, 1094, -2]], hero: [160, 860, 0, 1.12] }
+  : { slots: [[1080, 130, -5], [1230, 345, 4], [1105, 565, -2]], hero: [1130, 330, 0, 1.4] };
+
+/* ===================================================================== */
+const C = TEMPOS.cenas;
+const ORDEM = [['c1', 0], ['c2', C.praSempre], ['c3', C.momentos], ['c4', C.detalhes], ['c5', C.momento], ['c6', C.marca]];
+
+window.seek = function (t) {
+  const tc = t;                         // tempo real
+  t = Math.min(t, TEMPOS.fim.parado);   // do "parado" até o fim o quadro fica fixo
+  ORDEM.forEach(([id, a], n) => {
+    const b = n + 1 < ORDEM.length ? ORDEM[n + 1][1] : 1e9;
+    $(id).style.display = t >= a && t < b ? 'block' : 'none';
+  });
+  // cenas que ficam por baixo da transição seguinte
+  if (t >= C.detalhes - .5 && t < C.detalhes + .05) $('c3').style.display = 'block';
+  if (t >= C.detalhes - .45 && t < C.detalhes) $('c4').style.display = 'block'; // cortina creme subindo
+  if (t >= C.momento && t < C.momento + .6) $('c4').style.display = 'block';
+  const vis = id => $(id).style.display === 'block';
+
+  /* luz que varre (abertura -> cena 2) */
+  const kl = P(t, C.praSempre - .3, .65);
+  $('luz').style.background = kl > 0 && kl < 1
+    ? `linear-gradient(110deg,rgba(0,0,0,0) ${L(-40, 120, kl) - 22}%,rgba(255,226,150,.55) ${L(-40, 120, kl) - 6}%,rgba(255,248,228,.95) ${L(-40, 120, kl)}%,rgba(255,226,150,.55) ${L(-40, 120, kl) + 6}%,rgba(0,0,0,0) ${L(-40, 120, kl) + 22}%)` : 'none';
+  /* clarão suave (cena 2 -> montagem) */
+  const kf = P(t, C.momentos - .22, .6);
+  $('flash').style.opacity = kf > 0 && kf < 1 ? Math.sin(kf * Math.PI) * .9 : 0;
+
+  /* 1 ---- abertura */
+  if (vis('c1')) {
+    const a = TEMPOS.abertura;
+    montaLogo($('lg1'), t, a.flor, 1);
+    tf($('lg1'), { s: L(1, 1.06, E.ios(P(t, 0, C.praSempre))) });
+  }
+
+  /* 2 ---- tem dia que a gente guarda pra sempre */
+  if (vis('c2')) {
+    const a = C.praSempre, w = TEMPOS.praSempre, c2 = $('c2');
+    sobe(Q('.t1', c2), t, w.tem - .08);
+    sobe(Q('.t2', c2), t, w.guarda - .45);
+    douradoEntra(Q('.t3', c2), t, w.sempre - .06, .7);
+    fio($('fio2'), t, w.sempre + .25, .8);
+    const kc = E.oq(P(t, a + .1, 1.0));
+    tf($('f2'), { y: (1 - kc) * 160, r: L(4, -1.5, kc), s: L(.92, 1, kc) * L(1, 1.06, E.ios(P(t, C.praSempre, C.momentos - a))), o: cl(kc * 2) });
+    revela(Q('img', $('f2')), t, a + .1, 1.4);
+  }
+
+  /* 3 ---- momentos */
+  if (vis('c3')) {
+    const M = TEMPOS.momentos, fim = C.detalhes;
+    const dob = $('dobra'), iris = $('iris');
+    dob.style.display = 'none'; iris.style.display = 'none';
+    M.forEach((m, n) => {
+      const p = $('p' + n), prox = n + 1 < M.length ? M[n + 1].ini : fim;
+      const entra = n === 0 ? m.ini : m.ini - .3;          // a troca começa um pouco antes da fala
+      const on = t >= entra && t < prox + .25;
+      p.style.display = on ? 'block' : 'none';
+      if (!on) return;
+      p.style.zIndex = n + 1;
+      p.style.clipPath = 'none';
+      const img = Q('img', p);
+      // movimento lento da foto (Ken Burns) durante o painel inteiro
+      const kk = P(t, entra, prox + .25 - entra);
+      tf(img, { s: L(1.12, 1.02, E.ios(kk)), y: L(F === 'v' ? 30 : 15, -10, kk) });
+      // transições de entrada
+      if (n === 0) {
+        revela(img, t, m.ini - .1, .8);
+      } else if (n === 2) { // íris dourada abrindo
+        const ki = E.io(P(t, entra, .6)), rr = Math.hypot(W, H) * .6 * ki;
+        const ox = W * (F === 'v' ? .5 : .7), oy = H * (F === 'v' ? .42 : .5);
+        p.style.clipPath = ki < 1 ? `circle(${rr}px at ${ox}px ${oy}px)` : 'none';
+        if (ki > 0 && ki < 1) Object.assign(iris.style, { display: 'block', left: ox - rr + 'px', top: oy - rr + 'px', width: 2 * rr + 'px', height: 2 * rr + 'px', opacity: Math.sin(ki * Math.PI) });
+      } else { // virar de página: a dobra corre na diagonal (n=1 da direita, n=3 da esquerda)
+        const kp = E.io(P(t, entra, .62)), ang = 14, tg = Math.tan(ang * Math.PI / 180) * H;
+        const daDir = n === 1;
+        const x0 = daDir ? L(W + 60, -tg - 60, kp) : L(-tg - 60, W + 60, kp); // x da dobra no topo
+        if (kp < 1) {
+          p.style.clipPath = daDir
+            ? `polygon(${x0}px 0, ${W + 10}px 0, ${W + 10}px ${H}px, ${x0 + tg}px ${H}px)`
+            : `polygon(-10px 0, ${x0}px 0, ${x0 + tg}px ${H}px, -10px ${H}px)`;
+          if (kp > 0) {
+            Object.assign(dob.style, { display: 'block', left: (x0 + tg / 2 - 110) + 'px', zIndex: 20 });
+            dob.style.transform = `rotate(${-ang}deg) scaleX(${daDir ? 1 : -1})`;
+          }
+        }
+      }
+      // textos
+      const t0 = n === 0 ? m.ini + .1 : entra + .35;
+      sobe(Q('.kick', p), t, t0, .45);
+      fio(Q('.fio', p), t, t0 + .15, .6);
+      sobe(Q('.l1', p), t, t0 + .05, .55);
+      douradoEntra(Q('.l2', p), t, m.destaque - .12, .6);
+    });
+  }
+
+  /* 4 ---- cada detalhe pensado pra sua história */
+  if (vis('c4')) {
+    const a = C.detalhes, w = TEMPOS.detalhes, c4 = $('c4');
+    // cortina creme subindo, com fio dourado na borda
+    const kc = E.io(P(t, a - .45, .6));
+    c4.style.clipPath = kc < 1 ? `inset(${(1 - kc) * 100}% 0 0 0)` : 'none';
+    c4.style.boxShadow = 'none';
+    sobe(Q('.kick', c4), t, w.naRosa - .05, .5);
+    sobe(Q('.t1', c4), t, w.cada - .1);
+    sobe(Q('.t2', c4), t, w.pensado - .1);
+    douradoEntra(Q('.t3', c4), t, w.historia - .08, .7);
+    const tt = [w.salao, w.mesa, w.sabor];
+    for (let n = 0; n < 3; n++) {
+      const el = $('k' + n), [sx, sy, sr] = CARDS.slots[n];
+      el.style.left = sx + 'px'; el.style.top = sy + 'px'; el.style.zIndex = n + 1;
+      const rot = Q('.rot', el);
+      if (n === 0) { // o salão chega antes como foto grande e vai para o lugar quando é dito
+        const [hx, hy, hr, hs] = CARDS.hero;
+        const ke = E.oq(P(t, w.cada, .9)), km = E.io(P(t, tt[0] - .2, .6));
+        tf(el, { x: L(hx - sx, 0, km), y: L(hy - sy + (1 - ke) * 260, 0, km), r: L(hr, sr, km), s: L(hs, 1, km) * L(.94, 1, ke), o: cl(ke * 2) });
+        revela(Q('img', el), t, w.cada, 1.1);
+      } else { // a mesa e o sabor caem girando como fotos impressas
+        const t0 = tt[n] - .28, ke = E.ob(P(t, t0, .55), 1.1);
+        tf(el, { x: (n === 1 ? 1 : -1) * (1 - ke) * W * .7, y: (1 - ke) * -180, r: L(n === 1 ? 24 : -22, sr, ke), o: t >= t0 ? 1 : 0 });
+      }
+      const kr = E.ob(P(t, tt[n], .4), 1.6);
+      rot.style.transform = `scaleX(${cl(kr, 0, 1.2)}) rotate(-2deg)`;
+      rot.style.opacity = t >= tt[n] ? 1 : 0;
+      tf(rot.firstElementChild, { o: E.oc(P(t, tt[n] + .1, .3)) });
+    }
+  } else { $('c4').style.clipPath = 'none'; }
+
+  /* 5 ---- você só vive o momento (íris dourada sobre a cena creme) */
+  if (vis('c5')) {
+    const a = C.momento, w = TEMPOS.momento, c5 = $('c5');
+    const ki = E.io(P(t, a, .6)), rr = Math.hypot(W, H) * .6 * ki;
+    c5.style.clipPath = ki < 1 ? `circle(${rr}px at 50% 50%)` : 'none';
+    c5.style.zIndex = 5;
+    sobe(Q('.t1', c5), t, w.voce - .05);
+    douradoEntra(Q('.t2', c5), t, w.oMomento - .08, .7);
+    const kc = E.oq(P(t, a + .15, 1.0));
+    tf($('f5'), { y: (1 - kc) * 120, s: L(.9, 1, kc) * L(1, 1.07, E.ios(P(t, a, C.marca - a))), r: L(-3, 1.2, kc), o: cl(kc * 2) });
+    revela(Q('img', $('f5')), t, a + .15, 1.2);
+    // escurece no fim (sai para a marca)
+    c5.style.opacity = 1 - E.oc(P(t, C.marca - .3, .3));
+  } else { $('c5').style.clipPath = 'none'; $('c5').style.opacity = 1; }
+
+  /* 6 ---- marca + cartão final */
+  if (vis('c6')) {
+    const w = TEMPOS.marca, c6 = $('c6'), lg = $('lg6');
+    $('c6').style.opacity = E.oc(P(t, C.marca - .05, .35));
+    montaLogo(lg, t, w.logo, 1.15);
+    // posição do logo: grande no centro -> sobe para o topo do cartão final
+    const km = E.io(P(t, w.final, 1.1));
+    const A = F === 'v' ? { x: 130, y: 330, s: 1 } : { x: 150, y: 250, s: 1 };
+    const B = F === 'v' ? { x: 130, y: 320, s: .82 } : { x: 150, y: 260, s: 1 };
+    lg.style.left = '0px'; lg.style.top = '0px';
+    lg.style.transformOrigin = '50% 0';
+    const resp = L(1.04, 1, E.oc(P(t, w.logo, 1.6)));
+    tf(lg, { x: L(A.x, B.x, km), y: L(A.y, B.y, km), s: L(A.s, B.s, km) * resp });
+    // "Sua festa, do jeito que você sonhou." grande, depois some
+    const sai = E.io(P(t, w.final - .05, .5));
+    sobe(Q('.tg1', c6), t, w.festa - .08);
+    sobe(Q('.tg2', c6), t, w.jeito - .1);
+    douradoEntra(Q('.tg3', c6), t, w.sonhou - .08, .6);
+    QA('.tg', c6).forEach(e => { e.style.opacity = 1 - sai; e.style.marginTop = (-sai * 40) + 'px'; });
+    // cartão final
+    const lema = Q('.lema', c6), kl = E.oc(P(t, w.final + .45, .7));
+    tf(lema, { y: (1 - kl) * 30, o: kl });
+    fio($('fio6'), t, w.final + .7, .8);
+    QA('.info', c6).forEach((e, n) => {
+      const t0 = w.final + .85 + n * .22, k = E.oq(P(t, t0, .6));
+      tf(e, { y: (1 - k) * 36, o: k });
+      const ic = Q('svg', e);
+      if (ic) { const ki = E.ob(P(t, t0 + .08, .5), 2); ic.style.transform = `scale(${ki})`; }
+    });
+  }
+
+  brilho(t);
+};
+
+/* espera fontes e imagens para o gravador */
+window.pronto = Promise.all([
+  document.fonts.load('500 100px "Playfair Display"'),
+  document.fonts.load('italic 700 100px "Playfair Display"'),
+  document.fonts.load('italic 500 50px "Playfair Display"'),
+  document.fonts.load('600 40px "Inter"'),
+  document.fonts.load('500 50px "Inter"'),
+  ...[...document.images].map(i => i.decode().catch(() => { throw new Error('imagem não carregou: ' + i.src); })),
+]).then(() => document.fonts.ready).then(() => { seek(0); return true; });
+seek(0);
+</script>
+</body>
+</html>

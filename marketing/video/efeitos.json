@@ -1,0 +1,330 @@
+[
+{
+"t": 0.0,
+"som": "brilho",
+"dur": 1.2,
+"forte": 0.25
+},
+{
+"t": 0.09,
+"som": "vento_grave",
+"dur": 0.8,
+"forte": 0.35
+},
+{
+"t": 0.7,
+"som": "swipe",
+"dur": 0.3,
+"forte": 0.22
+},
+{
+"t": 1.16,
+"som": "sino",
+"f": 1568,
+"forte": 0.3
+},
+{
+"t": 1.3,
+"som": "brilho",
+"dur": 1.0,
+"forte": 0.4
+},
+{
+"t": 1.72,
+"som": "whoosh",
+"dur": 0.6,
+"f0": 400,
+"f1": 6000,
+"forte": 0.4
+},
+{
+"t": 2.0,
+"som": "batida",
+"forte": 0.28
+},
+{
+"t": 3.08,
+"som": "pop",
+"f": 420,
+"forte": 0.3
+},
+{
+"t": 3.82,
+"som": "sino",
+"f": 1318,
+"forte": 0.35
+},
+{
+"t": 4.04,
+"som": "brilho",
+"dur": 0.9,
+"forte": 0.35
+},
+{
+"t": 4.21,
+"som": "reverso",
+"dur": 0.5,
+"forte": 0.45
+},
+{
+"t": 4.7,
+"som": "impacto",
+"forte": 0.4,
+"grave": 60
+},
+{
+"t": 4.8,
+"som": "swipe",
+"dur": 0.22,
+"forte": 0.2
+},
+{
+"t": 5.41,
+"som": "batida",
+"forte": 0.33
+},
+{
+"t": 5.9,
+"som": "pagina",
+"forte": 0.55
+},
+{
+"t": 7.18,
+"som": "pop",
+"f": 900,
+"forte": 0.33
+},
+{
+"t": 7.22,
+"som": "brilho",
+"dur": 0.7,
+"forte": 0.22
+},
+{
+"t": 8.09,
+"som": "whoosh",
+"dur": 0.55,
+"f0": 2500,
+"f1": 400,
+"forte": 0.38
+},
+{
+"t": 8.99,
+"som": "batida",
+"forte": 0.33
+},
+{
+"t": 9.43,
+"som": "pagina",
+"forte": 0.5
+},
+{
+"t": 10.89,
+"som": "pop",
+"f": 1100,
+"forte": 0.33
+},
+{
+"t": 10.93,
+"som": "brilho",
+"dur": 0.8,
+"forte": 0.28
+},
+{
+"t": 11.41,
+"som": "vento_grave",
+"dur": 0.7,
+"forte": 0.42
+},
+{
+"t": 11.92,
+"som": "clique",
+"forte": 0.3
+},
+{
+"t": 13.17,
+"som": "papel",
+"dur": 0.5,
+"forte": 0.32
+},
+{
+"t": 14.22,
+"som": "batida",
+"forte": 0.25
+},
+{
+"t": 14.93,
+"som": "sino",
+"f": 1175,
+"forte": 0.3
+},
+{
+"t": 15.9,
+"som": "swipe",
+"dur": 0.3,
+"forte": 0.28
+},
+{
+"t": 16.09,
+"som": "pop",
+"f": 600,
+"forte": 0.42
+},
+{
+"t": 16.7,
+"som": "papel",
+"dur": 0.45,
+"forte": 0.38
+},
+{
+"t": 17.01,
+"som": "pop",
+"f": 750,
+"forte": 0.42
+},
+{
+"t": 17.62,
+"som": "passagem",
+"dur": 0.45,
+"forte": 0.3,
+"f": 700
+},
+{
+"t": 17.9,
+"som": "pop",
+"f": 900,
+"forte": 0.45
+},
+{
+"t": 18.73,
+"som": "brilho",
+"dur": 0.8,
+"forte": 0.35
+},
+{
+"t": 18.75,
+"som": "whoosh",
+"dur": 0.6,
+"f0": 250,
+"f1": 2500,
+"forte": 0.32
+},
+{
+"t": 19.81,
+"som": "taca",
+"forte": 0.5
+},
+{
+"t": 19.94,
+"som": "brilho",
+"dur": 1.0,
+"forte": 0.32
+},
+{
+"t": 20.34,
+"som": "reverso",
+"dur": 0.6,
+"forte": 0.48
+},
+{
+"t": 20.9,
+"som": "impacto",
+"forte": 0.48,
+"grave": 50
+},
+{
+"t": 21.47,
+"som": "swipe",
+"dur": 0.3,
+"forte": 0.22
+},
+{
+"t": 21.88,
+"som": "brilho",
+"dur": 1.2,
+"forte": 0.5
+},
+{
+"t": 22.03,
+"som": "sino",
+"f": 1568,
+"forte": 0.3
+},
+{
+"t": 22.65,
+"som": "batida",
+"forte": 0.28
+},
+{
+"t": 23.56,
+"som": "pop",
+"f": 520,
+"forte": 0.26
+},
+{
+"t": 24.58,
+"som": "sino",
+"f": 1047,
+"forte": 0.33
+},
+{
+"t": 24.86,
+"som": "brilho",
+"dur": 1.0,
+"forte": 0.38
+},
+{
+"t": 25.33,
+"som": "whoosh",
+"dur": 0.8,
+"f0": 300,
+"f1": 3000,
+"forte": 0.32
+},
+{
+"t": 25.85,
+"som": "brilho",
+"dur": 0.7,
+"forte": 0.2
+},
+{
+"t": 26.1,
+"som": "swipe",
+"dur": 0.25,
+"forte": 0.18
+},
+{
+"t": 26.25,
+"som": "pop",
+"f": 800,
+"forte": 0.25
+},
+{
+"t": 26.47,
+"som": "pop",
+"f": 900,
+"forte": 0.25
+},
+{
+"t": 26.69,
+"som": "pop",
+"f": 1000,
+"forte": 0.25
+},
+{
+"t": 26.91,
+"som": "clique",
+"forte": 0.25
+},
+{
+"t": 27.5,
+"som": "taca",
+"forte": 0.38
+},
+{
+"t": 27.55,
+"som": "sino",
+"f": 1318,
+"forte": 0.25
+}
+]
