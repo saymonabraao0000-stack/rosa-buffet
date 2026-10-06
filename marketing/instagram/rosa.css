@@ -1,0 +1,102 @@
+/* Base dos posts da Rosa Buffet no Instagram.
+   Cores e fontes do site (src/app/globals.css): preto, dourado, creme; Playfair Display + Inter.
+   Slide desenhado em 540x675 de CSS e renderizado com escala 2 → PNG 1080x1350. */
+:root {
+  --ink: #0d0d0d;
+  --ink-soft: #171717;
+  --gold: #c9a227;
+  --gold-soft: #e0c368;
+  --cream: #faf8f3;
+  --gray-light: #f2f0ec;
+  --gray-dark: #4a4a4a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #222; display: flex; flex-direction: column; gap: 24px; padding: 24px; align-items: center; }
+
+.slide {
+  width: 540px; height: 675px; position: relative; overflow: hidden;
+  background: var(--ink); color: var(--cream);
+  font-family: "Inter", sans-serif; -webkit-font-smoothing: antialiased;
+}
+.slide--creme { background: var(--cream); color: var(--ink); }
+
+/* Foto real: a div inteira é a foto */
+.foto { position: absolute; background-size: cover; background-position: center; }
+.foto--cheia { inset: 0; }
+.foto--topo { left: 0; right: 0; top: 0; height: 440px; }
+.foto--topo::before { /* sombra leve atrás do logo */
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 140px;
+  background: linear-gradient(180deg, rgba(13,13,13,.85), rgba(13,13,13,0));
+}
+.foto--cheia::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(13,13,13,.8) 0%, rgba(13,13,13,0) 24%, rgba(13,13,13,0) 42%, rgba(13,13,13,.92) 72%, #0d0d0d 100%);
+}
+.foto--topo::after { /* funde a foto no painel preto */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 90px;
+  background: linear-gradient(180deg, rgba(13,13,13,0), #0d0d0d);
+}
+
+/* Cabeçalho: logo + indicador de página */
+.topo { position: absolute; top: 26px; left: 32px; right: 32px; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+.logo { height: 38px; display: block; filter: drop-shadow(0 1px 2px rgba(0,0,0,.9)) drop-shadow(0 0 10px rgba(0,0,0,.6)); }
+.slide--creme .logo { filter: brightness(.55) saturate(1.3); }
+.pagina { text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 10px rgba(0,0,0,.6); font-size: 12px; letter-spacing: .18em; color: var(--gold-soft); font-weight: 500; }
+.slide--creme .pagina { color: #8a6d12; text-shadow: none; }
+
+/* Miolo */
+.miolo { position: absolute; left: 40px; right: 40px; bottom: 64px; z-index: 2; }
+.miolo--centro { top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; }
+.titulo {
+  font-family: "Playfair Display", serif; font-weight: 500; font-size: 40px; line-height: 1.1;
+  text-wrap: balance; letter-spacing: -.01em;
+}
+.titulo--g { font-size: 52px; line-height: 1.04; }
+.titulo em { font-style: italic; color: var(--gold-soft); }
+.slide--creme .titulo em { color: #9a7a14; }
+.texto { font-size: 18px; line-height: 1.5; color: rgba(250,248,243,.82); margin-top: 16px; text-wrap: pretty; }
+.slide--creme .texto { color: var(--gray-dark); }
+.filete { width: 56px; height: 1.5px; background: var(--gold); margin: 20px 0 0; border: 0; }
+.filete--antes { margin: 0 0 20px; }
+
+/* Lista com linhas finas douradas */
+.lista { list-style: none; margin-top: 22px; border-top: 1px solid rgba(201,162,39,.45); }
+.lista li { padding: 12px 0; border-bottom: 1px solid rgba(201,162,39,.45); font-size: 17px; line-height: 1.35; display: flex; gap: 14px; align-items: baseline; }
+.lista--justa li { padding: 9px 0; }
+.lista li b { font-family: "Playfair Display", serif; font-style: italic; font-weight: 500; color: var(--gold); min-width: 22px; }
+.slide--creme .lista li b { color: #9a7a14; }
+
+/* Rodapé de todo slide */
+.rodape {
+  position: absolute; left: 32px; right: 32px; bottom: 22px; z-index: 2;
+  display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .14em;
+  text-transform: uppercase; color: rgba(250,248,243,.6);
+}
+.slide--creme .rodape { color: rgba(13,13,13,.5); }
+
+/* Botão e contatos do CTA */
+.botao {
+  display: inline-block; background: var(--gold); color: var(--ink); font-weight: 600;
+  font-size: 17px; padding: 15px 28px; border-radius: 999px; margin-top: 26px;
+}
+.contatos { margin-top: 24px; display: grid; gap: 10px; }
+.contato {
+  display: flex; justify-content: space-between; align-items: center;
+  border: 1px solid rgba(201,162,39,.5); border-radius: 14px; padding: 13px 18px; font-size: 16px;
+}
+.contato span { color: rgba(250,248,243,.7); }
+.contato strong { font-weight: 600; letter-spacing: .02em; color: var(--cream); }
+
+/* Logo grande do CTA */
+.logo-grande { position: absolute; top: 44px; left: 0; right: 0; margin: auto; width: 230px; display: block; }
+
+/* Moldura de foto em slide creme */
+.moldura { border-radius: 18px; overflow: hidden; background-size: cover; background-position: center; }
+
+/* Placeholder de imagem a gerar no ChatGPT (prompt em prompts.md da pasta do post).
+   Uso: <div class="moldura placeholder" style="...; background-image:url(img-nome.png)"><span>Imagem: o que é</span></div>
+   Quando o arquivo existir, o render.py marca .tem-foto e a moldura tracejada some. */
+.placeholder { border: 2px dashed rgba(201,162,39,.75); background-color: rgba(201,162,39,.08); display: flex; align-items: center; justify-content: center; text-align: center; }
+.placeholder > span { font-size: 14px; line-height: 1.4; color: var(--gold); padding: 20px; font-weight: 500; }
+.placeholder.tem-foto { border: 0; background-color: transparent; }
+.placeholder.tem-foto > span { display: none; }

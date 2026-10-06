@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Rosa Buffet — Todos elogiaram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=block" rel="stylesheet">
+<link rel="stylesheet" href="../rosa.css">
+<style>
+  .slide { background: radial-gradient(120% 80% at 85% 100%, #1d1a12 0%, var(--ink) 60%); }
+  .aspas { font-family: "Playfair Display", serif; font-size: 92px; line-height: .6; color: var(--gold); height: 40px; }
+  .citacao { font-family: "Playfair Display", serif; font-weight: 500; font-size: 31px; line-height: 1.2; text-wrap: pretty; }
+  .citacao em { font-style: italic; color: var(--gold-soft); }
+  /* print real (nome, foto e assinatura desfocados) num celular saindo pela borda de baixo */
+  .celular {
+    position: absolute; right: 32px; top: 318px; width: 212px; height: 420px; z-index: 1;
+    border: 6px solid #1f1f1f; border-radius: 30px; overflow: hidden; background: #111;
+    box-shadow: 0 0 0 1px rgba(201,162,39,.55), 0 30px 60px rgba(0,0,0,.6);
+  }
+  .celular img { width: 100%; display: block; }
+  .selo { margin-top: 22px; font-size: 14px; color: var(--gold-soft); letter-spacing: .02em; }
+  .nota-print { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(250,248,243,.55); margin-top: 14px; }
+</style>
+</head>
+<body>
+
+<section class="slide">
+  <div class="topo"><img class="logo" src="../../../public/images/logo-header.png" alt=""><span></span></div>
+  <div class="miolo" style="top:100px; bottom:auto">
+    <div class="aspas">“</div>
+    <p class="citacao">Todos elogiaram o ambiente, a comida, a música, os profissionais e <em>todo restante da equipe</em>…</p>
+  </div>
+  <div class="celular"><img src="print-depoimento.jpg" alt="Print da mensagem de agradecimento de um cliente no WhatsApp"></div>
+  <div class="miolo" style="right:270px; top:400px; bottom:auto">
+    <hr class="filete filete--antes">
+    <h1 class="titulo" style="font-size:27px">Mensagem que chegou <em>no dia seguinte</em> à festa</h1>
+    <p class="selo">★ 4,6 no Google · 266 avaliações</p>
+    <p class="nota-print">Print real · nome protegido</p>
+  </div>
+  <div class="rodape" style="right:270px"><span>@rosabuffetoficial_</span></div>
+</section>
+
+</body>
+</html>

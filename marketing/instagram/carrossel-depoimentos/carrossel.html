@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Rosa Buffet — Quem fez festa aqui conta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=block" rel="stylesheet">
+<link rel="stylesheet" href="../rosa.css">
+<style>
+  /* prints reais (nome e foto de perfil desfocados em prints.py, ver legenda.md) */
+  .print { position: absolute; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px rgba(201,162,39,.55), 0 18px 40px rgba(0,0,0,.45); z-index: 1; }
+  .print img { width: 100%; display: block; }
+  .slide--creme .print { box-shadow: 0 0 0 1px rgba(154,122,20,.45), 0 16px 34px rgba(13,13,13,.22); }
+  .aspas { font-family: "Playfair Display", serif; font-size: 92px; line-height: .6; color: var(--gold); height: 40px; }
+  .slide--creme .aspas { color: #9a7a14; }
+  .citacao { font-family: "Playfair Display", serif; font-weight: 500; font-size: 29px; line-height: 1.22; text-wrap: pretty; }
+  .nota-print { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: rgba(250,248,243,.6); }
+  .slide--creme .nota-print { color: rgba(13,13,13,.5); }
+  .fundo { position: absolute; inset: 0; background-size: cover; background-position: center; }
+  .fundo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,13,13,.92) 0%, rgba(13,13,13,.8) 50%, rgba(13,13,13,.95) 100%); }
+  .nota { font-family: "Playfair Display", serif; font-weight: 500; font-size: 120px; line-height: .9; color: var(--gold-soft); letter-spacing: -.02em; }
+  .estrelas { display: flex; gap: 6px; margin-top: 10px; }
+  .estrelas svg { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+
+<!-- 1. CAPA -->
+<section class="slide">
+  <div class="foto foto--cheia" style="background-image:url(../../../public/images/portfolio/casamentos/casamentos-25.jpg); background-position:center 20%"></div>
+  <div class="topo"><img class="logo" src="../../../public/images/logo-header.png" alt=""><span class="pagina">01 / 07</span></div>
+  <div class="miolo">
+    <h1 class="titulo titulo--g">Quem fez festa aqui <em>conta</em></h1>
+    <p class="texto">Mensagens reais que a gente recebeu depois da festa. Só tiramos os nomes, o resto é palavra de cliente.</p>
+  </div>
+  <div class="rodape"><span>@rosabuffetoficial_</span><span>arrasta →</span></div>
+</section>
+
+<!-- 2. CASAMENTO: citação grande + print como prova -->
+<section class="slide slide--creme">
+  <div class="topo"><img class="logo" src="../../../public/images/logo-header.png" alt=""><span class="pagina">02 / 07</span></div>
+  <div class="miolo" style="top:100px; bottom:auto">
+    <div class="aspas">“</div>
+    <p class="citacao">Foi uma noite inesquecível, e cada detalhe contribuiu para que tudo acontecesse de forma leve, organizada e muito harmoniosa.</p>
+  </div>
+  <div class="print" style="left:40px; top:326px; width:172px; height:290px"><img src="print-casamento.jpg" alt="Print da mensagem de agradecimento dos noivos"></div>
+  <div class="miolo" style="left:240px; top:380px; bottom:auto">
+    <hr class="filete filete--antes">
+    <h2 class="titulo" style="font-size:30px">Dos noivos, <em>um dia depois</em></h2>
+    <p class="texto" style="font-size:16px">“tudo superou nossas expectativas.”</p>
+    <p class="nota-print" style="margin-top:18px; white-space:nowrap">Print real · nome protegido</p>
+  </div>
+  <div class="rodape"><span>@rosabuffetoficial_</span><span>Manaus · AM</span></div>
+</section>
+
+<!-- 3. PRINT RECORTADO EM DESTAQUE -->
+<section class="slide">
+  <div class="fundo" style="background-image:url(../../../public/images/portfolio/quinze-anos/quinze-anos-10.jpg)"></div>
+  <div class="topo"><img class="logo" src="../../../public/images/logo-header.png" alt=""><span class="pagina">03 / 07</span></div>
+  <div class="miolo" style="top:96px; bottom:auto">
+    <h2 class="titulo" style="font-size:34px">“Tudo simplesmente o sonho da minha filha, <em>perfeito.</em>”</h2>
+  </div>
+  <div class="print" style="left:50px; right:50px; top:236px"><img src="print-cerimonial.jpg" alt="Trecho da mensagem: cerimonial lindo e emocionante, mesa dos doces perfeita, comida elogiada"></div>
+  <div class="miolo" style="bottom:62px"><p class="nota-print">Mensagem real de cliente · nome protegido</p></div>
+  <div class="rodape"><span>@rosabuffetoficial_</span><span>Manaus · AM</span></div>
+</section>
+
+<!-- 4. FOTO MEIA TELA + CITAÇÃO -->
+<section class="slide">
+  <div class="foto" style="left:0; top:0; bottom:0; width:250px; background-image:url(../../../public/images/portfolio/quinze-anos/quinze-anos-06.jpg)"></div>
+  <div class="topo" style="left:280px"><span></span><span class="pagina">04 / 07</span></div>
+  <div class="miolo miolo--centro" style="left:280px; right:30px">
+    <div class="aspas">“</div>
+    <p class="citacao" style="font-size:27px">…saiu tudo do jeitinho que sonhamos, <em style="color:var(--gold-soft)">um trabalho impecável</em></p>
+    <div style="position:relative; margin-top:24px; border-radius:12px; overflow:hidden; box-shadow:0 0 0 1px rgba(201,162,39,.55)"><img src="print-jeitinho.jpg" alt="Print da mensagem: Só gratidão, as fotos estão lindas, saiu tudo do jeitinho que sonhamos" style="width:100%; display:block"></div>
+  </div>
+  <div class="rodape" style="left:280px"><span>@rosabuffetoficial_</span></div>
+</section>
+
+<!-- 5. DOIS PRINTS -->
+<section class="slide slide--creme">
+  <div class="topo"><img class="logo" src="../../../public/images/logo-header.png" alt=""><span class="pagina">05 / 07</span></div>
+  <div class="miolo" style="top:92px; bottom:auto">
+    <h2 class="titulo" style="font-size:34px">Cada mensagem dessas <em>emociona a gente</em></h2>
+  </div>
+  <div class="print" style="left:40px; top:182px; width:370px"><img src="print-festa-linda.jpg" alt="Print: que festa linda que nos proporcionou, tudo perfeito, equipe maravilhosa"></div>
+  <div class="print" style="right:40px; top:368px; width:300px; z-index:2"><img src="print-espaco.jpg" alt="Print: ontem o espaço estava impecável, estou imensamente grata"></div>
+  <div class="rodape"><span>@rosabuffetoficial_</span><span>Manaus · AM</span></div>
+</section>
+
+<!-- 6. GOOGLE -->
+<section class="slide">
+  <div class="foto foto--topo" style="height:330px; background-image:url(../../../public/images/portfolio/casamentos/casamentos-21.jpg)"></div>
+  <div class="topo"><img class="logo" src="../../../public/images/logo-header.png" alt=""><span class="pagina">06 / 07</span></div>
+  <div class="miolo">
+    <div class="nota">4,6</div>
+    <div class="estrelas" aria-label="4,6 de 5 estrelas">
+      <svg viewBox="0 0 24 24"><path fill="#c9a227" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z"/></svg>
+      <svg viewBox="0 0 24 24"><path fill="#c9a227" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z"/></svg>
+      <svg viewBox="0 0 24 24"><path fill="#c9a227" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z"/></svg>
+      <svg viewBox="0 0 24 24"><path fill="#c9a227" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z"/></svg>
+      <svg viewBox="0 0 24 24"><defs><linearGradient id="meia"><stop offset="60%" stop-color="#c9a227"/><stop offset="60%" stop-color="rgba(201,162,39,.3)"/></linearGradient></defs><path fill="url(#meia)" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z"/></svg>
+    </div>
+    <h2 class="titulo" style="margin-top:18px">No Google, com <em>266 avaliações</em></h2>
+    <p class="texto">Além das mensagens no WhatsApp, quem celebrou aqui também conta no Google.</p>
+  </div>
+  <div class="rodape"><span>@rosabuffetoficial_</span><span>Manaus · AM</span></div>
+</section>
+
+<!-- 7. CTA -->
+<section class="slide">
+  <div class="topo"><span></span><span class="pagina">07 / 07</span></div>
+  <img class="logo-grande" src="../../../public/images/logo-vertical-completo.png" alt="Rosa Buffet &amp; Eventos">
+  <div class="miolo">
+    <h2 class="titulo titulo--g">A próxima história <em>pode ser a sua</em></h2>
+    <p class="texto">Simule sua festa no site ou chame a gente no WhatsApp.</p>
+    <span class="botao">rosabuffeteventos.com.br</span>
+    <div class="contatos">
+      <div class="contato"><span>Rosa</span><strong>(92) 99207-3047</strong></div>
+      <div class="contato"><span>Wellington</span><strong>(92) 99459-8954</strong></div>
+    </div>
+  </div>
+  <div class="rodape"><span>@rosabuffetoficial_</span><span>Cidade de Deus · Manaus</span></div>
+</section>
+
+</body>
+</html>

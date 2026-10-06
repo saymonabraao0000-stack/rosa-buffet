@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Rosa Buffet — Temas de 15 anos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=block" rel="stylesheet">
+<link rel="stylesheet" href="../rosa.css">
+<style>
+  .miolo--alto { top: 82px; bottom: auto; }
+  .grade { position: absolute; left: 40px; right: 40px; top: 186px; height: 384px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; }
+  .grade .foto { position: relative; border-radius: 14px; overflow: hidden; }
+  .grade .foto::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 70px; background: linear-gradient(180deg, rgba(13,13,13,0), rgba(13,13,13,.85)); }
+  .rotulo { position: absolute; left: 12px; bottom: 10px; z-index: 1; display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 500; color: var(--cream); }
+  .rotulo b { width: 28px; height: 28px; border-radius: 50%; background: var(--gold); color: var(--ink); display: grid; place-items: center; font-family: "Playfair Display", serif; font-size: 15px; font-weight: 600; }
+  .chamada { position: absolute; left: 40px; right: 40px; top: 586px; font-size: 16px; color: rgba(250,248,243,.85); }
+  .chamada strong { color: var(--gold-soft); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<section class="slide">
+  <div class="topo"><img class="logo" src="../../../public/images/logo-header.png" alt=""><span></span></div>
+  <div class="miolo miolo--alto">
+    <h1 class="titulo">Qual desses temas <em>é a sua cara?</em></h1>
+  </div>
+  <div class="grade">
+    <div class="foto" style="background-image:url(../../../public/images/portfolio/quinze-anos/quinze-anos-08.jpg); background-position:center 55%"><span class="rotulo"><b>A</b>Azul gelo</span></div>
+    <div class="foto" style="background-image:url(../../../public/images/portfolio/quinze-anos/quinze-anos-07.jpg); background-position:center 35%"><span class="rotulo"><b>B</b>Baile de máscaras</span></div>
+    <div class="foto" style="background-image:url(../../../public/images/portfolio/quinze-anos/quinze-anos-26.jpg); background-position:center 25%"><span class="rotulo"><b>C</b>Galáxia</span></div>
+    <div class="foto" style="background-image:url(../../../public/images/portfolio/quinze-anos/quinze-anos-11.jpg); background-position:35% center"><span class="rotulo"><b>D</b>Lilás e dourado</span></div>
+  </div>
+  <p class="chamada">Comenta a letra aqui embaixo. <strong>A gente quer saber!</strong></p>
+  <div class="rodape"><span>@rosabuffetoficial_</span><span>Manaus · AM</span></div>
+</section>
+
+</body>
+</html>

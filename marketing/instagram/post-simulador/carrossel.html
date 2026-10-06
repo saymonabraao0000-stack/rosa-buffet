@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Rosa Buffet — Simulador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=block" rel="stylesheet">
+<link rel="stylesheet" href="../rosa.css">
+<style>
+  /* foto de festa bem escurecida no fundo, só pra dar clima */
+  .fundo { position: absolute; inset: 0; background: url(../../../public/images/portfolio/casamentos/casamentos-16.jpg) center/cover; }
+  .fundo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,13,13,.9) 0%, rgba(13,13,13,.72) 45%, rgba(13,13,13,.94) 100%); }
+  /* celular saindo pela borda de baixo; print real do site em print-simulador-tela.png */
+  .celular {
+    position: absolute; right: 30px; top: 246px; width: 236px; height: 500px; z-index: 1;
+    border: 7px solid #1f1f1f; border-radius: 36px; overflow: hidden; background: #faf8f3;
+    box-shadow: 0 0 0 1px rgba(201,162,39,.55), 0 30px 60px rgba(0,0,0,.6);
+  }
+  .celular img { width: 100%; display: block; }
+  .passos { list-style: none; margin-top: 4px; }
+  .passos li { display: flex; gap: 12px; align-items: baseline; padding: 11px 0; border-bottom: 1px solid rgba(201,162,39,.4); font-size: 16px; line-height: 1.3; color: rgba(250,248,243,.9); }
+  .passos li:first-child { border-top: 1px solid rgba(201,162,39,.4); }
+  .passos b { font-family: "Playfair Display", serif; font-style: italic; font-weight: 500; font-size: 20px; color: var(--gold-soft); min-width: 14px; }
+</style>
+</head>
+<body>
+
+<section class="slide">
+  <div class="fundo"></div>
+  <div class="topo"><img class="logo" src="../../../public/images/logo-header.png" alt=""><span></span></div>
+  <div class="miolo" style="top:96px; bottom:auto">
+    <h1 class="titulo titulo--g">Monte sua festa em <em>menos de 2 minutos</em></h1>
+  </div>
+  <div class="celular"><img src="print-simulador-tela.png" alt="Tela do simulador no site da Rosa Buffet"></div>
+  <div class="miolo" style="top:270px; right:292px; bottom:auto">
+    <ul class="passos">
+      <li><b>1</b>Escolha o tema</li>
+      <li><b>2</b>Diga os convidados</li>
+      <li><b>3</b>Escolha o pacote</li>
+      <li><b>4</b>Veja a estimativa</li>
+    </ul>
+    <span class="botao" style="margin-top:24px">Simular agora</span>
+    <p class="texto" style="font-size:14px; margin-top:12px">rosabuffeteventos.com.br<br>link na bio</p>
+  </div>
+  <div class="rodape" style="right:292px"><span>@rosabuffetoficial_</span></div>
+</section>
+
+</body>
+</html>
